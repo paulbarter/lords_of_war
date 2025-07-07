@@ -18,6 +18,16 @@ def get_current_active_space(x, y, board):
                 return space
     return None
 
+def get_current_active_unit(x, y, board):
+    for space in board:
+        if space.rect.collidepoint(x, y):
+            for unit in space.units:
+                # check that the mouse is hovering over the unit within the space
+                if unit.rect.collidepoint(x, y):
+                    # If the unit is found, return the unit
+                    return unit, space
+    return None, None
+
 class BaseSpace():
     def __init__(self, x, y, id, type):
         self.id = id
