@@ -23,6 +23,9 @@ class BaseUnit():
         rect.center = self.position
         return rect
 
-    def draw(self, screen):
-        pygame.draw.rect(screen, BLUE, self.rect, 2)
+    def draw(self, screen, hilight=False):
+        if hilight:
+            pygame.draw.rect(screen, BLUE, self.rect, 100, border_radius=100)
+        else:
+            pygame.draw.rect(screen, BLUE, self.rect, 2)
         screen.blit(self.image, self.rect)

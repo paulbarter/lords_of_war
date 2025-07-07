@@ -20,12 +20,12 @@ def get_current_active_space(x, y, board):
 
 def get_current_active_unit(x, y, board):
     for space in board:
-        if space.rect.collidepoint(x, y):
-            for unit in space.units:
-                # check that the mouse is hovering over the unit within the space
-                if unit.rect.collidepoint(x, y):
-                    # If the unit is found, return the unit
-                    return unit, space
+        # if space.rect.collidepoint(x, y):
+        for unit in space.units:
+            # check that the mouse is hovering over the unit within the space
+            if unit.rect.collidepoint(x, y):
+                # If the unit is found, return the unit
+                return unit, space
     return None, None
 
 class BaseSpace():
@@ -65,23 +65,20 @@ class BaseSpace():
                 new_units.append(unit)
         self.units = new_units
 
-    def draw_units(self, screen):
+    def draw_units(self, screen, current_active_unit):
         for unit in self.units:
+            # if current_active_unit and unit.id == current_active_unit.id:
+            #     unit.draw(screen, hilight=True)
+            # else:
+            #     unit.draw(screen)
             unit.draw(screen)
 
-    def draw(self, screen):
-        if self.id == 1:
-            pygame.draw.rect(screen, BLUE, self.rect, 2)
-        elif self.id == 2:
-            pygame.draw.rect(screen, (0, 255, 0), self.rect, 2)
-        elif self.id == 3:
-            pygame.draw.rect(screen, (255, 0, 0), self.rect, 2)
-        elif self.id == 4:
-            pygame.draw.rect(screen, (255, 255, 0), self.rect, 2)
-        elif self.id == 5:
-            pygame.draw.rect(screen, (0, 255, 255), self.rect, 2)
-        elif self.id == 6:
-            pygame.draw.rect(screen, (255, 0, 255), self.rect, 2)
+    def draw(self, screen, active_space, current_active_unit):
+        # if active_space and self.id == active_space.id:
+        #     pygame.draw.rect(screen, BLUE, self.rect, 10, border_radius=100)
+        # else:
+        #     pygame.draw.rect(screen, (0, 0, 0), self.rect, 2)
+        pygame.draw.rect(screen, (0, 0, 0), self.rect, 2)
         screen.blit(self.image, self.rect)
         if len(self.units) > 0:
-            self.draw_units(screen)
+            self.draw_units(screen, current_active_unit)
