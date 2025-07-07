@@ -46,9 +46,18 @@ class BaseSpace():
         unit.position = (self.x, self.y)
         unit.rect.center = self.rect.center
 
+    def remove_unit(self, unit_to_remove):
+        new_units = []
+        for unit in self.units:
+            if unit.id == unit_to_remove.id:
+                continue
+            else:
+                new_units.append(unit)
+        self.units = new_units
+
     def draw_units(self, screen):
         for unit in self.units:
-            unit.draw(screen, self.x, self.y)
+            unit.draw(screen)
 
     def draw(self, screen):
         if self.id == 1:

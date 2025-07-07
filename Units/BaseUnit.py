@@ -1,10 +1,12 @@
 import pygame
+import uuid
 
 BLUE = (0, 0, 255)
 
 class BaseUnit():
     def __init__(self, x, y):
         self.name = "BaseUnit"
+        self.id = uuid.uuid4()
         self.health = 100
         self.attack_power = 10
         self.defense_power = 5
@@ -21,7 +23,6 @@ class BaseUnit():
         rect.center = self.position
         return rect
 
-    def draw(self, screen, x, y):
-        self.rect.center = x, y
+    def draw(self, screen):
         pygame.draw.rect(screen, BLUE, self.rect, 2)
         screen.blit(self.image, self.rect)
