@@ -19,20 +19,27 @@ moving = False
 space_height = 154
 space_width = 97
 
-space_1_1 = BaseSpace(space_width, -50 + space_height, 1, SpaceTypes.CITY)
+space_1_1 = BaseSpace(space_width, -50 + space_height, 1, SpaceTypes.ROAD)
 space_1_2 = BaseSpace(space_width * 2, -50 + space_height, 2, SpaceTypes.ROAD)
 space_1_3 = BaseSpace(space_width * 3, -50 + space_height, 3, SpaceTypes.ROAD)
-space_2_1 = BaseSpace(space_width, -50 + space_height * 2, 4, SpaceTypes.PLAIN)
-space_2_2 = BaseSpace(space_width * 2, -50 + space_height * 2, 5, SpaceTypes.CITY)
-space_2_3 = BaseSpace(space_width * 3, -50 + space_height * 2, 6, SpaceTypes.ROAD)
+space_1_4 = BaseSpace(space_width * 4, -50 + space_height, 4, SpaceTypes.ROAD)
+space_1_5 = BaseSpace(space_width * 5, -50 + space_height, 5, SpaceTypes.ROAD)
+space_1_6 = BaseSpace(space_width * 6, -50 + space_height, 6, SpaceTypes.ROAD)
+space_2_1 = BaseSpace(space_width, -50 + space_height * 2, 7, SpaceTypes.ROAD)
+space_2_2 = BaseSpace(space_width * 2, -50 + space_height * 2, 8, SpaceTypes.ROAD)
+space_2_3 = BaseSpace(space_width * 3, -50 + space_height * 2, 9, SpaceTypes.ROAD)
+space_2_4 = BaseSpace(space_width * 4, -50 + space_height * 2, 10, SpaceTypes.ROAD)
+space_2_5 = BaseSpace(space_width * 5, -50 + space_height * 2, 11, SpaceTypes.ROAD)
+space_2_6 = BaseSpace(space_width * 6, -50 + space_height * 2, 12, SpaceTypes.ROAD)
 
 space_1_1.add_unit(BaseUnit(1, 2))
 space_2_2.add_unit(BaseUnit(1, 2))
 
-board = [space_1_1, space_1_2, space_1_3, space_2_1, space_2_2, space_2_3]
-def draw_board(active_space: BaseSpace, current_active_unit):
+board = [space_1_1, space_1_2, space_1_3, space_1_4, space_1_5, space_1_6,
+         space_2_1, space_2_2, space_2_3, space_2_4, space_2_5, space_2_6]
+def draw_board():
     for space in board:
-        space.draw(screen, active_space, current_active_unit)
+        space.draw(screen)
 
 def snap_to_space(unit, dragged_from_space: BaseSpace):
     for space in board:
@@ -43,6 +50,18 @@ def snap_to_space(unit, dragged_from_space: BaseSpace):
                 space.add_unit(unit)
                 dragged_from_space.remove_unit(unit)
             break
+
+def hover_space(active_space, x, y):
+    for space in board:
+        if space.rect.collidepoint(x, y) and space.id != active_space.id:
+            centre_active_space = (active_space.rect.centerx, active_space.rect.centery)
+            distance = pygame.math.Vector2(centre_active_space).distance_to((x, y))
+            if distance > 150:
+                new_image = pygame.image.load('images\\road-hover-invalid.png').convert()
+            else:
+                new_image = pygame.image.load('images\\road-hover-valid.png').convert()
+            space.image = new_image
+            space.draw(screen)
 
 current_active_unit = None
 active_space = None
@@ -98,9 +117,10 @@ while running:
             # show_popup(screen, f"unit: {current_active_unit} space {active_space}", font)
             if current_active_unit and active_space:
                 current_active_unit.rect.move_ip(event.rel)
+                hover_space(active_space, event.pos[0], event.pos[1])
 
     screen.fill(BROWN)
-    draw_board(active_space, current_active_unit)
+    draw_board()
     if moving and current_active_unit:
         current_active_unit.draw(screen)
     pygame.display.update()
