@@ -36,7 +36,7 @@ def draw_board(active_space: BaseSpace, current_active_unit):
 
 def snap_to_space(unit, dragged_from_space: BaseSpace):
     for space in board:
-        if (abs(unit.rect.centerx - space.rect.centerx) < 20) and (abs(unit.rect.centery - space.rect.centery) < 20):
+        if (abs(unit.rect.centerx - space.rect.centerx) < 40) and (abs(unit.rect.centery - space.rect.centery) < 40):
             unit.rect.center = space.rect.center
             if dragged_from_space.id != space.id:
                 # only move the unit if it is not the same space
@@ -83,14 +83,15 @@ while running:
                 moving = True
         elif event.type == MOUSEBUTTONUP:
             moving = False
-            snap_to_space(current_active_unit, active_space)
-            current_active_unit = None
-            active_space = None
-            # After snapping, check if the unit moved to a new space
-            for space in board:
-                if current_active_unit in space.units:
-                    active_space = space
-                    break
+            if current_active_unit:
+                snap_to_space(current_active_unit, active_space)
+                current_active_unit = None
+                active_space = None
+                # After snapping, check if the unit moved to a new space
+                for space in board:
+                    if current_active_unit in space.units:
+                        active_space = space
+                        break
 
         # Make your image move continuously
         elif event.type == MOUSEMOTION and moving:
