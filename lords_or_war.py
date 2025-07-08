@@ -3,7 +3,7 @@ from pygame.locals import *
 
 from Units.BaseUnit import BaseUnit, Jet
 from Units.Spaces import SpaceTypes, BaseSpace, get_current_active_space, get_current_active_unit, hover_space, \
-    snap_to_space, remove_movement_hilights
+    snap_to_space, remove_movement_hilights, snap_back_to_start
 
 YELLOW = (255, 255, 0)
 BLUE = (0, 0, 255)
@@ -91,17 +91,20 @@ while running:
                 moving = True
         elif event.type == MOUSEBUTTONUP:
             moving = False
-            if current_active_unit and len(possible_dest_space_ids) > 0:
-                snap_to_space(board, possible_dest_space_ids, current_active_unit, active_space)
+            if current_active_unit:
+                if len(possible_dest_space_ids) > 0:
+                    snap_to_space(board, possible_dest_space_ids, current_active_unit, active_space)
+                    # After snapping, check if the unit moved to a new space
+                    for space in board:
+                        if current_active_unit in space.units:
+                            active_space = space
+                            break
+                else:
+                    snap_back_to_start(current_active_unit, active_space)
                 possible_dest_space_ids = []
                 remove_movement_hilights(board, screen)
                 current_active_unit = None
                 active_space = None
-                # After snapping, check if the unit moved to a new space
-                for space in board:
-                    if current_active_unit in space.units:
-                        active_space = space
-                        break
 
         # Make your image move continuously
         elif event.type == MOUSEMOTION and moving:

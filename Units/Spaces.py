@@ -18,13 +18,13 @@ class BaseSpace():
         self.units = []
         self.type = type
         if (type == SpaceTypes.CITY or type == SpaceTypes.PLAIN):
-            self.move_penalty = 0
+            self.move_penalty = 100
         elif type == SpaceTypes.ROAD:
-            self.move_penalty = -100
-        elif type == SpaceTypes.FOREST:
             self.move_penalty = 50
+        elif type == SpaceTypes.FOREST:
+            self.move_penalty = 150
         elif type == SpaceTypes.MOUNTAIN:
-            self.move_penalty = 200
+            self.move_penalty = 300
         elif type == SpaceTypes.RIVER:
             self.move_penalty = 99999
         self.rect = self.create_rect(type, x, y)
@@ -83,11 +83,15 @@ def snap_to_space(board, possible_dest_spaces, unit, dragged_from_space: BaseSpa
     for space in board:
         if (abs(unit.rect.centerx - space.rect.centerx) < 40) and (abs(unit.rect.centery - space.rect.centery) < 40):
             unit.rect.center = space.rect.center
-            if dragged_from_space.id != space.id and space.id in possible_dest_spaces:
+            # if dragged_from_space.id != space.id and space.id in possible_dest_spaces:
+            if space.id in possible_dest_spaces:
                 # only move the unit if it is not the same space
                 space.add_unit(unit)
                 dragged_from_space.remove_unit(unit)
             break
+
+def snap_back_to_start(current_active_unit, active_space):
+    current_active_unit.rect.center = active_space.rect.center
 
 def remove_movement_hilights(board, screen):
     for space in board:
@@ -97,49 +101,72 @@ def remove_movement_hilights(board, screen):
         space.draw_units(screen)
 
 def is_space_adjacent(space1, space2):
+    # bug here when go from corner to corner to corner
     centre_space1 = (space1.rect.centerx, space1.rect.centery)
     centre_space2 = (space2.rect.centerx, space2.rect.centery)
     distance = pygame.math.Vector2(centre_space1).distance_to(centre_space2)
     return distance < 110  # Assuming spaces are close enough if within 100 pixels
 
-def get_image_for_space_type(space_type, hover=False):
+def get_image_for_space_type(space_type, hover=False, valid=True):
     if space_type == SpaceTypes.CITY:
         if hover:
-            return pygame.image.load('images\\city-hover.png').convert()
+            if not valid:
+                return pygame.image.load('images\\city-hover-invalid.png').convert()
         return pygame.image.load('images\\city.png').convert()
     elif space_type == SpaceTypes.PLAIN:
         if hover:
+            if not valid:
+                return pygame.image.load('images\\plain-hover-invalid.png').convert()
             return pygame.image.load('images\\plain-hover.png').convert()
         return pygame.image.load('images\\plain.png').convert()
     elif space_type == SpaceTypes.ROAD:
         if hover:
+            if not valid:
+                return pygame.image.load('images\\road-hover-invalid.png').convert()
             return pygame.image.load('images\\road-hover.png').convert()
         return pygame.image.load('images\\road.png').convert()
     elif space_type == SpaceTypes.FOREST:
         if hover:
+            if not valid:
+                return pygame.image.load('images\\forest-hover-invalid.png').convert()
             return pygame.image.load('images\\forest-hover.png').convert()
         return pygame.image.load('images\\forest.png').convert()
     elif space_type == SpaceTypes.MOUNTAIN:
         if hover:
+            if not valid:
+                return pygame.image.load('images\\mountain-hover-invalid.png').convert()
             return pygame.image.load('images\\mountain-hover.png').convert()
         return pygame.image.load('images\\mountain.png').convert()
     elif space_type == SpaceTypes.RIVER:
         if hover:
+            if not valid:
+                return pygame.image.load('images\\river-hover-invalid.png').convert()
             return pygame.image.load('images\\river-hover.png').convert()
         return pygame.image.load('images\\river.png').convert()
+
+def total_terrain_move_penalty(start_point, end_point, board):
+    # Calculate the move penalty based on the terrain type between two points
+    total_move_penalty = 0
+    for space in board:
+        if space.rect.clipline(start_point, end_point):
+            total_move_penalty += space.move_penalty
+    return total_move_penalty
 
 def hover_space(board, screen, current_active_unit, active_space, x, y):
     # make sure that only can move to adjacent space and then move again to avoid needing to calculate entire path
     possible_dest_space_ids = set()
     for space in board:
-        if space.rect.collidepoint(x, y) and space.id != active_space.id and is_space_adjacent(active_space, space):
+        if space.rect.collidepoint(x, y) and space.id != active_space.id:
+            # and is_space_adjacent(active_space, space):
             centre_active_space = (active_space.rect.centerx, active_space.rect.centery)
             centre_current_space = (space.rect.centerx, space.rect.centery)
             distance = pygame.math.Vector2(centre_active_space).distance_to(centre_current_space)
-            if distance <= (current_active_unit.movement - space.move_penalty):
+            if distance <= (current_active_unit.movement - total_terrain_move_penalty(centre_active_space, centre_current_space, board)):
                 new_image = get_image_for_space_type(space.type, hover=True)
                 possible_dest_space_ids.add(space.id)
-                space.image = new_image
-                space.draw(screen)
+            else:
+                new_image = get_image_for_space_type(space.type, hover=True, valid=False)
+            space.image = new_image
+            space.draw(screen)
     return list(possible_dest_space_ids)
 
