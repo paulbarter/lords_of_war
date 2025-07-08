@@ -65,6 +65,7 @@ current_turn = Teams.WOLF
 resources_screen = BaseScreen(screen, 100, 400, 600, 200)
 unit_info_screen = BaseScreen(screen, 100, 600, 400, 100)
 hovered_unit = None
+current_selected_unit_info = []
 
 while running:
     for event in pygame.event.get():
@@ -74,8 +75,8 @@ while running:
             current_active_unit, active_space = get_current_active_unit(current_turn, event.pos[0], event.pos[1], board)
             if current_active_unit:
                 moving = True
+                current_selected_unit_info = current_active_unit.get_info()
             if end_turn_button.collidepoint(event.pos):
-                # End turn logic here
                 show_popup(screen, f"Ending turn for team {current_turn}", font)
                 restore_movement_units(board, current_turn)
                 current_turn = Teams.BARBARIAN if current_turn == Teams.WOLF else Teams.WOLF
@@ -89,6 +90,7 @@ while running:
             if current_active_unit:
                 if len(possible_dest_space_ids) > 0:
                     snap_to_space(board, possible_dest_space_ids, current_active_unit, active_space)
+                    current_selected_unit_info = current_active_unit.get_info()
                     # After snapping, check if the unit moved to a new space
                     for space in board:
                         if current_active_unit in space.units:
@@ -114,8 +116,8 @@ while running:
     draw_board()
     pygame.draw.rect(screen, BLUE, end_turn_button, 1)
     screen.blit(end_turn_image, end_turn_button)
-    resources_screen.display(f"Gold: 100, Resources: 50")
-    unit_info_screen.display(f"Unit info:")
+    resources_screen.display(text=f"Gold: 100, Resources: 50")
+    unit_info_screen.display(text=None, messages=current_selected_unit_info)
     if moving and current_active_unit:
         current_active_unit.draw(screen)
     pygame.display.update()

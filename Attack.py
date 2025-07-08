@@ -44,6 +44,7 @@ class Attack():
     def execute(self):
         damage = self.calculate_damage()
         self.defender.health -= damage
+        self.attacker.movement = 0  # Attacker cannot move after attacking
         if self.defender.health <= 0:
             show_popup(pygame.display.get_surface(), f"{self.defender.name} has been defeated!", font)
             return True  # Defender is defeated

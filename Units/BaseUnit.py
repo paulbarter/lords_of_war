@@ -21,6 +21,11 @@ class BaseUnit():
         self.image = None
         self.rect = self.create_rect()
 
+    def get_info(self):
+        return [f"Name: {self.name}", f"Team: {self.team}", f"Health: {self.health}, " \
+               f"Attack Power: {self.attack_power}", f"Defense Power: {self.defense_power}, " \
+               f"Movement: {self.movement}"]
+
     def create_rect(self):
         if self.team == Teams.WOLF:
             img = pygame.image.load('images\\soldier-wolf.png')
