@@ -39,7 +39,7 @@ class Jet(BaseUnit):
         self.id = uuid.uuid4()
         self.health = 100
         self.fly = True
-        self.attack_power = 10
+        self.attack_power = 50
         self.defense_power = 5
         self.movement = 710
         self.position = (x, y)

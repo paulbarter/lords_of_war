@@ -37,7 +37,8 @@ class Attack():
 
     def calculate_damage(self):
         # Simple damage calculation: attack power minus defense power
-        damage = max(0, self.attack_power - self.defense_power)
+        import random
+        damage = max(0, int(round((self.attack_power - self.defense_power) * random.random(), 0)))
         return damage
 
     def execute(self):
