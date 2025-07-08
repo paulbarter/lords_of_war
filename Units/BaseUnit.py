@@ -7,7 +7,7 @@ class BaseUnit():
     def __init__(self, x, y):
         self.name = "BaseUnit"
         self.id = uuid.uuid4()
-        self.health = 100
+        self.health = 20
         self.fly = False
         self.attack_power = 10
         self.defense_power = 5

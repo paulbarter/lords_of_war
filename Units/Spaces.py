@@ -1,5 +1,7 @@
 import pygame
 
+from Attack import Attack
+
 BLUE = (0, 0, 255)
 
 class SpaceTypes:
@@ -9,32 +11,6 @@ class SpaceTypes:
     MOUNTAIN = 3
     RIVER = 4
     PLAIN = 5
-
-def show_popup(screen, message, font):
-    # Draw semi-transparent overlay
-    overlay = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
-    overlay.fill((0, 0, 0, 180))  # Black with alpha
-    screen.blit(overlay, (0, 0))
-
-    # Draw popup rectangle
-    popup_rect = pygame.Rect(0, 0, 400, 200)
-    popup_rect.center = screen.get_rect().center
-    pygame.draw.rect(screen, (255, 255, 255), popup_rect)
-    pygame.draw.rect(screen, (0, 0, 0), popup_rect, 3)
-
-    # Render message
-    text_surface = font.render(message, True, (0, 0, 0))
-    text_rect = text_surface.get_rect(center=popup_rect.center)
-    screen.blit(text_surface, text_rect)
-
-    pygame.display.update()
-
-    # Wait for user to close popup
-    waiting = True
-    while waiting:
-        for event in pygame.event.get():
-            if event.type in (pygame.KEYDOWN, pygame.MOUSEBUTTONDOWN, pygame.QUIT):
-                waiting = False
 
 class BaseSpace():
     def __init__(self, x, y, id, type):
@@ -109,10 +85,18 @@ def snap_to_space(board, possible_dest_spaces, unit, dragged_from_space: BaseSpa
     for space in board:
         if (abs(unit.rect.centerx - space.rect.centerx) < 40) and (abs(unit.rect.centery - space.rect.centery) < 40):
             unit.rect.center = space.rect.center
-            # if dragged_from_space.id != space.id and space.id in possible_dest_spaces:
             if space.id in possible_dest_spaces:
-                # only move the unit if it is not the same space
-                space.add_unit(unit)
+                if len(space.units) > 0:
+                    defeated = Attack(unit, space.units[0]).execute()
+                    if not defeated:
+                        # If the attack did not defeat the defender, snap back to start
+                        snap_back_to_start(unit, dragged_from_space)
+                        break
+                    else:
+                        space.remove_unit(space.units[0])
+                        space.add_unit(unit)
+                else:
+                    space.add_unit(unit)
                 dragged_from_space.remove_unit(unit)
             break
 

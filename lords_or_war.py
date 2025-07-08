@@ -55,32 +55,6 @@ current_active_unit = None
 active_space = None
 possible_dest_space_ids = []
 
-def show_popup(screen, message):
-    # Draw semi-transparent overlay
-    overlay = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
-    overlay.fill((0, 0, 0, 180))  # Black with alpha
-    screen.blit(overlay, (0, 0))
-
-    # Draw popup rectangle
-    popup_rect = pygame.Rect(0, 0, 400, 200)
-    popup_rect.center = screen.get_rect().center
-    pygame.draw.rect(screen, (255, 255, 255), popup_rect)
-    pygame.draw.rect(screen, (0, 0, 0), popup_rect, 3)
-
-    # Render message
-    text_surface = font.render(message, True, (0, 0, 0))
-    text_rect = text_surface.get_rect(center=popup_rect.center)
-    screen.blit(text_surface, text_rect)
-
-    pygame.display.update()
-
-    # Wait for user to close popup
-    waiting = True
-    while waiting:
-        for event in pygame.event.get():
-            if event.type in (pygame.KEYDOWN, pygame.MOUSEBUTTONDOWN, pygame.QUIT):
-                waiting = False
-
 while running:
     for event in pygame.event.get():
         if event.type == QUIT:
