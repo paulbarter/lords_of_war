@@ -22,21 +22,31 @@ class BaseSpace():
         self.type = type
         if (type == SpaceTypes.CITY or type == SpaceTypes.PLAIN):
             self.move_penalty = 50
+            if (type == SpaceTypes.CITY):
+                self.name = 'City'
+            else:
+                self.name = 'Plain'
         elif type == SpaceTypes.ROAD:
             self.move_penalty = 50
+            self.name = 'Road'
         elif type == SpaceTypes.FOREST:
+            self.name = 'Forest'
             self.move_penalty = 150
         elif type == SpaceTypes.MOUNTAIN:
+            self.name = 'Mountain'
             self.move_penalty = 300
         elif type == SpaceTypes.RIVER:
+            self.name = 'River'
             self.move_penalty = 99999
         self.rect = self.create_rect(type, x, y)
+
+    def get_info(self):
+        return [f"Type: {self.name}"]
 
     def create_rect(self, type, x, y):
         image = get_image_for_space_type(type)
         image.convert()
         self.image = image
-        # Draw rectangle around the image
         rect = image.get_rect()
         rect.center = x, y
         return rect
@@ -65,22 +75,19 @@ class BaseSpace():
         if len(self.units) > 0:
             self.draw_units(screen)
 
-def get_current_active_space(x, y, board):
+def get_current_active_unit(current_turn, x, y, board):
+    active_unit = None
+    active_space = None
     for space in board:
         if space.rect.collidepoint(x, y):
-            if len(space.units) > 0:
-                # If the space has units, return the space
-                return space
-    return None
-
-def get_current_active_unit(current_turn, x, y, board):
-    for space in board:
+            active_space = space
         for unit in space.units:
             # check that the mouse is hovering over the unit within the space
             if unit.rect.collidepoint(x, y) and unit.team == current_turn:
                 # If the unit is found, return the unit
-                return unit, space
-    return None, None
+                active_unit = unit
+                break
+    return active_unit, active_space
 
 def restore_movement_units(board, current_turn):
     for space in board:

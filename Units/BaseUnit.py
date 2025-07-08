@@ -10,6 +10,10 @@ class BaseUnit():
     def __init__(self, x, y, team):
         self.name = "Soldier"
         self.team = team
+        if team == Teams.WOLF:
+            self.team_name = "Wolf"
+        elif team == Teams.BARBARIAN:
+            self.team_name = "Barbarian"
         self.id = uuid.uuid4()
         self.health = 20
         self.fly = False
@@ -22,7 +26,7 @@ class BaseUnit():
         self.rect = self.create_rect()
 
     def get_info(self):
-        return [f"Name: {self.name}", f"Team: {self.team}", f"Health: {self.health}, " \
+        return [f"Name: {self.name}", f"Team: {self.team_name}", f"Health: {self.health}, " \
                f"Attack Power: {self.attack_power}", f"Defense Power: {self.defense_power}, " \
                f"Movement: {self.movement}"]
 
