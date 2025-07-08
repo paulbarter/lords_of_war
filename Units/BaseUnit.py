@@ -8,9 +8,10 @@ class BaseUnit():
         self.name = "BaseUnit"
         self.id = uuid.uuid4()
         self.health = 100
+        self.fly = False
         self.attack_power = 10
         self.defense_power = 5
-        self.movement = 310
+        self.movement = 200
         self.position = (x, y)
         self.image = None
         self.rect = self.create_rect()
@@ -37,6 +38,7 @@ class Jet(BaseUnit):
         self.name = "Jet"
         self.id = uuid.uuid4()
         self.health = 100
+        self.fly = True
         self.attack_power = 10
         self.defense_power = 5
         self.movement = 710

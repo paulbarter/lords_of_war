@@ -10,6 +10,32 @@ class SpaceTypes:
     RIVER = 4
     PLAIN = 5
 
+def show_popup(screen, message, font):
+    # Draw semi-transparent overlay
+    overlay = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
+    overlay.fill((0, 0, 0, 180))  # Black with alpha
+    screen.blit(overlay, (0, 0))
+
+    # Draw popup rectangle
+    popup_rect = pygame.Rect(0, 0, 400, 200)
+    popup_rect.center = screen.get_rect().center
+    pygame.draw.rect(screen, (255, 255, 255), popup_rect)
+    pygame.draw.rect(screen, (0, 0, 0), popup_rect, 3)
+
+    # Render message
+    text_surface = font.render(message, True, (0, 0, 0))
+    text_rect = text_surface.get_rect(center=popup_rect.center)
+    screen.blit(text_surface, text_rect)
+
+    pygame.display.update()
+
+    # Wait for user to close popup
+    waiting = True
+    while waiting:
+        for event in pygame.event.get():
+            if event.type in (pygame.KEYDOWN, pygame.MOUSEBUTTONDOWN, pygame.QUIT):
+                waiting = False
+
 class BaseSpace():
     def __init__(self, x, y, id, type):
         self.id = id
@@ -18,7 +44,7 @@ class BaseSpace():
         self.units = []
         self.type = type
         if (type == SpaceTypes.CITY or type == SpaceTypes.PLAIN):
-            self.move_penalty = 100
+            self.move_penalty = 50
         elif type == SpaceTypes.ROAD:
             self.move_penalty = 50
         elif type == SpaceTypes.FOREST:
@@ -112,6 +138,7 @@ def get_image_for_space_type(space_type, hover=False, valid=True):
         if hover:
             if not valid:
                 return pygame.image.load('images\\city-hover-invalid.png').convert()
+            return pygame.image.load('images\\city-hover.png').convert()
         return pygame.image.load('images\\city.png').convert()
     elif space_type == SpaceTypes.PLAIN:
         if hover:
@@ -144,24 +171,27 @@ def get_image_for_space_type(space_type, hover=False, valid=True):
             return pygame.image.load('images\\river-hover.png').convert()
         return pygame.image.load('images\\river.png').convert()
 
-def total_terrain_move_penalty(start_point, end_point, board):
+def total_terrain_move_penalty(unit, start_point, end_point, board):
     # Calculate the move penalty based on the terrain type between two points
     total_move_penalty = 0
     for space in board:
         if space.rect.clipline(start_point, end_point):
-            total_move_penalty += space.move_penalty
+            if unit.fly:
+                total_move_penalty += 50
+            else:
+                total_move_penalty += space.move_penalty
     return total_move_penalty
 
-def hover_space(board, screen, current_active_unit, active_space, x, y):
-    # make sure that only can move to adjacent space and then move again to avoid needing to calculate entire path
+def hover_space(board, screen, unit, active_space, x, y):
     possible_dest_space_ids = set()
     for space in board:
         if space.rect.collidepoint(x, y) and space.id != active_space.id:
-            # and is_space_adjacent(active_space, space):
             centre_active_space = (active_space.rect.centerx, active_space.rect.centery)
             centre_current_space = (space.rect.centerx, space.rect.centery)
             distance = pygame.math.Vector2(centre_active_space).distance_to(centre_current_space)
-            if distance <= (current_active_unit.movement - total_terrain_move_penalty(centre_active_space, centre_current_space, board)):
+            terrain_penalty = total_terrain_move_penalty(unit, centre_active_space, centre_current_space, board)
+            # show_popup(screen, f"distance {distance} penalty: {terrain_penalty}", font)
+            if distance <= (unit.movement - terrain_penalty):
                 new_image = get_image_for_space_type(space.type, hover=True)
                 possible_dest_space_ids.add(space.id)
             else:

@@ -23,20 +23,20 @@ space_width = 100
 space_1_1 = BaseSpace(space_width, -50 + space_height, 1, SpaceTypes.ROAD)
 space_1_2 = BaseSpace(space_width * 2, -50 + space_height, 2, SpaceTypes.CITY)
 space_1_3 = BaseSpace(space_width * 3, -50 + space_height, 3, SpaceTypes.ROAD)
-space_1_4 = BaseSpace(space_width * 4, -50 + space_height, 4, SpaceTypes.PLAIN)
-space_1_5 = BaseSpace(space_width * 5, -50 + space_height, 5, SpaceTypes.PLAIN)
+space_1_4 = BaseSpace(space_width * 4, -50 + space_height, 4, SpaceTypes.ROAD)
+space_1_5 = BaseSpace(space_width * 5, -50 + space_height, 5, SpaceTypes.ROAD)
 space_1_6 = BaseSpace(space_width * 6, -50 + space_height, 6, SpaceTypes.ROAD)
 space_2_1 = BaseSpace(space_width, -50 + space_height * 2, 7, SpaceTypes.ROAD)
 space_2_2 = BaseSpace(space_width * 2, -50 + space_height * 2, 8, SpaceTypes.ROAD)
-space_2_3 = BaseSpace(space_width * 3, -50 + space_height * 2, 9, SpaceTypes.CITY)
+space_2_3 = BaseSpace(space_width * 3, -50 + space_height * 2, 9, SpaceTypes.ROAD)
 space_2_4 = BaseSpace(space_width * 4, -50 + space_height * 2, 10, SpaceTypes.ROAD)
 space_2_5 = BaseSpace(space_width * 5, -50 + space_height * 2, 11, SpaceTypes.ROAD)
 space_2_6 = BaseSpace(space_width * 6, -50 + space_height * 2, 12, SpaceTypes.PLAIN)
-space_3_1 = BaseSpace(space_width, -50 + space_height * 3, 13, SpaceTypes.ROAD)
-space_3_2 = BaseSpace(space_width * 2, -50 + space_height * 3, 14, SpaceTypes.RIVER)
+space_3_1 = BaseSpace(space_width, -50 + space_height * 3, 13, SpaceTypes.PLAIN)
+space_3_2 = BaseSpace(space_width * 2, -50 + space_height * 3, 14, SpaceTypes.ROAD)
 space_3_3 = BaseSpace(space_width * 3, -50 + space_height * 3, 15, SpaceTypes.RIVER)
 space_3_4 = BaseSpace(space_width * 4, -50 + space_height * 3, 16, SpaceTypes.ROAD)
-space_3_5 = BaseSpace(space_width * 5, -50 + space_height * 3, 17, SpaceTypes.MOUNTAIN)
+space_3_5 = BaseSpace(space_width * 5, -50 + space_height * 3, 17, SpaceTypes.RIVER)
 space_3_6 = BaseSpace(space_width * 6, -50 + space_height * 3, 18, SpaceTypes.MOUNTAIN)
 
 space_1_1.add_unit(BaseUnit(1, 2))
@@ -55,7 +55,7 @@ current_active_unit = None
 active_space = None
 possible_dest_space_ids = []
 
-def show_popup(screen, message, font):
+def show_popup(screen, message):
     # Draw semi-transparent overlay
     overlay = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
     overlay.fill((0, 0, 0, 180))  # Black with alpha
