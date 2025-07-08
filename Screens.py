@@ -12,11 +12,11 @@ class BaseScreen:
         self.width = width
         self.height = height
 
-    def render_multiline_text(self, screen, font, messages, left, top, line_spacing=5):
+    def render_multiline_text(self, screen, font, messages, left, top, line_spacing=2):
         y = top
         for message in messages:
             text_surface = font.render(message, True, (0, 0, 0))
-            screen.blit(text_surface, (left, y))
+            screen.blit(text_surface, (left + 10, y + 10))
             y += text_surface.get_height() + line_spacing
 
     def display(self, text="", messages=[], add_overlay=False):

@@ -28,9 +28,9 @@ class BaseUnit():
 
     def create_rect(self):
         if self.team == Teams.WOLF:
-            img = pygame.image.load('images\\soldier-wolf.png')
+            img = pygame.image.load('images\\units\\soldier-wolf.png')
         elif self.team == Teams.BARBARIAN:
-            img = pygame.image.load('images\\soldier-barbarian.png')
+            img = pygame.image.load('images\\units\\soldier-barbarian.png')
         img.convert()
         self.image = img
         # Draw rectangle around the image
@@ -61,7 +61,10 @@ class Jet(BaseUnit):
         self.rect = self.create_rect()
 
     def create_rect(self):
-        img = pygame.image.load('images\\jet.png')
+        if self.team == Teams.WOLF:
+            img = pygame.image.load('images\\units\\jet-wolf.png')
+        elif self.team == Teams.BARBARIAN:
+            img = pygame.image.load('images\\units\\jet-barbarian.png')
         img.convert()
         self.image = img
         # Draw rectangle around the image

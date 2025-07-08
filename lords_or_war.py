@@ -5,7 +5,8 @@ from Attack import show_popup
 from Screens import BaseScreen
 from Units.BaseUnit import BaseUnit, Jet, Teams
 from Units.Spaces import SpaceTypes, BaseSpace, get_current_active_space, get_current_active_unit, hover_space, \
-    snap_to_space, remove_movement_hilights, snap_back_to_start, check_hover_unit, restore_movement_units
+    snap_to_space, remove_movement_hilights, snap_back_to_start, check_hover_unit, restore_movement_units, \
+    remove_all_unit_hilights
 
 YELLOW = (255, 255, 0)
 BLUE = (0, 0, 255)
@@ -63,7 +64,7 @@ active_space = None
 possible_dest_space_ids = []
 current_turn = Teams.WOLF
 resources_screen = BaseScreen(screen, 100, 400, 600, 200)
-unit_info_screen = BaseScreen(screen, 100, 600, 400, 100)
+unit_info_screen = BaseScreen(screen, 100, 600, 400, 150)
 hovered_unit = None
 current_selected_unit_info = []
 
@@ -76,6 +77,8 @@ while running:
             if current_active_unit:
                 moving = True
                 current_selected_unit_info = current_active_unit.get_info()
+            else:
+                remove_all_unit_hilights(board, screen)
             if end_turn_button.collidepoint(event.pos):
                 show_popup(screen, f"Ending turn for team {current_turn}", font)
                 restore_movement_units(board, current_turn)

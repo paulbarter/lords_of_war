@@ -1,6 +1,7 @@
 import pygame
 
 from Attack import Attack
+from Units.BaseUnit import Teams
 
 BLUE = (0, 0, 255)
 
@@ -182,7 +183,16 @@ def remove_all_unit_hilights(board, screen, exclude=None):
                 continue
             if unit.image is not None:
                 original_unit_position = unit.position
-                original_unit_image = pygame.image.load('images\\soldier-wolf.png')
+                if unit.team == Teams.WOLF:
+                    if unit.name == 'Soldier':
+                        original_unit_image = pygame.image.load('images\\units\\soldier-wolf.png')
+                    else:
+                        original_unit_image = pygame.image.load('images\\units\\jet-wolf.png')
+                elif unit.team == Teams.BARBARIAN:
+                    if unit.name == 'Soldier':
+                        original_unit_image = pygame.image.load('images\\units\\soldier-barbarian.png')
+                    else:
+                        original_unit_image = pygame.image.load('images\\units\\jet-barbarian.png')
                 original_unit_image.convert()
                 unit.image = original_unit_image
                 unit.rect = original_unit_image.get_rect()
@@ -194,7 +204,16 @@ def check_hover_unit(turn, screen, board, mouse_position):
         for unit in space.units:
             if unit.rect.collidepoint(mouse_position) and unit.team == turn:
                 original_unit_position = unit.position
-                hovered_unit_image = pygame.image.load('images\\soldier-wolf-hover.png')
+                if unit.team == Teams.WOLF:
+                    if unit.name == 'Soldier':
+                        hovered_unit_image = pygame.image.load('images\\units\\soldier-wolf-hover.png')
+                    else:
+                        hovered_unit_image = pygame.image.load('images\\units\\jet-wolf-hover.png')
+                elif unit.team == Teams.BARBARIAN:
+                    if unit.name == 'Soldier':
+                        hovered_unit_image = pygame.image.load('images\\units\\soldier-barbarian-hover.png')
+                    else:
+                        hovered_unit_image = pygame.image.load('images\\units\\jet-barbarian-hover.png')
                 hovered_unit_image.convert()
                 unit.image = hovered_unit_image
                 unit.rect = hovered_unit_image.get_rect()
