@@ -5,7 +5,7 @@ from Attack import show_popup
 from Screens import BaseScreen
 from Units.BaseUnit import BaseUnit, Jet, Teams
 from Units.Spaces import SpaceTypes, BaseSpace, get_current_active_space, get_current_active_unit, hover_space, \
-    snap_to_space, remove_movement_hilights, snap_back_to_start
+    snap_to_space, remove_movement_hilights, snap_back_to_start, check_hover_unit, restore_movement_units
 
 YELLOW = (255, 255, 0)
 BLUE = (0, 0, 255)
