@@ -81,11 +81,20 @@ def get_current_active_unit(current_turn, x, y, board):
                 return unit, space
     return None, None
 
+def restore_movement_units(board, current_turn):
+    for space in board:
+        for unit in space.units:
+            if unit.team == current_turn:
+                unit.movement = unit.initial_movement  # Reset movement for the unit
+
 def snap_to_space(board, possible_dest_spaces, unit, dragged_from_space: BaseSpace):
     for space in board:
         if (abs(unit.rect.centerx - space.rect.centerx) < 40) and (abs(unit.rect.centery - space.rect.centery) < 40):
             unit.rect.center = space.rect.center
             if space.id in possible_dest_spaces:
+                centre_active_space = (dragged_from_space.rect.centerx, dragged_from_space.rect.centery)
+                centre_current_space = (space.rect.centerx, space.rect.centery)
+                unit.movement -= total_terrain_move_penalty(unit, centre_active_space, centre_current_space, board)
                 if len(space.units) > 0 and space.units[0].team != unit.team:
                     defeated = Attack(unit, space.units[0]).execute()
                     if not defeated:
@@ -165,6 +174,34 @@ def total_terrain_move_penalty(unit, start_point, end_point, board):
             else:
                 total_move_penalty += space.move_penalty
     return total_move_penalty
+
+def remove_all_unit_hilights(board, screen, exclude=None):
+    for space in board:
+        for unit in space.units:
+            if exclude and unit.id == exclude.id:
+                continue
+            if unit.image is not None:
+                original_unit_position = unit.position
+                original_unit_image = pygame.image.load('images\\soldier-wolf.png')
+                original_unit_image.convert()
+                unit.image = original_unit_image
+                unit.rect = original_unit_image.get_rect()
+                unit.rect.center = original_unit_position
+                screen.blit(original_unit_image, unit.rect)
+
+def check_hover_unit(turn, screen, board, mouse_position):
+    for space in board:
+        for unit in space.units:
+            if unit.rect.collidepoint(mouse_position) and unit.team == turn:
+                original_unit_position = unit.position
+                hovered_unit_image = pygame.image.load('images\\soldier-wolf-hover.png')
+                hovered_unit_image.convert()
+                unit.image = hovered_unit_image
+                unit.rect = hovered_unit_image.get_rect()
+                unit.rect.center = original_unit_position
+                screen.blit(hovered_unit_image, unit.rect)
+                remove_all_unit_hilights(board, screen, exclude=unit)
+                return unit
 
 def hover_space(board, screen, unit, active_space, x, y):
     possible_dest_space_ids = set()

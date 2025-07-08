@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import *
 
 from Attack import show_popup
+from Screens import BaseScreen
 from Units.BaseUnit import BaseUnit, Jet, Teams
 from Units.Spaces import SpaceTypes, BaseSpace, get_current_active_space, get_current_active_unit, hover_space, \
     snap_to_space, remove_movement_hilights, snap_back_to_start
@@ -61,6 +62,9 @@ current_active_unit = None
 active_space = None
 possible_dest_space_ids = []
 current_turn = Teams.WOLF
+resources_screen = BaseScreen(screen, 100, 400, 600, 200)
+unit_info_screen = BaseScreen(screen, 100, 600, 400, 100)
+hovered_unit = None
 
 while running:
     for event in pygame.event.get():
@@ -73,6 +77,7 @@ while running:
             if end_turn_button.collidepoint(event.pos):
                 # End turn logic here
                 show_popup(screen, f"Ending turn for team {current_turn}", font)
+                restore_movement_units(board, current_turn)
                 current_turn = Teams.BARBARIAN if current_turn == Teams.WOLF else Teams.WOLF
                 moving = False
                 current_active_unit = None
@@ -97,16 +102,20 @@ while running:
                 active_space = None
 
         # Make your image move continuously
-        elif event.type == MOUSEMOTION and moving:
-            # show_popup(screen, f"unit: {current_active_unit} space {active_space}", font)
-            if current_active_unit and active_space:
-                current_active_unit.rect.move_ip(event.rel)
-                possible_dest_space_ids = hover_space(board, screen, current_active_unit, active_space, event.pos[0], event.pos[1])
+        elif event.type == MOUSEMOTION:
+            if moving:
+                if current_active_unit and active_space:
+                    current_active_unit.rect.move_ip(event.rel)
+                    possible_dest_space_ids = hover_space(board, screen, current_active_unit, active_space, event.pos[0], event.pos[1])
+            else:
+                hovered_unit = check_hover_unit(current_turn, screen, board, event.pos)
 
     screen.fill(BROWN)
     draw_board()
     pygame.draw.rect(screen, BLUE, end_turn_button, 1)
     screen.blit(end_turn_image, end_turn_button)
+    resources_screen.display(f"Gold: 100, Resources: 50")
+    unit_info_screen.display(f"Unit info:")
     if moving and current_active_unit:
         current_active_unit.draw(screen)
     pygame.display.update()

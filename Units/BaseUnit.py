@@ -16,6 +16,7 @@ class BaseUnit():
         self.attack_power = 10
         self.defense_power = 5
         self.movement = 200
+        self.initial_movement = 200
         self.position = (x, y)
         self.image = None
         self.rect = self.create_rect()
@@ -49,6 +50,7 @@ class Jet(BaseUnit):
         self.attack_power = 50
         self.defense_power = 5
         self.movement = 710
+        self.initial_movement = 710
         self.position = (x, y)
         self.image = None
         self.rect = self.create_rect()
