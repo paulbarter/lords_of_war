@@ -10,6 +10,7 @@ class BaseUnit():
         self.health = 100
         self.attack_power = 10
         self.defense_power = 5
+        self.movement = 210
         self.position = (x, y)
         self.image = None
         self.rect = self.create_rect()
@@ -29,3 +30,25 @@ class BaseUnit():
         else:
             pygame.draw.rect(screen, BLUE, self.rect, 2)
         screen.blit(self.image, self.rect)
+
+class Jet(BaseUnit):
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        self.name = "Jet"
+        self.id = uuid.uuid4()
+        self.health = 100
+        self.attack_power = 10
+        self.defense_power = 5
+        self.movement = 710
+        self.position = (x, y)
+        self.image = None
+        self.rect = self.create_rect()
+
+    def create_rect(self):
+        img = pygame.image.load('images\\jet.png')
+        img.convert()
+        self.image = img
+        # Draw rectangle around the image
+        rect = img.get_rect()
+        rect.center = self.position
+        return rect

@@ -1,9 +1,9 @@
 import pygame
 from pygame.locals import *
 
-from Units.BaseUnit import BaseUnit
+from Units.BaseUnit import BaseUnit, Jet
 from Units.Spaces import SpaceTypes, BaseSpace, get_current_active_space, get_current_active_unit, hover_space, \
-    snap_to_space
+    snap_to_space, remove_movement_hilights
 
 YELLOW = (255, 255, 0)
 BLUE = (0, 0, 255)
@@ -17,27 +17,35 @@ screen = pygame.display.set_mode((w, h))
 # Set running and moving values
 running = True
 moving = False
-space_height = 154
-space_width = 97
+space_height = 100
+space_width = 100
 
 space_1_1 = BaseSpace(space_width, -50 + space_height, 1, SpaceTypes.ROAD)
-space_1_2 = BaseSpace(space_width * 2, -50 + space_height, 2, SpaceTypes.ROAD)
+space_1_2 = BaseSpace(space_width * 2, -50 + space_height, 2, SpaceTypes.CITY)
 space_1_3 = BaseSpace(space_width * 3, -50 + space_height, 3, SpaceTypes.ROAD)
-space_1_4 = BaseSpace(space_width * 4, -50 + space_height, 4, SpaceTypes.ROAD)
-space_1_5 = BaseSpace(space_width * 5, -50 + space_height, 5, SpaceTypes.ROAD)
+space_1_4 = BaseSpace(space_width * 4, -50 + space_height, 4, SpaceTypes.PLAIN)
+space_1_5 = BaseSpace(space_width * 5, -50 + space_height, 5, SpaceTypes.PLAIN)
 space_1_6 = BaseSpace(space_width * 6, -50 + space_height, 6, SpaceTypes.ROAD)
 space_2_1 = BaseSpace(space_width, -50 + space_height * 2, 7, SpaceTypes.ROAD)
 space_2_2 = BaseSpace(space_width * 2, -50 + space_height * 2, 8, SpaceTypes.ROAD)
-space_2_3 = BaseSpace(space_width * 3, -50 + space_height * 2, 9, SpaceTypes.ROAD)
+space_2_3 = BaseSpace(space_width * 3, -50 + space_height * 2, 9, SpaceTypes.CITY)
 space_2_4 = BaseSpace(space_width * 4, -50 + space_height * 2, 10, SpaceTypes.ROAD)
 space_2_5 = BaseSpace(space_width * 5, -50 + space_height * 2, 11, SpaceTypes.ROAD)
-space_2_6 = BaseSpace(space_width * 6, -50 + space_height * 2, 12, SpaceTypes.ROAD)
+space_2_6 = BaseSpace(space_width * 6, -50 + space_height * 2, 12, SpaceTypes.PLAIN)
+space_3_1 = BaseSpace(space_width, -50 + space_height * 3, 13, SpaceTypes.ROAD)
+space_3_2 = BaseSpace(space_width * 2, -50 + space_height * 3, 14, SpaceTypes.RIVER)
+space_3_3 = BaseSpace(space_width * 3, -50 + space_height * 3, 15, SpaceTypes.RIVER)
+space_3_4 = BaseSpace(space_width * 4, -50 + space_height * 3, 16, SpaceTypes.ROAD)
+space_3_5 = BaseSpace(space_width * 5, -50 + space_height * 3, 17, SpaceTypes.MOUNTAIN)
+space_3_6 = BaseSpace(space_width * 6, -50 + space_height * 3, 18, SpaceTypes.MOUNTAIN)
 
 space_1_1.add_unit(BaseUnit(1, 2))
 space_2_2.add_unit(BaseUnit(1, 2))
+space_2_3.add_unit(Jet(1, 2))
 
 board = [space_1_1, space_1_2, space_1_3, space_1_4, space_1_5, space_1_6,
-         space_2_1, space_2_2, space_2_3, space_2_4, space_2_5, space_2_6]
+         space_2_1, space_2_2, space_2_3, space_2_4, space_2_5, space_2_6,
+         space_3_1, space_3_2, space_3_3, space_3_4, space_3_5, space_3_6]
 
 def draw_board():
     for space in board:
@@ -45,6 +53,7 @@ def draw_board():
 
 current_active_unit = None
 active_space = None
+possible_dest_space_ids = []
 
 def show_popup(screen, message, font):
     # Draw semi-transparent overlay
@@ -82,8 +91,10 @@ while running:
                 moving = True
         elif event.type == MOUSEBUTTONUP:
             moving = False
-            if current_active_unit:
-                snap_to_space(board, current_active_unit, active_space)
+            if current_active_unit and len(possible_dest_space_ids) > 0:
+                snap_to_space(board, possible_dest_space_ids, current_active_unit, active_space)
+                possible_dest_space_ids = []
+                remove_movement_hilights(board, screen)
                 current_active_unit = None
                 active_space = None
                 # After snapping, check if the unit moved to a new space
@@ -97,7 +108,7 @@ while running:
             # show_popup(screen, f"unit: {current_active_unit} space {active_space}", font)
             if current_active_unit and active_space:
                 current_active_unit.rect.move_ip(event.rel)
-                hover_space(board, screen, active_space, event.pos[0], event.pos[1])
+                possible_dest_space_ids = hover_space(board, screen, current_active_unit, active_space, event.pos[0], event.pos[1])
 
     screen.fill(BROWN)
     draw_board()
