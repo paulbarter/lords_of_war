@@ -1,6 +1,7 @@
 import pygame
 from pygame.locals import *
 
+from Attack import show_popup
 from Units.BaseUnit import BaseUnit, Jet, Teams
 from Units.Spaces import SpaceTypes, BaseSpace, get_current_active_space, get_current_active_unit, hover_space, \
     snap_to_space, remove_movement_hilights, snap_back_to_start
@@ -47,6 +48,11 @@ board = [space_1_1, space_1_2, space_1_3, space_1_4, space_1_5, space_1_6,
          space_2_1, space_2_2, space_2_3, space_2_4, space_2_5, space_2_6,
          space_3_1, space_3_2, space_3_3, space_3_4, space_3_5, space_3_6]
 
+end_turn_image = pygame.image.load('images\\end_turn_button.png')
+end_turn_image.convert()
+end_turn_button = end_turn_image.get_rect()
+end_turn_button.center = (300, 350)
+
 def draw_board():
     for space in board:
         space.draw(screen)
@@ -54,15 +60,25 @@ def draw_board():
 current_active_unit = None
 active_space = None
 possible_dest_space_ids = []
+current_turn = Teams.WOLF
 
 while running:
     for event in pygame.event.get():
         if event.type == QUIT:
             running = False
         elif event.type == MOUSEBUTTONDOWN:
-            current_active_unit, active_space = get_current_active_unit(event.pos[0], event.pos[1], board)
+            current_active_unit, active_space = get_current_active_unit(current_turn, event.pos[0], event.pos[1], board)
             if current_active_unit:
                 moving = True
+            if end_turn_button.collidepoint(event.pos):
+                # End turn logic here
+                show_popup(screen, f"Ending turn for team {current_turn}", font)
+                current_turn = Teams.BARBARIAN if current_turn == Teams.WOLF else Teams.WOLF
+                moving = False
+                current_active_unit = None
+                active_space = None
+                possible_dest_space_ids = []
+                remove_movement_hilights(board, screen)
         elif event.type == MOUSEBUTTONUP:
             moving = False
             if current_active_unit:
@@ -89,6 +105,8 @@ while running:
 
     screen.fill(BROWN)
     draw_board()
+    pygame.draw.rect(screen, BLUE, end_turn_button, 1)
+    screen.blit(end_turn_image, end_turn_button)
     if moving and current_active_unit:
         current_active_unit.draw(screen)
     pygame.display.update()

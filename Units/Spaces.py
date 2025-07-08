@@ -72,11 +72,11 @@ def get_current_active_space(x, y, board):
                 return space
     return None
 
-def get_current_active_unit(x, y, board):
+def get_current_active_unit(current_turn, x, y, board):
     for space in board:
         for unit in space.units:
             # check that the mouse is hovering over the unit within the space
-            if unit.rect.collidepoint(x, y):
+            if unit.rect.collidepoint(x, y) and unit.team == current_turn:
                 # If the unit is found, return the unit
                 return unit, space
     return None, None

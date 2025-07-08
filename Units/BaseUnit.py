@@ -8,7 +8,7 @@ class Teams():
 
 class BaseUnit():
     def __init__(self, x, y, team):
-        self.name = "BaseUnit"
+        self.name = "Soldier"
         self.team = team
         self.id = uuid.uuid4()
         self.health = 20
