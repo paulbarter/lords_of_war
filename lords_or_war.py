@@ -2,7 +2,8 @@ import pygame
 from pygame.locals import *
 
 from Units.BaseUnit import BaseUnit
-from Units.Spaces import SpaceTypes, BaseSpace, get_current_active_space, get_current_active_unit
+from Units.Spaces import SpaceTypes, BaseSpace, get_current_active_space, get_current_active_unit, hover_space, \
+    snap_to_space
 
 YELLOW = (255, 255, 0)
 BLUE = (0, 0, 255)
@@ -37,31 +38,10 @@ space_2_2.add_unit(BaseUnit(1, 2))
 
 board = [space_1_1, space_1_2, space_1_3, space_1_4, space_1_5, space_1_6,
          space_2_1, space_2_2, space_2_3, space_2_4, space_2_5, space_2_6]
+
 def draw_board():
     for space in board:
         space.draw(screen)
-
-def snap_to_space(unit, dragged_from_space: BaseSpace):
-    for space in board:
-        if (abs(unit.rect.centerx - space.rect.centerx) < 40) and (abs(unit.rect.centery - space.rect.centery) < 40):
-            unit.rect.center = space.rect.center
-            if dragged_from_space.id != space.id:
-                # only move the unit if it is not the same space
-                space.add_unit(unit)
-                dragged_from_space.remove_unit(unit)
-            break
-
-def hover_space(active_space, x, y):
-    for space in board:
-        if space.rect.collidepoint(x, y) and space.id != active_space.id:
-            centre_active_space = (active_space.rect.centerx, active_space.rect.centery)
-            distance = pygame.math.Vector2(centre_active_space).distance_to((x, y))
-            if distance > 150:
-                new_image = pygame.image.load('images\\road-hover-invalid.png').convert()
-            else:
-                new_image = pygame.image.load('images\\road-hover-valid.png').convert()
-            space.image = new_image
-            space.draw(screen)
 
 current_active_unit = None
 active_space = None
@@ -103,7 +83,7 @@ while running:
         elif event.type == MOUSEBUTTONUP:
             moving = False
             if current_active_unit:
-                snap_to_space(current_active_unit, active_space)
+                snap_to_space(board, current_active_unit, active_space)
                 current_active_unit = None
                 active_space = None
                 # After snapping, check if the unit moved to a new space
@@ -117,7 +97,7 @@ while running:
             # show_popup(screen, f"unit: {current_active_unit} space {active_space}", font)
             if current_active_unit and active_space:
                 current_active_unit.rect.move_ip(event.rel)
-                hover_space(active_space, event.pos[0], event.pos[1])
+                hover_space(board, screen, active_space, event.pos[0], event.pos[1])
 
     screen.fill(BROWN)
     draw_board()
