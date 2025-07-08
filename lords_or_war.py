@@ -1,8 +1,8 @@
 import pygame
 from pygame.locals import *
 
-from Attack import show_popup
 from Screens import BaseScreen
+from Teams import WolfTeam, BarbarianTeam
 from Units.BaseUnit import BaseUnit, Jet, Teams
 from Units.Spaces import SpaceTypes, BaseSpace, get_current_active_unit, hover_space, \
     snap_to_space, remove_movement_hilights, snap_back_to_start, check_hover_unit, restore_movement_units, \
@@ -17,11 +17,13 @@ font = pygame.font.SysFont(None, 32)
 w, h = 1550, 795
 screen = pygame.display.set_mode((w, h))
 
-# Set running and moving values
 running = True
 moving = False
 space_height = 100
 space_width = 100
+
+team_wolf = WolfTeam()
+team_barbarian = BarbarianTeam()
 
 space_1_1 = BaseSpace(space_width, -50 + space_height, SpaceTypes.ROAD)
 space_1_2 = BaseSpace(space_width * 2, -50 + space_height, SpaceTypes.CITY)
@@ -75,16 +77,14 @@ resources_screen = BaseScreen(screen, 100, 400, 600, 200)
 unit_info_screen = BaseScreen(screen, 100, 600, 400, 150)
 hovered_unit = None
 current_selected_unit_info = []
-current_turn = Teams.WOLF
-wolf_turn = 1
-barbarian_turn = 0
+current_active_team = team_wolf
 
 while running:
     for event in pygame.event.get():
         if event.type == QUIT:
             running = False
         elif event.type == MOUSEBUTTONDOWN:
-            current_active_unit, active_space = get_current_active_unit(current_turn, event.pos[0], event.pos[1], board)
+            current_active_unit, active_space = get_current_active_unit(current_active_team, event.pos[0], event.pos[1], board)
             if current_active_unit:
                 moving = True
                 current_selected_unit_info = current_active_unit.get_info()
@@ -94,22 +94,23 @@ while running:
                     current_selected_unit_info = active_space.get_info()
             if end_turn_button.collidepoint(event.pos):
                 # show_popup(screen, f"Ending turn for team {current_turn}", font)
-                restore_movement_units(board, current_turn)
-                current_turn = Teams.BARBARIAN if current_turn == Teams.WOLF else Teams.WOLF
+                restore_movement_units(board, current_active_team)
+                current_active_team = team_barbarian if current_active_team.name == 'Wolf' else team_wolf
                 moving = False
                 current_active_unit = None
                 active_space = None
                 possible_dest_space_ids = []
                 remove_movement_hilights(board, screen)
-                if current_turn == Teams.WOLF:
-                    wolf_turn += 1
+                if current_active_team.name == 'Wolf':
+                    team_wolf.turn_nr += 1
                 else:
-                    barbarian_turn += 1
+                    if team_barbarian.turn_nr != 0:
+                        team_barbarian.turn_nr += 1
         elif event.type == MOUSEBUTTONUP:
             moving = False
             if current_active_unit:
                 if len(possible_dest_space_ids) > 0:
-                    snap_to_space(board, possible_dest_space_ids, current_active_unit, active_space)
+                    snap_to_space(current_active_team, board, possible_dest_space_ids, current_active_unit, active_space)
                     current_selected_unit_info = current_active_unit.get_info()
                     # After snapping, check if the unit moved to a new space
                     for space in board:
@@ -130,16 +131,16 @@ while running:
                     current_active_unit.rect.move_ip(event.rel)
                     possible_dest_space_ids = hover_space(board, screen, current_active_unit, active_space, event.pos[0], event.pos[1])
             else:
-                hovered_unit = check_hover_unit(current_turn, screen, board, event.pos)
+                hovered_unit = check_hover_unit(current_active_team, screen, board, event.pos)
 
     screen.fill(BROWN)
     draw_board()
     pygame.draw.rect(screen, BLUE, end_turn_button, 1)
     screen.blit(end_turn_image, end_turn_button)
-    if current_turn == Teams.WOLF:
-        resources_screen.display(text=f"WOLF: Turn: {wolf_turn}; Gold: 100, Resources: 50")
-    elif current_turn == Teams.BARBARIAN:
-        resources_screen.display(text=f"Barbarians: Turn: {barbarian_turn}; Gold: 100, Resources: 50")
+    if current_active_team.type == Teams.WOLF:
+        resources_screen.display(text=f"WOLF: Turn: {team_wolf.turn_nr}; Gold: {team_wolf.calculate_resources()}, Resources: 50")
+    elif current_active_team.type == Teams.BARBARIAN:
+        resources_screen.display(text=f"Barbarians: Turn: {team_barbarian.turn_nr}; Gold: {team_barbarian.calculate_resources()}, Resources: 50")
 
     unit_info_screen.display(text=None, messages=current_selected_unit_info)
     if moving and current_active_unit:

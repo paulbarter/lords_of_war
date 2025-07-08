@@ -76,7 +76,7 @@ class BaseSpace():
         if len(self.units) > 0:
             self.draw_units(screen)
 
-def get_current_active_unit(current_turn, x, y, board):
+def get_current_active_unit(active_team, x, y, board):
     active_unit = None
     active_space = None
     for space in board:
@@ -84,19 +84,19 @@ def get_current_active_unit(current_turn, x, y, board):
             active_space = space
         for unit in space.units:
             # check that the mouse is hovering over the unit within the space
-            if unit.rect.collidepoint(x, y) and unit.team == current_turn:
+            if unit.rect.collidepoint(x, y) and unit.team == active_team.type:
                 # If the unit is found, return the unit
                 active_unit = unit
                 break
     return active_unit, active_space
 
-def restore_movement_units(board, current_turn):
+def restore_movement_units(board, active_team):
     for space in board:
         for unit in space.units:
-            if unit.team == current_turn:
+            if unit.team == active_team.type:
                 unit.movement = unit.initial_movement  # Reset movement for the unit
 
-def snap_to_space(board, possible_dest_spaces, unit, dragged_from_space: BaseSpace):
+def snap_to_space(active_team, board, possible_dest_spaces, unit, dragged_from_space: BaseSpace):
     for space in board:
         if (abs(unit.rect.centerx - space.rect.centerx) < 40) and (abs(unit.rect.centery - space.rect.centery) < 40):
             unit.rect.center = space.rect.center
@@ -113,8 +113,12 @@ def snap_to_space(board, possible_dest_spaces, unit, dragged_from_space: BaseSpa
                     else:
                         space.remove_unit(space.units[0])
                         space.add_unit(unit)
+                        if space.type == SpaceTypes.CITY:
+                            active_team.owned_cities.append(space)
                 else:
                     space.add_unit(unit)
+                    if space.type == SpaceTypes.CITY:
+                        active_team.owned_cities.append(space)
                 dragged_from_space.remove_unit(unit)
             break
 
@@ -207,10 +211,10 @@ def remove_all_unit_hilights(board, screen, exclude=None):
                 unit.rect.center = original_unit_position
                 screen.blit(original_unit_image, unit.rect)
 
-def check_hover_unit(turn, screen, board, mouse_position):
+def check_hover_unit(active_team, screen, board, mouse_position):
     for space in board:
         for unit in space.units:
-            if unit.rect.collidepoint(mouse_position) and unit.team == turn:
+            if unit.rect.collidepoint(mouse_position) and unit.team == active_team.type:
                 original_unit_position = unit.position
                 if unit.team == Teams.WOLF:
                     if unit.name == 'Soldier':
