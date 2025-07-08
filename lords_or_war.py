@@ -1,7 +1,7 @@
 import pygame
 from pygame.locals import *
 
-from Units.BaseUnit import BaseUnit, Jet
+from Units.BaseUnit import BaseUnit, Jet, Teams
 from Units.Spaces import SpaceTypes, BaseSpace, get_current_active_space, get_current_active_unit, hover_space, \
     snap_to_space, remove_movement_hilights, snap_back_to_start
 
@@ -39,9 +39,9 @@ space_3_4 = BaseSpace(space_width * 4, -50 + space_height * 3, 16, SpaceTypes.RO
 space_3_5 = BaseSpace(space_width * 5, -50 + space_height * 3, 17, SpaceTypes.RIVER)
 space_3_6 = BaseSpace(space_width * 6, -50 + space_height * 3, 18, SpaceTypes.MOUNTAIN)
 
-space_1_1.add_unit(BaseUnit(1, 2))
-space_2_2.add_unit(BaseUnit(1, 2))
-space_2_3.add_unit(Jet(1, 2))
+space_1_1.add_unit(BaseUnit(1, 2, Teams.WOLF))
+space_2_2.add_unit(BaseUnit(1, 2, Teams.BARBARIAN))
+space_2_3.add_unit(Jet(1, 2, Teams.WOLF))
 
 board = [space_1_1, space_1_2, space_1_3, space_1_4, space_1_5, space_1_6,
          space_2_1, space_2_2, space_2_3, space_2_4, space_2_5, space_2_6,

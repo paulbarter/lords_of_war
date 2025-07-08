@@ -86,7 +86,7 @@ def snap_to_space(board, possible_dest_spaces, unit, dragged_from_space: BaseSpa
         if (abs(unit.rect.centerx - space.rect.centerx) < 40) and (abs(unit.rect.centery - space.rect.centery) < 40):
             unit.rect.center = space.rect.center
             if space.id in possible_dest_spaces:
-                if len(space.units) > 0:
+                if len(space.units) > 0 and space.units[0].team != unit.team:
                     defeated = Attack(unit, space.units[0]).execute()
                     if not defeated:
                         # If the attack did not defeat the defender, snap back to start

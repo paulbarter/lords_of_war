@@ -1,11 +1,15 @@
 import pygame
 import uuid
-
 BLUE = (0, 0, 255)
 
+class Teams():
+    WOLF = 1
+    BARBARIAN = 2
+
 class BaseUnit():
-    def __init__(self, x, y):
+    def __init__(self, x, y, team):
         self.name = "BaseUnit"
+        self.team = team
         self.id = uuid.uuid4()
         self.health = 20
         self.fly = False
@@ -17,7 +21,10 @@ class BaseUnit():
         self.rect = self.create_rect()
 
     def create_rect(self):
-        img = pygame.image.load('images\\soldier.png')
+        if self.team == Teams.WOLF:
+            img = pygame.image.load('images\\soldier-wolf.png')
+        elif self.team == Teams.BARBARIAN:
+            img = pygame.image.load('images\\soldier-barbarian.png')
         img.convert()
         self.image = img
         # Draw rectangle around the image
@@ -33,8 +40,8 @@ class BaseUnit():
         screen.blit(self.image, self.rect)
 
 class Jet(BaseUnit):
-    def __init__(self, x, y):
-        super().__init__(x, y)
+    def __init__(self, x, y, team):
+        super().__init__(x, y, team)
         self.name = "Jet"
         self.id = uuid.uuid4()
         self.health = 100
