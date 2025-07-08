@@ -28,13 +28,12 @@ class BaseScreen:
         popup_rect = pygame.Rect(self.left, self.top, self.width, self.height)
         pygame.draw.rect(self.screen, (255, 255, 255), popup_rect)
         pygame.draw.rect(self.screen, (0, 0, 0), popup_rect, 3)
-
-        # Render message
-        # for message in messages:
-            # text_surface = font.render(message, True, (0, 0, 0))
-            # text_rect = text_surface.get_rect(center=popup_rect.center)
-        self.render_multiline_text(self.screen, font, messages, self.left, self.top)
-        # self.screen.blit(text_surface, text_rect)
+        if text:
+            text_surface = font.render(text, True, (0, 0, 0))
+            text_rect = text_surface.get_rect(center=popup_rect.center)
+            self.screen.blit(text_surface, text_rect)
+        else:
+            self.render_multiline_text(self.screen, font, messages, self.left, self.top)
 
 class ResourcesScreen(BaseScreen):
     def __init__(self, screen):

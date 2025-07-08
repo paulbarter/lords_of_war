@@ -1,4 +1,5 @@
 import pygame
+import uuid
 
 from Attack import Attack
 from Units.BaseUnit import Teams
@@ -14,8 +15,8 @@ class SpaceTypes:
     PLAIN = 5
 
 class BaseSpace():
-    def __init__(self, x, y, id, type):
-        self.id = id
+    def __init__(self, x, y, type):
+        self.id = uuid.uuid4()
         self.x = x
         self.y = y
         self.units = []

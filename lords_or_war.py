@@ -14,7 +14,7 @@ BROWN = (100, 100, 100)
 
 pygame.init()
 font = pygame.font.SysFont(None, 32)
-w, h = 940, 750
+w, h = 1550, 795
 screen = pygame.display.set_mode((w, h))
 
 # Set running and moving values
@@ -23,32 +23,41 @@ moving = False
 space_height = 100
 space_width = 100
 
-space_1_1 = BaseSpace(space_width, -50 + space_height, 1, SpaceTypes.ROAD)
-space_1_2 = BaseSpace(space_width * 2, -50 + space_height, 2, SpaceTypes.CITY)
-space_1_3 = BaseSpace(space_width * 3, -50 + space_height, 3, SpaceTypes.ROAD)
-space_1_4 = BaseSpace(space_width * 4, -50 + space_height, 4, SpaceTypes.ROAD)
-space_1_5 = BaseSpace(space_width * 5, -50 + space_height, 5, SpaceTypes.ROAD)
-space_1_6 = BaseSpace(space_width * 6, -50 + space_height, 6, SpaceTypes.ROAD)
-space_2_1 = BaseSpace(space_width, -50 + space_height * 2, 7, SpaceTypes.ROAD)
-space_2_2 = BaseSpace(space_width * 2, -50 + space_height * 2, 8, SpaceTypes.ROAD)
-space_2_3 = BaseSpace(space_width * 3, -50 + space_height * 2, 9, SpaceTypes.ROAD)
-space_2_4 = BaseSpace(space_width * 4, -50 + space_height * 2, 10, SpaceTypes.ROAD)
-space_2_5 = BaseSpace(space_width * 5, -50 + space_height * 2, 11, SpaceTypes.ROAD)
-space_2_6 = BaseSpace(space_width * 6, -50 + space_height * 2, 12, SpaceTypes.PLAIN)
-space_3_1 = BaseSpace(space_width, -50 + space_height * 3, 13, SpaceTypes.PLAIN)
-space_3_2 = BaseSpace(space_width * 2, -50 + space_height * 3, 14, SpaceTypes.ROAD)
-space_3_3 = BaseSpace(space_width * 3, -50 + space_height * 3, 15, SpaceTypes.RIVER)
-space_3_4 = BaseSpace(space_width * 4, -50 + space_height * 3, 16, SpaceTypes.ROAD)
-space_3_5 = BaseSpace(space_width * 5, -50 + space_height * 3, 17, SpaceTypes.RIVER)
-space_3_6 = BaseSpace(space_width * 6, -50 + space_height * 3, 18, SpaceTypes.MOUNTAIN)
+space_1_1 = BaseSpace(space_width, -50 + space_height, SpaceTypes.ROAD)
+space_1_2 = BaseSpace(space_width * 2, -50 + space_height, SpaceTypes.CITY)
+space_1_3 = BaseSpace(space_width * 3, -50 + space_height, SpaceTypes.ROAD)
+space_1_4 = BaseSpace(space_width * 4, -50 + space_height, SpaceTypes.ROAD)
+space_1_5 = BaseSpace(space_width * 5, -50 + space_height, SpaceTypes.ROAD)
+space_1_6 = BaseSpace(space_width * 6, -50 + space_height, SpaceTypes.ROAD)
+space_1_7 = BaseSpace(space_width * 7, -50 + space_height, SpaceTypes.ROAD)
+space_1_8 = BaseSpace(space_width * 8, -50 + space_height, SpaceTypes.ROAD)
+space_1_9 = BaseSpace(space_width * 9, -50 + space_height, SpaceTypes.ROAD)
+space_2_1 = BaseSpace(space_width, -50 + space_height * 2, SpaceTypes.ROAD)
+space_2_2 = BaseSpace(space_width * 2, -50 + space_height * 2, SpaceTypes.ROAD)
+space_2_3 = BaseSpace(space_width * 3, -50 + space_height * 2, SpaceTypes.ROAD)
+space_2_4 = BaseSpace(space_width * 4, -50 + space_height * 2, SpaceTypes.ROAD)
+space_2_5 = BaseSpace(space_width * 5, -50 + space_height * 2, SpaceTypes.ROAD)
+space_2_6 = BaseSpace(space_width * 6, -50 + space_height * 2, SpaceTypes.PLAIN)
+space_2_7 = BaseSpace(space_width * 7, -50 + space_height * 2, SpaceTypes.PLAIN)
+space_2_8 = BaseSpace(space_width * 8, -50 + space_height * 2, SpaceTypes.PLAIN)
+space_2_9 = BaseSpace(space_width * 9, -50 + space_height * 2, SpaceTypes.PLAIN)
+space_3_1 = BaseSpace(space_width, -50 + space_height * 3, SpaceTypes.PLAIN)
+space_3_2 = BaseSpace(space_width * 2, -50 + space_height * 3, SpaceTypes.ROAD)
+space_3_3 = BaseSpace(space_width * 3, -50 + space_height * 3, SpaceTypes.RIVER)
+space_3_4 = BaseSpace(space_width * 4, -50 + space_height * 3, SpaceTypes.ROAD)
+space_3_5 = BaseSpace(space_width * 5, -50 + space_height * 3, SpaceTypes.RIVER)
+space_3_6 = BaseSpace(space_width * 6, -50 + space_height * 3, SpaceTypes.MOUNTAIN)
+space_3_7 = BaseSpace(space_width * 7, -50 + space_height * 3, SpaceTypes.MOUNTAIN)
+space_3_8 = BaseSpace(space_width * 8, -50 + space_height * 3, SpaceTypes.MOUNTAIN)
+space_3_9 = BaseSpace(space_width * 9, -50 + space_height * 3, SpaceTypes.MOUNTAIN)
 
 space_1_1.add_unit(BaseUnit(1, 2, Teams.WOLF))
 space_2_2.add_unit(BaseUnit(1, 2, Teams.BARBARIAN))
 space_2_3.add_unit(Jet(1, 2, Teams.WOLF))
 
-board = [space_1_1, space_1_2, space_1_3, space_1_4, space_1_5, space_1_6,
-         space_2_1, space_2_2, space_2_3, space_2_4, space_2_5, space_2_6,
-         space_3_1, space_3_2, space_3_3, space_3_4, space_3_5, space_3_6]
+board = [space_1_1, space_1_2, space_1_3, space_1_4, space_1_5, space_1_6, space_1_7, space_1_8, space_1_9,
+         space_2_1, space_2_2, space_2_3, space_2_4, space_2_5, space_2_6, space_2_7, space_2_8, space_2_9,
+         space_3_1, space_3_2, space_3_3, space_3_4, space_3_5, space_3_6, space_3_7, space_3_8, space_3_9]
 
 end_turn_image = pygame.image.load('images\\end_turn_button.png')
 end_turn_image.convert()
@@ -62,12 +71,13 @@ def draw_board():
 current_active_unit = None
 active_space = None
 possible_dest_space_ids = []
-current_turn = Teams.WOLF
 resources_screen = BaseScreen(screen, 100, 400, 600, 200)
 unit_info_screen = BaseScreen(screen, 100, 600, 400, 150)
 hovered_unit = None
 current_selected_unit_info = []
-turn_number = 1
+current_turn = Teams.WOLF
+wolf_turn = 1
+barbarian_turn = 0
 
 while running:
     for event in pygame.event.get():
@@ -91,6 +101,10 @@ while running:
                 active_space = None
                 possible_dest_space_ids = []
                 remove_movement_hilights(board, screen)
+                if current_turn == Teams.WOLF:
+                    wolf_turn += 1
+                else:
+                    barbarian_turn += 1
         elif event.type == MOUSEBUTTONUP:
             moving = False
             if current_active_unit:
@@ -122,7 +136,11 @@ while running:
     draw_board()
     pygame.draw.rect(screen, BLUE, end_turn_button, 1)
     screen.blit(end_turn_image, end_turn_button)
-    resources_screen.display(text=f"Turn: {turn_number}; Gold: 100, Resources: 50")
+    if current_turn == Teams.WOLF:
+        resources_screen.display(text=f"WOLF: Turn: {wolf_turn}; Gold: 100, Resources: 50")
+    elif current_turn == Teams.BARBARIAN:
+        resources_screen.display(text=f"Barbarians: Turn: {barbarian_turn}; Gold: 100, Resources: 50")
+
     unit_info_screen.display(text=None, messages=current_selected_unit_info)
     if moving and current_active_unit:
         current_active_unit.draw(screen)
