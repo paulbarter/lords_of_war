@@ -1,10 +1,10 @@
 import pygame
 from pygame.locals import *
 
+from Board import team_wolf, team_barbarian, get_board
 from Screens import BaseScreen
-from Teams import WolfTeam, BarbarianTeam
-from Units.BaseUnit import BaseUnit, Jet, Teams
-from Units.Spaces import SpaceTypes, BaseSpace, get_current_active_unit, hover_space, \
+from Units.BaseUnit import Teams
+from Units.Spaces import get_current_active_unit, hover_space, \
     snap_to_space, remove_movement_hilights, snap_back_to_start, check_hover_unit, restore_movement_units, \
     remove_all_unit_hilights
 
@@ -19,52 +19,15 @@ screen = pygame.display.set_mode((w, h))
 
 running = True
 moving = False
-space_height = 100
-space_width = 100
-
-team_wolf = WolfTeam()
-team_barbarian = BarbarianTeam()
-
-space_1_1 = BaseSpace(space_width, -50 + space_height, SpaceTypes.ROAD)
-space_1_2 = BaseSpace(space_width * 2, -50 + space_height, SpaceTypes.CITY)
-space_1_3 = BaseSpace(space_width * 3, -50 + space_height, SpaceTypes.ROAD)
-space_1_4 = BaseSpace(space_width * 4, -50 + space_height, SpaceTypes.ROAD)
-space_1_5 = BaseSpace(space_width * 5, -50 + space_height, SpaceTypes.ROAD)
-space_1_6 = BaseSpace(space_width * 6, -50 + space_height, SpaceTypes.ROAD)
-space_1_7 = BaseSpace(space_width * 7, -50 + space_height, SpaceTypes.ROAD)
-space_1_8 = BaseSpace(space_width * 8, -50 + space_height, SpaceTypes.ROAD)
-space_1_9 = BaseSpace(space_width * 9, -50 + space_height, SpaceTypes.ROAD)
-space_2_1 = BaseSpace(space_width, -50 + space_height * 2, SpaceTypes.ROAD)
-space_2_2 = BaseSpace(space_width * 2, -50 + space_height * 2, SpaceTypes.ROAD)
-space_2_3 = BaseSpace(space_width * 3, -50 + space_height * 2, SpaceTypes.ROAD)
-space_2_4 = BaseSpace(space_width * 4, -50 + space_height * 2, SpaceTypes.ROAD)
-space_2_5 = BaseSpace(space_width * 5, -50 + space_height * 2, SpaceTypes.ROAD)
-space_2_6 = BaseSpace(space_width * 6, -50 + space_height * 2, SpaceTypes.PLAIN)
-space_2_7 = BaseSpace(space_width * 7, -50 + space_height * 2, SpaceTypes.PLAIN)
-space_2_8 = BaseSpace(space_width * 8, -50 + space_height * 2, SpaceTypes.PLAIN)
-space_2_9 = BaseSpace(space_width * 9, -50 + space_height * 2, SpaceTypes.PLAIN)
-space_3_1 = BaseSpace(space_width, -50 + space_height * 3, SpaceTypes.PLAIN)
-space_3_2 = BaseSpace(space_width * 2, -50 + space_height * 3, SpaceTypes.ROAD)
-space_3_3 = BaseSpace(space_width * 3, -50 + space_height * 3, SpaceTypes.RIVER)
-space_3_4 = BaseSpace(space_width * 4, -50 + space_height * 3, SpaceTypes.ROAD)
-space_3_5 = BaseSpace(space_width * 5, -50 + space_height * 3, SpaceTypes.RIVER)
-space_3_6 = BaseSpace(space_width * 6, -50 + space_height * 3, SpaceTypes.MOUNTAIN)
-space_3_7 = BaseSpace(space_width * 7, -50 + space_height * 3, SpaceTypes.MOUNTAIN)
-space_3_8 = BaseSpace(space_width * 8, -50 + space_height * 3, SpaceTypes.MOUNTAIN)
-space_3_9 = BaseSpace(space_width * 9, -50 + space_height * 3, SpaceTypes.MOUNTAIN)
-
-space_1_1.add_unit(BaseUnit(1, 2, Teams.WOLF))
-space_2_2.add_unit(BaseUnit(1, 2, Teams.BARBARIAN))
-space_2_3.add_unit(Jet(1, 2, Teams.WOLF))
-
-board = [space_1_1, space_1_2, space_1_3, space_1_4, space_1_5, space_1_6, space_1_7, space_1_8, space_1_9,
-         space_2_1, space_2_2, space_2_3, space_2_4, space_2_5, space_2_6, space_2_7, space_2_8, space_2_9,
-         space_3_1, space_3_2, space_3_3, space_3_4, space_3_5, space_3_6, space_3_7, space_3_8, space_3_9]
 
 end_turn_image = pygame.image.load('images\\end_turn_button.png')
 end_turn_image.convert()
 end_turn_button = end_turn_image.get_rect()
 end_turn_button.center = (300, 350)
+
+space_width = 100
+space_height = 100
+board = get_board(space_width, space_height)
 
 def draw_board():
     for space in board:
