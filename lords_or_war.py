@@ -75,8 +75,7 @@ while running:
             if current_active_unit:
                 if len(possible_dest_space_ids) > 0:
                     if firing_is_active:
-                        shoot_at_space(current_active_team, board, possible_dest_space_ids, current_active_unit,
-                                       active_space, event.pos)
+                        shoot_at_space(board, current_active_unit, event.pos)
                     else:
                         snap_to_space(current_active_team, board, possible_dest_space_ids, current_active_unit, active_space)
                     current_selected_unit_info = current_active_unit.get_info()

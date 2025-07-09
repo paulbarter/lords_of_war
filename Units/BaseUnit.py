@@ -88,4 +88,6 @@ class Jet(BaseUnit):
 
     def get_target_image(self):
         if self.team == Teams.WOLF:
-            return pygame.image.load('images\\units\\jet-target-wolf.png')
+            return pygame.image.load('images\\units\\jet-wolf-hover-firing.png')
+        elif self.team == Teams.BARBARIAN:
+            return pygame.image.load('images\\units\\jet-barbarian-hover-firing.png')

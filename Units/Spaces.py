@@ -96,7 +96,9 @@ def restore_movement_units(board, active_team):
             if unit.team == active_team.type:
                 unit.movement = unit.initial_movement  # Reset movement for the unit
 
-def shoot_at_space(active_team, board, possible_dest_spaces, unit, dragged_from_space: BaseSpace, mouse_position):
+def shoot_at_space(board, unit, mouse_position):
+    if unit.movement <= 0 or not unit.can_shoot:
+        return
     for space in board:
         if space.rect.collidepoint(mouse_position):
             if len(space.units) > 0 and space.units[0].team != unit.team:
@@ -104,7 +106,6 @@ def shoot_at_space(active_team, board, possible_dest_spaces, unit, dragged_from_
                 defeated = Attack(unit, space.units[0]).execute()
                 if defeated:
                     space.remove_unit(space.units[0])
-
 
 def snap_to_space(active_team, board, possible_dest_spaces, unit, dragged_from_space: BaseSpace, firing=False):
     for space in board:
@@ -340,13 +341,15 @@ def handle_move(distance, unit, centre_active_space, centre_current_space, space
 
 def handle_shoot(distance, unit, centre_active_space, centre_current_space, space, screen, board):
     possible_dest_shooting_ids = set()
+    new_image = None
     if distance <= (unit.range):
         enemy = None
         if space.units and space.units[0].team != unit.team:
             enemy = space.units[0]
             enemy.image = enemy.get_target_image()
-        new_image = get_image_for_space_type(space.type, hover=True, enemy=enemy, firing=True)
-        possible_dest_shooting_ids.add(space.id)
+        if unit.movement > 0:
+            new_image = get_image_for_space_type(space.type, hover=True, enemy=enemy, firing=True)
+            possible_dest_shooting_ids.add(space.id)
     else:
         new_image = get_image_for_space_type(space.type, hover=True, valid=False, firing=True)
     if new_image:
