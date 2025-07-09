@@ -181,7 +181,8 @@ def get_image_for_space_type(space_type, hover=False, valid=True, enemy=None, fi
             if firing:
                 # valid here means in range
                 if enemy and valid:
-                    return pygame.image.load('images\\road-hover-enemy-firing.png').convert()
+                    # in range means the target will be on the unit and not the space
+                    return None
                 if valid:
                     return pygame.image.load('images\\road-hover-firing.png').convert()
                 else:
@@ -199,7 +200,8 @@ def get_image_for_space_type(space_type, hover=False, valid=True, enemy=None, fi
             if firing:
                 # valid here means in range
                 if enemy and valid:
-                    return pygame.image.load('images\\forest-hover-enemy-firing.png').convert()
+                    # in range means the target will be on the unit and not the space
+                    return None
                 if valid:
                     return pygame.image.load('images\\forest-hover-firing.png').convert()
                 else:
@@ -217,7 +219,8 @@ def get_image_for_space_type(space_type, hover=False, valid=True, enemy=None, fi
             if firing:
                 # valid here means in range
                 if enemy and valid:
-                    return pygame.image.load('images\\mountain-hover-enemy-firing.png').convert()
+                    # in range means the target will be on the unit and not the space
+                    return None
                 if valid:
                     return pygame.image.load('images\\mountain-hover-firing.png').convert()
                 else:
@@ -235,7 +238,8 @@ def get_image_for_space_type(space_type, hover=False, valid=True, enemy=None, fi
             if firing:
                 # valid here means in range
                 if enemy and valid:
-                    return pygame.image.load('images\\river-hover-enemy-firing.png').convert()
+                    # in range means the target will be on the unit and not the space
+                    return None
                 if valid:
                     return pygame.image.load('images\\river-hover-firing.png').convert()
                 else:
@@ -283,10 +287,12 @@ def remove_all_unit_hilights(board, screen, exclude=None):
                 unit.rect.center = original_unit_position
                 screen.blit(original_unit_image, unit.rect)
 
-def check_hover_unit(active_team, screen, board, mouse_position):
+def check_hover_unit(active_team, screen, board, mouse_position, firing=False):
     for space in board:
         for unit in space.units:
             if unit.rect.collidepoint(mouse_position) and unit.team == active_team.type:
+                if firing and not unit.can_shoot:
+                    continue
                 original_unit_position = unit.position
                 if unit.team == Teams.WOLF:
                     if unit.name == 'Soldier':
@@ -317,8 +323,9 @@ def handle_move(distance, unit, centre_active_space, centre_current_space, space
         possible_dest_space_ids.add(space.id)
     else:
         new_image = get_image_for_space_type(space.type, hover=True, valid=False)
-    space.image = new_image
-    space.draw(screen)
+    if new_image:
+        space.image = new_image
+        space.draw(screen)
     return list(possible_dest_space_ids)
 
 def handle_shoot(distance, unit, centre_active_space, centre_current_space, space, screen, board):
@@ -332,8 +339,9 @@ def handle_shoot(distance, unit, centre_active_space, centre_current_space, spac
         possible_dest_shooting_ids.add(space.id)
     else:
         new_image = get_image_for_space_type(space.type, hover=True, valid=False, firing=True)
-    space.image = new_image
-    space.draw(screen)
+    if new_image:
+        space.image = new_image
+        space.draw(screen)
     return list(possible_dest_shooting_ids)
 
 def hover_space(board, screen, unit, active_space, x, y, firing=False):

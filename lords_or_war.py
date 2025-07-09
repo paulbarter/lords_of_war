@@ -40,7 +40,7 @@ current_active_team = team_wolf
 resources_screen = BaseScreen(screen, 100, 400, 600, 200)
 unit_info_screen = BaseScreen(screen, 100, 600, 400, 150)
 end_turn_button = BaseButton(screen, 'END TURN', 100, 320, 150, 50)
-fire_button = BaseButton(screen, 'FIRE', 300, 320, 150, 50)
+fire_button = BaseButton(screen, 'FIRE', 300, 320, 250, 50)
 
 while running:
     for event in pygame.event.get():
@@ -105,6 +105,7 @@ while running:
                         possible_firing_dest_space_ids = \
                             hover_space(board, screen, current_active_unit, active_space,
                                                           event.pos[0], event.pos[1], firing=firing_is_active)
+                hovered_unit = check_hover_unit(current_active_team, screen, board, event.pos, firing=True)
             else:
                 hovered_unit = check_hover_unit(current_active_team, screen, board, event.pos)
 
@@ -112,9 +113,9 @@ while running:
     draw_board()
     end_turn_button.draw()
     if firing_is_active:
-        fire_button.draw(new_text='STOP FIRING')
+        fire_button.draw(new_text='MOVE [NOW FIRING]')
     else:
-        fire_button.draw(new_text='FIRE')
+        fire_button.draw(new_text='FIRE [NOW MOVING]')
     if current_active_team.type == Teams.WOLF:
         resources_screen.display(text=f"WOLF: Turn: {team_wolf.turn_nr}; Gold: {team_wolf.calculate_resources()}, Resources: 50")
     elif current_active_team.type == Teams.BARBARIAN:
