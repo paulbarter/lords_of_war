@@ -1,4 +1,6 @@
 import pygame
+from sounds.Sounds import play_sound
+
 pygame.init()
 font = pygame.font.SysFont(None, 32)
 
@@ -46,9 +48,12 @@ class Attack():
         self.defender.health -= damage
         self.attacker.movement = 0  # Attacker cannot move after attacking
         if self.defender.health <= 0:
+            play_sound('sounds\\explosion.wav')
+            play_sound('sounds\\die.wav')
             show_popup(pygame.display.get_surface(), f"{self.defender.name} has been defeated!", font)
             return True  # Defender is defeated
         else:
+            play_sound('sounds\\explosion.wav')
             show_popup(pygame.display.get_surface(), f"{self.defender.name} takes {damage} damage!"
                                                      f" health left: {self.defender.health}", font)
             return False  # Defender survives
