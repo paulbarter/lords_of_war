@@ -96,7 +96,17 @@ def restore_movement_units(board, active_team):
             if unit.team == active_team.type:
                 unit.movement = unit.initial_movement  # Reset movement for the unit
 
-def snap_to_space(active_team, board, possible_dest_spaces, unit, dragged_from_space: BaseSpace):
+def shoot_at_space(active_team, board, possible_dest_spaces, unit, dragged_from_space: BaseSpace, mouse_position):
+    for space in board:
+        if space.rect.collidepoint(mouse_position):
+            if len(space.units) > 0 and space.units[0].team != unit.team:
+                unit.movement = 0  # Reset movement after firing
+                defeated = Attack(unit, space.units[0]).execute()
+                if defeated:
+                    space.remove_unit(space.units[0])
+
+
+def snap_to_space(active_team, board, possible_dest_spaces, unit, dragged_from_space: BaseSpace, firing=False):
     for space in board:
         if (abs(unit.rect.centerx - space.rect.centerx) < 40) and (abs(unit.rect.centery - space.rect.centery) < 40):
             unit.rect.center = space.rect.center
@@ -106,15 +116,15 @@ def snap_to_space(active_team, board, possible_dest_spaces, unit, dragged_from_s
                 unit.movement -= total_terrain_move_penalty(unit, centre_active_space, centre_current_space, board)
                 if len(space.units) > 0 and space.units[0].team != unit.team:
                     defeated = Attack(unit, space.units[0]).execute()
-                    if not defeated:
-                        # If the attack did not defeat the defender, snap back to start
-                        snap_back_to_start(unit, dragged_from_space)
-                        break
-                    else:
+                    if defeated:
                         space.remove_unit(space.units[0])
                         space.add_unit(unit)
                         if space.type == SpaceTypes.CITY:
                             active_team.owned_cities.append(space)
+                    else:
+                        # If the attack did not defeat the defender, snap back to start
+                        snap_back_to_start(unit, dragged_from_space)
+                        break
                 else:
                     space.add_unit(unit)
                     if space.type == SpaceTypes.CITY:

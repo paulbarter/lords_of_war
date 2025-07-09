@@ -6,7 +6,7 @@ from Screens import BaseScreen, BaseButton
 from Units.BaseUnit import Teams
 from Units.Spaces import get_current_active_unit, hover_space, \
     snap_to_space, remove_movement_hilights, snap_back_to_start, check_hover_unit, restore_movement_units, \
-    remove_all_unit_hilights
+    remove_all_unit_hilights, shoot_at_space
 
 YELLOW = (255, 255, 0)
 BLUE = (0, 0, 255)
@@ -31,7 +31,6 @@ current_active_unit = None
 firing_is_active = False
 active_space = None
 possible_dest_space_ids = []
-possible_firing_dest_space_ids = []
 hovered_unit = None
 current_selected_unit_info = []
 current_active_team = team_wolf
@@ -73,12 +72,13 @@ while running:
                         team_barbarian.turn_nr += 1
         elif event.type == MOUSEBUTTONUP:
             moving = False
-
-            # TODO = check firing: possible_firing_dest_space_ids
-
             if current_active_unit:
                 if len(possible_dest_space_ids) > 0:
-                    snap_to_space(current_active_team, board, possible_dest_space_ids, current_active_unit, active_space)
+                    if firing_is_active:
+                        shoot_at_space(current_active_team, board, possible_dest_space_ids, current_active_unit,
+                                       active_space, event.pos)
+                    else:
+                        snap_to_space(current_active_team, board, possible_dest_space_ids, current_active_unit, active_space)
                     current_selected_unit_info = current_active_unit.get_info()
                     # After snapping, check if the unit moved to a new space
                     for space in board:
@@ -88,7 +88,6 @@ while running:
                 else:
                     snap_back_to_start(current_active_unit, active_space)
                 possible_dest_space_ids = []
-                possible_firing_dest_space_ids = []
                 remove_movement_hilights(board, screen)
                 current_active_unit = None
                 active_space = None
@@ -102,7 +101,7 @@ while running:
                         possible_dest_space_ids = hover_space(board, screen, current_active_unit, active_space,
                                                               event.pos[0], event.pos[1], firing=False)
                     else:
-                        possible_firing_dest_space_ids = \
+                        possible_dest_space_ids = \
                             hover_space(board, screen, current_active_unit, active_space,
                                                           event.pos[0], event.pos[1], firing=firing_is_active)
                 hovered_unit = check_hover_unit(current_active_team, screen, board, event.pos, firing=True)
