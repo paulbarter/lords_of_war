@@ -28,8 +28,10 @@ def draw_board():
 running = True
 moving = False
 current_active_unit = None
+firing_is_active = False
 active_space = None
 possible_dest_space_ids = []
+possible_firing_dest_space_ids = []
 hovered_unit = None
 current_selected_unit_info = []
 current_active_team = team_wolf
@@ -38,6 +40,7 @@ current_active_team = team_wolf
 resources_screen = BaseScreen(screen, 100, 400, 600, 200)
 unit_info_screen = BaseScreen(screen, 100, 600, 400, 150)
 end_turn_button = BaseButton(screen, 'END TURN', 100, 320, 150, 50)
+fire_button = BaseButton(screen, 'FIRE', 300, 320, 150, 50)
 
 while running:
     for event in pygame.event.get():
@@ -52,6 +55,8 @@ while running:
                 remove_all_unit_hilights(board, screen)
                 if active_space:
                     current_selected_unit_info = active_space.get_info()
+            if fire_button.rect.collidepoint(event.pos):
+                firing_is_active = not firing_is_active
             if end_turn_button.rect.collidepoint(event.pos):
                 # show_popup(screen, f"Ending turn for team {current_turn}", font)
                 restore_movement_units(board, current_active_team)
@@ -68,6 +73,9 @@ while running:
                         team_barbarian.turn_nr += 1
         elif event.type == MOUSEBUTTONUP:
             moving = False
+
+            # TODO = check firing: possible_firing_dest_space_ids
+
             if current_active_unit:
                 if len(possible_dest_space_ids) > 0:
                     snap_to_space(current_active_team, board, possible_dest_space_ids, current_active_unit, active_space)
@@ -80,22 +88,33 @@ while running:
                 else:
                     snap_back_to_start(current_active_unit, active_space)
                 possible_dest_space_ids = []
+                possible_firing_dest_space_ids = []
                 remove_movement_hilights(board, screen)
                 current_active_unit = None
                 active_space = None
 
         # Make your image move continuously
         elif event.type == MOUSEMOTION:
-            if moving:
+            if moving or firing_is_active:
                 if current_active_unit and active_space:
-                    current_active_unit.rect.move_ip(event.rel)
-                    possible_dest_space_ids = hover_space(board, screen, current_active_unit, active_space, event.pos[0], event.pos[1])
+                    if not firing_is_active:
+                        current_active_unit.rect.move_ip(event.rel)
+                        possible_dest_space_ids = hover_space(board, screen, current_active_unit, active_space,
+                                                              event.pos[0], event.pos[1], firing=False)
+                    else:
+                        possible_firing_dest_space_ids = \
+                            hover_space(board, screen, current_active_unit, active_space,
+                                                          event.pos[0], event.pos[1], firing=firing_is_active)
             else:
                 hovered_unit = check_hover_unit(current_active_team, screen, board, event.pos)
 
     screen.fill(BROWN)
     draw_board()
     end_turn_button.draw()
+    if firing_is_active:
+        fire_button.draw(new_text='STOP FIRING')
+    else:
+        fire_button.draw(new_text='FIRE')
     if current_active_team.type == Teams.WOLF:
         resources_screen.display(text=f"WOLF: Turn: {team_wolf.turn_nr}; Gold: {team_wolf.calculate_resources()}, Resources: 50")
     elif current_active_team.type == Teams.BARBARIAN:

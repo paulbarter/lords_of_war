@@ -15,6 +15,8 @@ class BaseUnit():
         elif team == Teams.BARBARIAN:
             self.team_name = "Barbarian"
         self.id = uuid.uuid4()
+        self.can_shoot = False
+        self.range = 0
         self.health = 20
         self.fly = False
         self.attack_power = 10
@@ -49,6 +51,12 @@ class BaseUnit():
             pygame.draw.rect(screen, BLUE, self.rect, 2)
         screen.blit(self.image, self.rect)
 
+    def get_target_image(self):
+        if self.team == Teams.WOLF:
+            return pygame.image.load('images\\units\\soldier-wolf-hover-firing.png')
+        elif self.team == Teams.BARBARIAN:
+            return pygame.image.load('images\\units\\soldier-barbarian-hover-firing.png')
+
 class Jet(BaseUnit):
     def __init__(self, x, y, team):
         super().__init__(x, y, team)
@@ -56,6 +64,8 @@ class Jet(BaseUnit):
         self.id = uuid.uuid4()
         self.health = 100
         self.fly = True
+        self.can_shoot = True
+        self.range = 400
         self.attack_power = 50
         self.defense_power = 5
         self.movement = 710
@@ -75,3 +85,7 @@ class Jet(BaseUnit):
         rect = img.get_rect()
         rect.center = self.position
         return rect
+
+    def get_target_image(self):
+        if self.team == Teams.WOLF:
+            return pygame.image.load('images\\units\\jet-target-wolf.png')

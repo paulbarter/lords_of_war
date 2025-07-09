@@ -51,7 +51,9 @@ class BaseButton:
         self.text_surface = font.render(text, True, (255, 255, 255))
         self.text_rect = self.text_surface.get_rect(center=self.rect.center)
 
-    def draw(self, color=(150, 150, 150)):
-        pygame.draw.rect(self.screen, color, self.rect)
+    def draw(self, color=(150, 150, 150), new_text=""):
+        if new_text:
+            self.text_surface = font.render(new_text, True, (255, 255, 255))
+            self.text_rect = self.text_surface.get_rect(center=self.rect.center)
+        pygame.draw.rect(self.screen, (150, 150, 150), self.rect)
         self.screen.blit(self.text_surface, self.text_rect)
-        # pygame.display.flip()

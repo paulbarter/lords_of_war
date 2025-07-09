@@ -139,53 +139,113 @@ def is_space_adjacent(space1, space2):
     distance = pygame.math.Vector2(centre_space1).distance_to(centre_space2)
     return distance < 110  # Assuming spaces are close enough if within 100 pixels
 
-def get_image_for_space_type(space_type, hover=False, valid=True, enemy=None):
+def get_image_for_space_type(space_type, hover=False, valid=True, enemy=None, firing=False):
     if space_type == SpaceTypes.CITY:
         if hover:
-            if not valid:
-                return pygame.image.load('images\\city-hover-invalid.png').convert()
-            if enemy:
-                return pygame.image.load('images\\city-hover-enemy.png').convert()
+            if firing:
+                # valid here means in range
+                if enemy and valid:
+                    return pygame.image.load('images\\city-hover-enemy-firing.png').convert()
+                if valid:
+                    return pygame.image.load('images\\city-hover-firing.png').convert()
+                else:
+                    return pygame.image.load('images\\city-hover-invalid.png').convert()
+            else:
+                # Moving
+                if not valid:
+                    return pygame.image.load('images\\city-hover-invalid.png').convert()
+                if enemy:
+                    return pygame.image.load('images\\city-hover-enemy.png').convert()
             return pygame.image.load('images\\city-hover.png').convert()
         return pygame.image.load('images\\city.png').convert()
     elif space_type == SpaceTypes.PLAIN:
         if hover:
-            if not valid:
-                return pygame.image.load('images\\plain-hover-invalid.png').convert()
-            if enemy:
-                return pygame.image.load('images\\plain-hover-enemy.png').convert()
+            if firing:
+                # valid here means in range
+                if enemy and valid:
+                    return pygame.image.load('images\\plain-hover-enemy-firing.png').convert()
+                if valid:
+                    return pygame.image.load('images\\plain-hover-firing.png').convert()
+                else:
+                    return pygame.image.load('images\\plain-hover-invalid.png').convert()
+            else:
+                # Moving
+                if not valid:
+                    return pygame.image.load('images\\plain-hover-invalid.png').convert()
+                if enemy:
+                    return pygame.image.load('images\\plain-hover-enemy.png').convert()
             return pygame.image.load('images\\plain-hover.png').convert()
         return pygame.image.load('images\\plain.png').convert()
     elif space_type == SpaceTypes.ROAD:
         if hover:
-            if not valid:
-                return pygame.image.load('images\\road-hover-invalid.png').convert()
-            if enemy:
-                return pygame.image.load('images\\road-hover-enemy.png').convert()
+            if firing:
+                # valid here means in range
+                if enemy and valid:
+                    return pygame.image.load('images\\road-hover-enemy-firing.png').convert()
+                if valid:
+                    return pygame.image.load('images\\road-hover-firing.png').convert()
+                else:
+                    return pygame.image.load('images\\road-hover-invalid.png').convert()
+            else:
+                # Moving
+                if not valid:
+                    return pygame.image.load('images\\road-hover-invalid.png').convert()
+                if enemy:
+                    return pygame.image.load('images\\road-hover-enemy.png').convert()
             return pygame.image.load('images\\road-hover.png').convert()
         return pygame.image.load('images\\road.png').convert()
     elif space_type == SpaceTypes.FOREST:
         if hover:
-            if not valid:
-                return pygame.image.load('images\\forest-hover-invalid.png').convert()
-            if enemy:
-                return pygame.image.load('images\\forest-hover-enemy.png').convert()
+            if firing:
+                # valid here means in range
+                if enemy and valid:
+                    return pygame.image.load('images\\forest-hover-enemy-firing.png').convert()
+                if valid:
+                    return pygame.image.load('images\\forest-hover-firing.png').convert()
+                else:
+                    return pygame.image.load('images\\forest-hover-invalid.png').convert()
+            else:
+                # Moving
+                if not valid:
+                    return pygame.image.load('images\\forest-hover-invalid.png').convert()
+                if enemy:
+                    return pygame.image.load('images\\forest-hover-enemy.png').convert()
             return pygame.image.load('images\\forest-hover.png').convert()
         return pygame.image.load('images\\forest.png').convert()
     elif space_type == SpaceTypes.MOUNTAIN:
         if hover:
-            if not valid:
-                return pygame.image.load('images\\mountain-hover-invalid.png').convert()
-            if enemy:
-                return pygame.image.load('images\\mountain-hover-enemy.png').convert()
+            if firing:
+                # valid here means in range
+                if enemy and valid:
+                    return pygame.image.load('images\\mountain-hover-enemy-firing.png').convert()
+                if valid:
+                    return pygame.image.load('images\\mountain-hover-firing.png').convert()
+                else:
+                    return pygame.image.load('images\\mountain-hover-invalid.png').convert()
+            else:
+                # Moving
+                if not valid:
+                    return pygame.image.load('images\\mountain-hover-invalid.png').convert()
+                if enemy:
+                    return pygame.image.load('images\\mountain-hover-enemy.png').convert()
             return pygame.image.load('images\\mountain-hover.png').convert()
         return pygame.image.load('images\\mountain.png').convert()
     elif space_type == SpaceTypes.RIVER:
         if hover:
-            if not valid:
-                return pygame.image.load('images\\river-hover-invalid.png').convert()
-            if enemy:
-                return pygame.image.load('images\\river-hover-enemy.png').convert()
+            if firing:
+                # valid here means in range
+                if enemy and valid:
+                    return pygame.image.load('images\\river-hover-enemy-firing.png').convert()
+                if valid:
+                    return pygame.image.load('images\\river-hover-firing.png').convert()
+                else:
+                    return pygame.image.load('images\\river-hover-invalid.png').convert()
+            else:
+                # Moving
+                if not valid:
+                    return pygame.image.load('images\\river-hover-invalid.png').convert()
+                if enemy:
+                    return pygame.image.load('images\\river-hover-enemy.png').convert()
             return pygame.image.load('images\\river-hover.png').convert()
         return pygame.image.load('images\\river.png').convert()
 
@@ -246,24 +306,47 @@ def check_hover_unit(active_team, screen, board, mouse_position):
                 remove_all_unit_hilights(board, screen, exclude=unit)
                 return unit
 
-def hover_space(board, screen, unit, active_space, x, y):
+def handle_move(distance, unit, centre_active_space, centre_current_space, space, screen, board):
     possible_dest_space_ids = set()
+    terrain_penalty = total_terrain_move_penalty(unit, centre_active_space, centre_current_space, board)
+    if distance <= (unit.movement - terrain_penalty):
+        enemy = None
+        if space.units and space.units[0].team != unit.team:
+            enemy = space.units[0]
+        new_image = get_image_for_space_type(space.type, hover=True, enemy=enemy)
+        possible_dest_space_ids.add(space.id)
+    else:
+        new_image = get_image_for_space_type(space.type, hover=True, valid=False)
+    space.image = new_image
+    space.draw(screen)
+    return list(possible_dest_space_ids)
+
+def handle_shoot(distance, unit, centre_active_space, centre_current_space, space, screen, board):
+    possible_dest_shooting_ids = set()
+    if distance <= (unit.range):
+        enemy = None
+        if space.units and space.units[0].team != unit.team:
+            enemy = space.units[0]
+            enemy.image = enemy.get_target_image()
+        new_image = get_image_for_space_type(space.type, hover=True, enemy=enemy, firing=True)
+        possible_dest_shooting_ids.add(space.id)
+    else:
+        new_image = get_image_for_space_type(space.type, hover=True, valid=False, firing=True)
+    space.image = new_image
+    space.draw(screen)
+    return list(possible_dest_shooting_ids)
+
+def hover_space(board, screen, unit, active_space, x, y, firing=False):
+    # Manage moving and shooting
     for space in board:
         if space.rect.collidepoint(x, y) and space.id != active_space.id:
             centre_active_space = (active_space.rect.centerx, active_space.rect.centery)
             centre_current_space = (space.rect.centerx, space.rect.centery)
             distance = pygame.math.Vector2(centre_active_space).distance_to(centre_current_space)
-            terrain_penalty = total_terrain_move_penalty(unit, centre_active_space, centre_current_space, board)
-            # show_popup(screen, f"distance {distance} penalty: {terrain_penalty}", font)
-            if distance <= (unit.movement - terrain_penalty):
-                enemy = None
-                if space.units and space.units[0].team != unit.team:
-                    enemy = space.units[0]
-                new_image = get_image_for_space_type(space.type, hover=True, enemy=enemy)
-                possible_dest_space_ids.add(space.id)
+            if firing:
+                return handle_shoot(distance, unit, centre_active_space, centre_current_space, space, screen, board)
             else:
-                new_image = get_image_for_space_type(space.type, hover=True, valid=False)
-            space.image = new_image
-            space.draw(screen)
-    return list(possible_dest_space_ids)
+                return handle_move(distance, unit, centre_active_space, centre_current_space, space, screen, board)
+
+    return []
 
