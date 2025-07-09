@@ -2,7 +2,7 @@ import pygame
 from pygame.locals import *
 
 from Board import team_wolf, team_barbarian, get_board
-from Screens import BaseScreen
+from Screens import BaseScreen, BaseButton
 from Units.BaseUnit import Teams
 from Units.Spaces import get_current_active_unit, hover_space, \
     snap_to_space, remove_movement_hilights, snap_back_to_start, check_hover_unit, restore_movement_units, \
@@ -10,21 +10,12 @@ from Units.Spaces import get_current_active_unit, hover_space, \
 
 YELLOW = (255, 255, 0)
 BLUE = (0, 0, 255)
-BROWN = (100, 100, 100)
+BROWN = (60, 60, 60)
 
 pygame.init()
 font = pygame.font.SysFont(None, 32)
 w, h = 1550, 795
 screen = pygame.display.set_mode((w, h))
-
-running = True
-moving = False
-
-end_turn_image = pygame.image.load('images\\end_turn_button.png')
-end_turn_image.convert()
-end_turn_button = end_turn_image.get_rect()
-end_turn_button.center = (300, 350)
-
 space_width = 100
 space_height = 100
 board = get_board(space_width, space_height)
@@ -33,14 +24,20 @@ def draw_board():
     for space in board:
         space.draw(screen)
 
+# Initialising variables
+running = True
+moving = False
 current_active_unit = None
 active_space = None
 possible_dest_space_ids = []
-resources_screen = BaseScreen(screen, 100, 400, 600, 200)
-unit_info_screen = BaseScreen(screen, 100, 600, 400, 150)
 hovered_unit = None
 current_selected_unit_info = []
 current_active_team = team_wolf
+
+# boards for info
+resources_screen = BaseScreen(screen, 100, 400, 600, 200)
+unit_info_screen = BaseScreen(screen, 100, 600, 400, 150)
+end_turn_button = BaseButton(screen, 'END TURN', 100, 320, 150, 50)
 
 while running:
     for event in pygame.event.get():
@@ -55,7 +52,7 @@ while running:
                 remove_all_unit_hilights(board, screen)
                 if active_space:
                     current_selected_unit_info = active_space.get_info()
-            if end_turn_button.collidepoint(event.pos):
+            if end_turn_button.rect.collidepoint(event.pos):
                 # show_popup(screen, f"Ending turn for team {current_turn}", font)
                 restore_movement_units(board, current_active_team)
                 current_active_team = team_barbarian if current_active_team.name == 'Wolf' else team_wolf
@@ -98,8 +95,7 @@ while running:
 
     screen.fill(BROWN)
     draw_board()
-    pygame.draw.rect(screen, BLUE, end_turn_button, 1)
-    screen.blit(end_turn_image, end_turn_button)
+    end_turn_button.draw()
     if current_active_team.type == Teams.WOLF:
         resources_screen.display(text=f"WOLF: Turn: {team_wolf.turn_nr}; Gold: {team_wolf.calculate_resources()}, Resources: 50")
     elif current_active_team.type == Teams.BARBARIAN:

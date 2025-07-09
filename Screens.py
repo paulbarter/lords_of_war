@@ -43,3 +43,15 @@ class ResourcesScreen(BaseScreen):
     def display(self):
         super().display()
         print("Displaying resources information.")
+
+class BaseButton:
+    def __init__(self, screen, text, left, top, width, height):
+        self.screen = screen
+        self.rect = pygame.Rect(left, top, width, height)
+        self.text_surface = font.render(text, True, (255, 255, 255))
+        self.text_rect = self.text_surface.get_rect(center=self.rect.center)
+
+    def draw(self, color=(150, 150, 150)):
+        pygame.draw.rect(self.screen, color, self.rect)
+        self.screen.blit(self.text_surface, self.text_rect)
+        # pygame.display.flip()
