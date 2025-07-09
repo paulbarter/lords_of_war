@@ -139,41 +139,53 @@ def is_space_adjacent(space1, space2):
     distance = pygame.math.Vector2(centre_space1).distance_to(centre_space2)
     return distance < 110  # Assuming spaces are close enough if within 100 pixels
 
-def get_image_for_space_type(space_type, hover=False, valid=True):
+def get_image_for_space_type(space_type, hover=False, valid=True, enemy=None):
     if space_type == SpaceTypes.CITY:
         if hover:
             if not valid:
                 return pygame.image.load('images\\city-hover-invalid.png').convert()
+            if enemy:
+                return pygame.image.load('images\\city-hover-enemy.png').convert()
             return pygame.image.load('images\\city-hover.png').convert()
         return pygame.image.load('images\\city.png').convert()
     elif space_type == SpaceTypes.PLAIN:
         if hover:
             if not valid:
                 return pygame.image.load('images\\plain-hover-invalid.png').convert()
+            if enemy:
+                return pygame.image.load('images\\plain-hover-enemy.png').convert()
             return pygame.image.load('images\\plain-hover.png').convert()
         return pygame.image.load('images\\plain.png').convert()
     elif space_type == SpaceTypes.ROAD:
         if hover:
             if not valid:
                 return pygame.image.load('images\\road-hover-invalid.png').convert()
+            if enemy:
+                return pygame.image.load('images\\road-hover-enemy.png').convert()
             return pygame.image.load('images\\road-hover.png').convert()
         return pygame.image.load('images\\road.png').convert()
     elif space_type == SpaceTypes.FOREST:
         if hover:
             if not valid:
                 return pygame.image.load('images\\forest-hover-invalid.png').convert()
+            if enemy:
+                return pygame.image.load('images\\forest-hover-enemy.png').convert()
             return pygame.image.load('images\\forest-hover.png').convert()
         return pygame.image.load('images\\forest.png').convert()
     elif space_type == SpaceTypes.MOUNTAIN:
         if hover:
             if not valid:
                 return pygame.image.load('images\\mountain-hover-invalid.png').convert()
+            if enemy:
+                return pygame.image.load('images\\mountain-hover-enemy.png').convert()
             return pygame.image.load('images\\mountain-hover.png').convert()
         return pygame.image.load('images\\mountain.png').convert()
     elif space_type == SpaceTypes.RIVER:
         if hover:
             if not valid:
                 return pygame.image.load('images\\river-hover-invalid.png').convert()
+            if enemy:
+                return pygame.image.load('images\\river-hover-enemy.png').convert()
             return pygame.image.load('images\\river-hover.png').convert()
         return pygame.image.load('images\\river.png').convert()
 
@@ -244,7 +256,10 @@ def hover_space(board, screen, unit, active_space, x, y):
             terrain_penalty = total_terrain_move_penalty(unit, centre_active_space, centre_current_space, board)
             # show_popup(screen, f"distance {distance} penalty: {terrain_penalty}", font)
             if distance <= (unit.movement - terrain_penalty):
-                new_image = get_image_for_space_type(space.type, hover=True)
+                enemy = None
+                if space.units and space.units[0].team != unit.team:
+                    enemy = space.units[0]
+                new_image = get_image_for_space_type(space.type, hover=True, enemy=enemy)
                 possible_dest_space_ids.add(space.id)
             else:
                 new_image = get_image_for_space_type(space.type, hover=True, valid=False)
