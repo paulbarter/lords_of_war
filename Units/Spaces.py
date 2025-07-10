@@ -136,8 +136,10 @@ def snap_to_space(active_team, board, possible_dest_spaces, unit, dragged_from_s
 def snap_back_to_start(current_active_unit, active_space):
     current_active_unit.rect.center = active_space.rect.center
 
-def remove_movement_hilights(board, screen):
+def remove_movement_hilights(board, screen, exclude=None):
     for space in board:
+        if exclude and space.id == exclude.id:
+            continue
         new_image = get_image_for_space_type(space.type)
         space.image = new_image
         space.draw(screen)
@@ -365,9 +367,9 @@ def hover_space(board, screen, unit, active_space, x, y, firing=False):
             centre_current_space = (space.rect.centerx, space.rect.centery)
             distance = pygame.math.Vector2(centre_active_space).distance_to(centre_current_space)
             if firing:
-                return handle_shoot(distance, unit, centre_active_space, centre_current_space, space, screen, board)
+                return space, handle_shoot(distance, unit, centre_active_space, centre_current_space, space, screen, board)
             else:
-                return handle_move(distance, unit, centre_active_space, centre_current_space, space, screen, board)
+                return space, handle_move(distance, unit, centre_active_space, centre_current_space, space, screen, board)
 
-    return []
+    return None, []
 

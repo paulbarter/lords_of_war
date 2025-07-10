@@ -28,6 +28,7 @@ def draw_board():
 running = True
 moving = False
 current_active_unit = None
+current_hovered_space = None
 firing_is_active = False
 active_space = None
 possible_dest_space_ids = []
@@ -97,15 +98,16 @@ while running:
                 if current_active_unit and active_space:
                     if not firing_is_active:
                         current_active_unit.rect.move_ip(event.rel)
-                        possible_dest_space_ids = hover_space(board, screen, current_active_unit, active_space,
+                        current_hovered_space, possible_dest_space_ids = hover_space(board, screen, current_active_unit, active_space,
                                                               event.pos[0], event.pos[1], firing=False)
                     else:
-                        possible_dest_space_ids = \
+                        current_hovered_space, possible_dest_space_ids = \
                             hover_space(board, screen, current_active_unit, active_space,
                                                           event.pos[0], event.pos[1], firing=firing_is_active)
                 hovered_unit = check_hover_unit(current_active_team, screen, board, event.pos, firing=True)
             else:
                 hovered_unit = check_hover_unit(current_active_team, screen, board, event.pos)
+            remove_movement_hilights(board, screen, exclude=current_hovered_space)
 
     screen.fill(BROWN)
     draw_board()

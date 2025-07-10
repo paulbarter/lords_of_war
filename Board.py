@@ -39,6 +39,7 @@ def get_board(space_width, space_height):
     space_2_2.add_unit(BaseUnit(1, 2, Teams.BARBARIAN))
     space_2_2.add_unit(Jet(1, 2, Teams.BARBARIAN))
     space_2_3.add_unit(Jet(1, 2, Teams.WOLF))
+    space_3_6.add_unit(Jet(1, 2, Teams.WOLF))
 
     return [space_1_1, space_1_2, space_1_3, space_1_4, space_1_5, space_1_6, space_1_7, space_1_8, space_1_9,
              space_2_1, space_2_2, space_2_3, space_2_4, space_2_5, space_2_6, space_2_7, space_2_8, space_2_9,
