@@ -132,7 +132,7 @@ def shoot_at_space(board, unit, mouse_position):
 
 def snap_to_space(active_team, board, possible_dest_spaces, unit, dragged_from_space: BaseSpace, firing=False):
     for space in board:
-        if (abs(unit.rect.centerx - space.rect.centerx) < 40) and (abs(unit.rect.centery - space.rect.centery) < 40):
+        if (abs(unit.rect.centerx - space.rect.centerx) < 45) and (abs(unit.rect.centery - space.rect.centery) < 45):
             unit.rect.center = space.rect.center
             if space.id in possible_dest_spaces:
                 centre_active_space = (dragged_from_space.rect.centerx, dragged_from_space.rect.centery)
@@ -321,7 +321,7 @@ def remove_all_unit_hilights(board, screen, exclude=None):
             if exclude and unit.id == exclude.id:
                 continue
             if unit.image is not None:
-                original_unit_position = unit.position
+                original_unit_position = unit.rect.center
                 if unit.team == Teams.WOLF:
                     if unit.name == 'Soldier':
                         original_unit_image = pygame.image.load('images\\units\\soldier-wolf.png')
