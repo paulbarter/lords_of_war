@@ -277,6 +277,21 @@ def total_terrain_move_penalty(unit, start_point, end_point, board):
                 total_move_penalty += space.move_penalty
     return total_move_penalty
 
+def handle_hover(board, screen, current_active_unit, active_space, current_active_team, event, firing):
+    current_hovered_space = possible_dest_space_ids = None
+    if current_active_unit and active_space:
+        if not firing:
+            current_active_unit.rect.move_ip(event.rel)
+            current_hovered_space, possible_dest_space_ids = hover_space(board, screen, current_active_unit,
+                                                                         active_space,
+                                                                         event.pos[0], event.pos[1], firing=False)
+        else:
+            current_hovered_space, possible_dest_space_ids = \
+                hover_space(board, screen, current_active_unit, active_space,
+                            event.pos[0], event.pos[1], firing=firing)
+    hovered_unit = check_hover_unit(current_active_team, screen, board, event.pos, firing=True)
+    return current_hovered_space, possible_dest_space_ids
+
 def remove_all_unit_hilights(board, screen, exclude=None):
     for space in board:
         for unit in space.units:

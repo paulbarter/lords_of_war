@@ -1,7 +1,9 @@
 import pygame
+from Units.BaseUnit import Teams
+
 pygame.init()
 font = pygame.font.SysFont(None, 32)
-
+SCREEN_BACKGROUND = (60, 60, 60)
 
 class BaseScreen:
     def __init__(self, screen, left, top, width, height):
@@ -57,3 +59,26 @@ class BaseButton:
             self.text_rect = self.text_surface.get_rect(center=self.rect.center)
         pygame.draw.rect(self.screen, (150, 150, 150), self.rect)
         self.screen.blit(self.text_surface, self.text_rect)
+
+
+def draw_board(screen, board):
+    for space in board:
+        space.draw(screen)
+
+def display_screen_and_resources(screen, board, end_turn_button, fire_button, resources_screen, unit_info_screen,
+                                 current_active_team, team_wolf, team_barbarian, firing, current_selected_unit_info):
+    screen.fill(SCREEN_BACKGROUND)
+    draw_board(screen, board)
+    end_turn_button.draw()
+    if firing:
+        fire_button.draw(new_text='MOVE [NOW FIRING]')
+    else:
+        fire_button.draw(new_text='FIRE [NOW MOVING]')
+    if current_active_team.type == Teams.WOLF:
+        resources_screen.display(
+            text=f"WOLF: Turn: {team_wolf.turn_nr}; Gold: {team_wolf.calculate_resources()}, Resources: 50")
+    elif current_active_team.type == Teams.BARBARIAN:
+        resources_screen.display(
+            text=f"Barbarians: Turn: {team_barbarian.turn_nr}; Gold: {team_barbarian.calculate_resources()}, Resources: 50")
+    unit_info_screen.display(text=None, messages=current_selected_unit_info)
+
