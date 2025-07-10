@@ -10,7 +10,7 @@ def get_board(space_width, space_height):
     space_1_1 = BaseSpace(space_width, -50 + space_height, SpaceTypes.ROAD)
     space_1_2 = BaseSpace(space_width * 2, -50 + space_height, SpaceTypes.CITY)
     space_1_3 = BaseSpace(space_width * 3, -50 + space_height, SpaceTypes.ROAD)
-    space_1_4 = BaseSpace(space_width * 4, -50 + space_height, SpaceTypes.ROAD)
+    space_1_4 = BaseSpace(space_width * 4, -50 + space_height, SpaceTypes.CITY)
     space_1_5 = BaseSpace(space_width * 5, -50 + space_height, SpaceTypes.ROAD)
     space_1_6 = BaseSpace(space_width * 6, -50 + space_height, SpaceTypes.ROAD)
     space_1_7 = BaseSpace(space_width * 7, -50 + space_height, SpaceTypes.ROAD)

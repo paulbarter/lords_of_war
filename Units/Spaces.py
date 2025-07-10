@@ -2,6 +2,7 @@ import pygame
 import uuid
 
 from Attack import Attack
+from City import calculate_city_occupied
 from Units.BaseUnit import Teams
 
 BLUE = (0, 0, 255)
@@ -19,6 +20,7 @@ class BaseSpace():
         self.id = uuid.uuid4()
         self.x = x
         self.y = y
+        self.owner = None  # The team that owns the space, if any
         self.units = []
         self.type = type
         if (type == SpaceTypes.CITY or type == SpaceTypes.PLAIN):
@@ -74,6 +76,12 @@ class BaseSpace():
             self.units[0].draw(screen)
 
     def draw(self, screen):
+        if self.type == SpaceTypes.CITY and self.owner:
+            new_image = get_image_for_space_type(self.type, hover=False, owner=self.owner)
+            new_image.convert()
+            self.image = new_image
+            self.rect = new_image.get_rect()
+            self.rect.center = self.x, self.y
         pygame.draw.rect(screen, (0, 0, 0), self.rect, 2)
         screen.blit(self.image, self.rect)
         if len(self.units) > 0:
@@ -130,7 +138,7 @@ def shoot_at_space(board, unit, mouse_position):
                 if defeated:
                     space.remove_unit(space.units[0])
 
-def snap_to_space(active_team, board, possible_dest_spaces, unit, dragged_from_space: BaseSpace, firing=False):
+def snap_to_space(active_team, inactive_team, board, possible_dest_spaces, unit, dragged_from_space: BaseSpace):
     for space in board:
         if (abs(unit.rect.centerx - space.rect.centerx) < 45) and (abs(unit.rect.centery - space.rect.centery) < 45):
             unit.rect.center = space.rect.center
@@ -142,17 +150,17 @@ def snap_to_space(active_team, board, possible_dest_spaces, unit, dragged_from_s
                     defeated = Attack(unit, space.units[0]).execute()
                     if defeated:
                         space.remove_unit(space.units[0])
-                        space.add_unit(unit)
-                        if space.type == SpaceTypes.CITY:
-                            active_team.owned_cities.append(space)
                     else:
                         # If the attack did not defeat the defender, snap back to start
+                        # TODO make sure don't snap back if unit moved from further than 1 space away (dont allow moving
+                        # right into another unit unless adjacent)
                         snap_back_to_start(unit, dragged_from_space)
                         break
                 else:
                     space.add_unit(unit)
-                    if space.type == SpaceTypes.CITY:
-                        active_team.owned_cities.append(space)
+                space.add_unit(unit)
+                if space.type == SpaceTypes.CITY:
+                    calculate_city_occupied(active_team, inactive_team, space)
                 dragged_from_space.remove_unit(unit)
             break
 
@@ -175,7 +183,7 @@ def is_space_adjacent(space1, space2):
     distance = pygame.math.Vector2(centre_space1).distance_to(centre_space2)
     return distance < 110  # Assuming spaces are close enough if within 100 pixels
 
-def get_image_for_space_type(space_type, hover=False, valid=True, enemy=None, firing=False):
+def get_image_for_space_type(space_type, hover=False, valid=True, enemy=None, firing=False, owner=None):
     if space_type == SpaceTypes.CITY:
         if hover:
             if firing:
@@ -193,6 +201,11 @@ def get_image_for_space_type(space_type, hover=False, valid=True, enemy=None, fi
                 if enemy:
                     return pygame.image.load('images\\city-hover-enemy.png').convert()
             return pygame.image.load('images\\city-hover.png').convert()
+        if owner:
+            if owner.name == 'Wolf':
+                return pygame.image.load('images\\city-wolf.png').convert()
+            elif owner.name == 'Barbarian':
+                return pygame.image.load('images\\city-barbarian.png').convert()
         return pygame.image.load('images\\city.png').convert()
     elif space_type == SpaceTypes.PLAIN:
         if hover:

@@ -9,15 +9,17 @@ class BaseTeam():
         self.points = 0
         self.turn_nr = 0
         self.owned_cities = []
+        self.total_gold = 0
+        self.total_resources = 0
 
     def calculate_resources(self):
-        total_gold = 0
-        total_resources = 0
-        for city in self.owned_cities:
-            # TODO - add for farms etc... create city class
-            total_gold += GOLD_PER_CITY
-            total_resources += RESOURCES_PER_CITY
-        return total_gold, total_resources
+        # TODO - add for farms etc... create city class
+        self.total_gold += (GOLD_PER_CITY * len(self.owned_cities))
+        self.total_resources += (RESOURCES_PER_CITY * len(self.owned_cities))
+
+    def get_info(self):
+        return [f"Name: {self.name}", f"Points: {self.points}", f"Turn: {self.turn_nr}",
+                f"Gold: {self.total_gold}, Resources: {self.total_resources}"]
 
 class WolfTeam(BaseTeam):
     def __init__(self):

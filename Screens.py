@@ -75,10 +75,8 @@ def display_screen_and_resources(screen, board, end_turn_button, fire_button, re
     else:
         fire_button.draw(new_text='FIRE [NOW MOVING]')
     if current_active_team.type == Teams.WOLF:
-        resources_screen.display(
-            text=f"WOLF: Turn: {team_wolf.turn_nr}; Gold: {team_wolf.calculate_resources()}, Resources: 50")
+        resources_screen.display(messages=team_wolf.get_info())
     elif current_active_team.type == Teams.BARBARIAN:
-        resources_screen.display(
-            text=f"Barbarians: Turn: {team_barbarian.turn_nr}; Gold: {team_barbarian.calculate_resources()}, Resources: 50")
+        resources_screen.display(messages=team_barbarian.get_info())
     unit_info_screen.display(text=None, messages=current_selected_unit_info)
 

@@ -14,7 +14,7 @@ def handle_end_turn(board, screen, current_active_team, moving, current_active_u
     if current_active_team.name == 'Wolf':
         team_wolf.turn_nr += 1
     else:
-        if team_barbarian.turn_nr != 0:
-            team_barbarian.turn_nr += 1
+        team_barbarian.turn_nr += 1
+    current_active_team.calculate_resources()
 
     return current_active_team, moving, current_active_unit, active_space, possible_dest_space_ids, team_wolf, team_barbarian

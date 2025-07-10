@@ -67,7 +67,8 @@ while running:
                     if firing_is_active:
                         shoot_at_space(board, current_active_unit, event.pos)
                     else:
-                        snap_to_space(current_active_team, board, possible_dest_space_ids, current_active_unit, active_space)
+                        inactive_team = team_wolf if current_active_team.name == "Barbarian" else team_barbarian
+                        snap_to_space(current_active_team, inactive_team, board, possible_dest_space_ids, current_active_unit, active_space)
                     current_selected_unit_info = current_active_unit.get_info(unit_stack)
                 else:
                     snap_back_to_start(current_active_unit, active_space)
