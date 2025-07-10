@@ -30,12 +30,14 @@ fire_button = BaseButton(screen, 'FIRE', 300, 320, 250, 50)
 running = True
 moving = False
 current_active_unit = None
+previously_active_unit = None
 current_hovered_space = None
 firing_is_active = False
 active_space = None
 possible_dest_space_ids = []
 hovered_unit = None
 current_selected_unit_info = []
+unit_stack = []
 current_active_team = team_wolf
 
 while running:
@@ -43,10 +45,11 @@ while running:
         if event.type == QUIT:
             running = False
         elif event.type == MOUSEBUTTONDOWN:
-            current_active_unit, active_space = get_current_active_unit(current_active_team, event.pos[0], event.pos[1], board)
+            current_active_unit, active_space, unit_stack = get_current_active_unit(previously_active_unit, current_active_team,
+                                                                                    event.pos[0], event.pos[1], board)
             if current_active_unit:
                 moving = True
-                current_selected_unit_info = current_active_unit.get_info()
+                current_selected_unit_info = current_active_unit.get_info(unit_stack)
             else:
                 remove_all_unit_hilights(board, screen)
                 if active_space:
@@ -65,11 +68,12 @@ while running:
                         shoot_at_space(board, current_active_unit, event.pos)
                     else:
                         snap_to_space(current_active_team, board, possible_dest_space_ids, current_active_unit, active_space)
-                    current_selected_unit_info = current_active_unit.get_info()
+                    current_selected_unit_info = current_active_unit.get_info(unit_stack)
                 else:
                     snap_back_to_start(current_active_unit, active_space)
                 possible_dest_space_ids = []
                 remove_movement_hilights(board, screen)
+                previously_active_unit = current_active_unit
                 current_active_unit = None
                 active_space = None
         elif event.type == MOUSEMOTION:

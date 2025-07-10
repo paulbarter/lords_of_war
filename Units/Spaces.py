@@ -69,6 +69,9 @@ class BaseSpace():
     def draw_units(self, screen):
         for unit in self.units:
             unit.draw(screen)
+        # only draw the first unit in the stack because that is the only unit available for selection
+        if self.units:
+            self.units[0].draw(screen)
 
     def draw(self, screen):
         pygame.draw.rect(screen, (0, 0, 0), self.rect, 2)
@@ -76,19 +79,39 @@ class BaseSpace():
         if len(self.units) > 0:
             self.draw_units(screen)
 
-def get_current_active_unit(active_team, x, y, board):
+def get_current_active_unit(previously_active_unit, active_team, x, y, board):
     active_unit = None
     active_space = None
+    unit_stack = []
+    get_bottom_of_stack = False
     for space in board:
         if space.rect.collidepoint(x, y):
             active_space = space
         for unit in space.units:
             # check that the mouse is hovering over the unit within the space
             if unit.rect.collidepoint(x, y) and unit.team == active_team.type:
-                # If the unit is found, return the unit
-                active_unit = unit
-                break
-    return active_unit, active_space
+                if previously_active_unit and previously_active_unit.id == unit.id and len(space.units) > 1:
+                    # If the previously active unit is the same as the current unit, get bottom unit, to allow selecting different unit
+                    get_bottom_of_stack = True
+                    unit_stack = space.units
+                    break
+                else:
+                    # If the unit is found, return the unit
+                    active_unit = unit
+                    unit_stack = space.units
+                    break
+    if get_bottom_of_stack:
+        # start with last element
+        new_stack = [unit_stack[len(unit_stack)-1]]
+        count = 0
+        for unit in unit_stack:
+            new_stack.append(unit)
+            count += 1
+        # shave off the last element because it was added twice
+        new_stack = new_stack[:-1]  # Reverse the stack to have the bottom unit first
+        active_space.units = new_stack
+        unit_stack = new_stack
+    return active_unit, active_space, unit_stack
 
 def restore_movement_units(board, active_team):
     for space in board:

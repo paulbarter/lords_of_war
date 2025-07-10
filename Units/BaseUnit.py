@@ -27,10 +27,13 @@ class BaseUnit():
         self.image = None
         self.rect = self.create_rect()
 
-    def get_info(self):
+    def get_info(self, unit_stack):
+        unit_stack_label = ""
+        if unit_stack:
+            unit_stack_label = [unit.name + ";" for unit in unit_stack]
         return [f"Name: {self.name}", f"Team: {self.team_name}", f"Health: {self.health}, " \
                f"Attack Power: {self.attack_power}", f"Defense Power: {self.defense_power}, " \
-               f"Movement: {self.movement}"]
+               f"Movement: {self.movement}", f"Unit Stack: {unit_stack_label}"]
 
     def create_rect(self):
         if self.team == Teams.WOLF:
