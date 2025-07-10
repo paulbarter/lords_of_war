@@ -1,4 +1,7 @@
 import pygame
+
+from Utils import handle_end_turn
+
 pygame.init()
 from pygame.locals import *
 
@@ -51,19 +54,9 @@ while running:
             if fire_button.rect.collidepoint(event.pos):
                 firing_is_active = not firing_is_active
             if end_turn_button.rect.collidepoint(event.pos):
-                # show_popup(screen, f"Ending turn for team {current_turn}", font)
-                restore_movement_units(board, current_active_team)
-                current_active_team = team_barbarian if current_active_team.name == 'Wolf' else team_wolf
-                moving = False
-                current_active_unit = None
-                active_space = None
-                possible_dest_space_ids = []
-                remove_movement_hilights(board, screen)
-                if current_active_team.name == 'Wolf':
-                    team_wolf.turn_nr += 1
-                else:
-                    if team_barbarian.turn_nr != 0:
-                        team_barbarian.turn_nr += 1
+                (current_active_team, moving, current_active_unit, active_space, possible_dest_space_ids, team_wolf,
+                 team_barbarian) = handle_end_turn(board, screen, current_active_team, moving, current_active_unit, active_space,
+                                possible_dest_space_ids, team_wolf, team_barbarian)
         elif event.type == MOUSEBUTTONUP:
             moving = False
             if current_active_unit:
