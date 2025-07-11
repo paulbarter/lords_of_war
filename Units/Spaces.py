@@ -2,8 +2,6 @@ import pygame
 import uuid
 
 from Attack import Attack
-from City import calculate_city_occupied
-from Units.BaseUnit import Teams
 
 BLUE = (0, 0, 255)
 
@@ -136,6 +134,14 @@ class River(BaseSpace):
         self.name = 'River'
         super().__init__(x, y, SpaceTypes.RIVER)
         self.move_penalty = 99999  # Cannot cross river without a boat or flying unit
+
+def calculate_city_occupied(active_team, inactive_team, city):
+    if city.owner and city.owner != active_team:
+        active_team.owned_cities.append(city)
+        inactive_team.owned_cities.remove(city)
+    elif not city.owner:
+        active_team.owned_cities.append(city)
+    city.owner = active_team
 
 def get_current_active_unit(previously_active_unit, active_team, x, y, board):
     active_unit = None

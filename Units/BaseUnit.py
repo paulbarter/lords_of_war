@@ -1,4 +1,5 @@
 import pygame
+from Units.Spaces import City
 import uuid
 BLUE = (0, 0, 255)
 
@@ -101,3 +102,16 @@ class Settler(BaseUnit):
         self.defense_power = 0
         self.movement = 200
         self.initial_movement = 100
+
+    def settle(self, current_space, team, board):
+        if current_space.name != "City" and current_space.name != "River" and current_space.name != "Mountain":
+            new_space = City(current_space.rect.centerx, current_space.rect.centery)
+            new_space.owner = team
+            new_space.units = []
+            number_on_board = 0
+            for space in board:
+                if space.id == current_space.id:
+                    break
+                number_on_board += 1
+            board[number_on_board] = new_space
+            team.owned_cities.append(new_space)

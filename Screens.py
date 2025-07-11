@@ -8,7 +8,8 @@ font = pygame.font.SysFont(None, 32)
 SCREEN_BACKGROUND = (60, 60, 60)
 
 def handle_buttons(event, board, screen, fire_button, buy_button, end_turn_button, firing_is_active, active_space,
-                   current_active_team, moving, current_active_unit, possible_dest_space_ids, team_wolf, team_barbarian):
+                   current_active_team, moving, current_active_unit, possible_dest_space_ids, team_wolf, team_barbarian,
+                   settle_button):
     if fire_button.rect.collidepoint(event.pos):
         firing_is_active = not firing_is_active
     if buy_button.rect.collidepoint(event.pos):
@@ -21,6 +22,10 @@ def handle_buttons(event, board, screen, fire_button, buy_button, end_turn_butto
          team_barbarian) = handle_end_turn(board, screen, current_active_team, moving, current_active_unit,
                                            active_space,
                                            possible_dest_space_ids, team_wolf, team_barbarian)
+    if settle_button.rect.collidepoint(event.pos):
+        if (current_active_unit and current_active_unit.name == 'Settler' and active_space and active_space.name != "City" and
+                active_space.name != "River" and active_space.name != "Mountain"):
+            current_active_unit.settle(active_space, current_active_team, board)
 
     return (firing_is_active, current_active_team, moving, current_active_unit, active_space, possible_dest_space_ids, team_wolf,
             team_barbarian)
@@ -87,7 +92,7 @@ def draw_board(screen, board):
 
 def display_screen_and_resources(screen, board, end_turn_button, fire_button, resources_screen, unit_info_screen,
                                  current_active_team, team_wolf, team_barbarian, firing, current_selected_unit_info,
-                                 active_space, buy_button):
+                                 buy_button, settle_button):
     screen.fill(SCREEN_BACKGROUND)
     draw_board(screen, board)
     end_turn_button.draw()
@@ -101,4 +106,5 @@ def display_screen_and_resources(screen, board, end_turn_button, fire_button, re
         resources_screen.display(messages=team_barbarian.get_info())
     unit_info_screen.display(text=None, messages=current_selected_unit_info)
     buy_button.draw(new_text='BUY SETTLER')
+    settle_button.draw(new_text='SETTLE')
 

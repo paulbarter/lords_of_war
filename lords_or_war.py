@@ -26,6 +26,7 @@ unit_info_screen = BaseScreen(screen, 100, 600, 400, 150)
 end_turn_button = BaseButton(screen, 'END TURN', 100, 320, 150, 50)
 fire_button = BaseButton(screen, 'FIRE', 300, 320, 250, 50)
 buy_button = BaseButton(screen, 'Buy settler', 580, 320, 250, 50)
+settle_button = BaseButton(screen, 'SETTLE', 900, 320, 250, 50)
 
 # Initialising variables
 running = True
@@ -47,8 +48,10 @@ while running:
             running = False
         elif event.type == MOUSEBUTTONDOWN:
             (firing_is_active, current_active_team, moving, current_active_unit, active_space, possible_dest_space_ids, team_wolf,
-            team_barbarian) = handle_buttons(event, board, screen, fire_button, buy_button, end_turn_button, firing_is_active, active_space,
-                   current_active_team, moving, current_active_unit, possible_dest_space_ids, team_wolf, team_barbarian)
+            team_barbarian) = (
+                handle_buttons(event, board, screen, fire_button, buy_button, end_turn_button, firing_is_active,
+                               active_space, current_active_team, moving, current_active_unit, possible_dest_space_ids,
+                               team_wolf, team_barbarian, settle_button))
             current_active_unit, active_space, unit_stack = get_current_active_unit(previously_active_unit, current_active_team,
                                                                                     event.pos[0], event.pos[1], board)
             if current_active_unit:
@@ -84,7 +87,7 @@ while running:
 
     display_screen_and_resources(screen, board, end_turn_button, fire_button, resources_screen, unit_info_screen,
                                  current_active_team, team_wolf, team_barbarian, firing_is_active, current_selected_unit_info,
-                                 active_space, buy_button)
+                                 buy_button, settle_button)
     if moving and current_active_unit:
         current_active_unit.draw(screen)
     pygame.display.update()

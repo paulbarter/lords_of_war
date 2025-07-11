@@ -1,7 +1,7 @@
 
 from Teams import WolfTeam, BarbarianTeam
 from Units.BaseUnit import Jet, Teams, Soldier, Settler
-from Units.Spaces import BaseSpace, SpaceTypes, River, Road, Mountain, Plain, City
+from Units.Spaces import River, Road, Mountain, Plain, City
 
 team_wolf = WolfTeam()
 team_barbarian = BarbarianTeam()
