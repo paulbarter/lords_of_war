@@ -6,10 +6,10 @@ pygame.init()
 from pygame.locals import *
 
 from Board import team_wolf, team_barbarian, get_board
-from Screens import BaseScreen, BaseButton, display_screen_and_resources
+from Screens import BaseScreen, BaseButton, display_screen_and_resources, handle_buttons
 from Units.Spaces import get_current_active_unit, hover_space, \
     snap_to_space, remove_movement_hilights, snap_back_to_start, check_hover_unit, restore_movement_units, \
-    remove_all_unit_hilights, shoot_at_space, handle_hover
+    remove_all_unit_hilights, shoot_at_space, handle_hover, SpaceTypes
 
 YELLOW = (255, 255, 0)
 BLUE = (0, 0, 255)
@@ -25,6 +25,7 @@ resources_screen = BaseScreen(screen, 100, 400, 600, 200)
 unit_info_screen = BaseScreen(screen, 100, 600, 400, 150)
 end_turn_button = BaseButton(screen, 'END TURN', 100, 320, 150, 50)
 fire_button = BaseButton(screen, 'FIRE', 300, 320, 250, 50)
+buy_button = BaseButton(screen, 'Buy settler', 580, 320, 250, 50)
 
 # Initialising variables
 running = True
@@ -45,6 +46,9 @@ while running:
         if event.type == QUIT:
             running = False
         elif event.type == MOUSEBUTTONDOWN:
+            (firing_is_active, current_active_team, moving, current_active_unit, active_space, possible_dest_space_ids, team_wolf,
+            team_barbarian) = handle_buttons(event, board, screen, fire_button, buy_button, end_turn_button, firing_is_active, active_space,
+                   current_active_team, moving, current_active_unit, possible_dest_space_ids, team_wolf, team_barbarian)
             current_active_unit, active_space, unit_stack = get_current_active_unit(previously_active_unit, current_active_team,
                                                                                     event.pos[0], event.pos[1], board)
             if current_active_unit:
@@ -54,12 +58,7 @@ while running:
                 remove_all_unit_hilights(board, screen)
                 if active_space:
                     current_selected_unit_info = active_space.get_info()
-            if fire_button.rect.collidepoint(event.pos):
-                firing_is_active = not firing_is_active
-            if end_turn_button.rect.collidepoint(event.pos):
-                (current_active_team, moving, current_active_unit, active_space, possible_dest_space_ids, team_wolf,
-                 team_barbarian) = handle_end_turn(board, screen, current_active_team, moving, current_active_unit, active_space,
-                                possible_dest_space_ids, team_wolf, team_barbarian)
+
         elif event.type == MOUSEBUTTONUP:
             moving = False
             if current_active_unit:
@@ -75,8 +74,8 @@ while running:
                 possible_dest_space_ids = []
                 remove_movement_hilights(board, screen)
                 previously_active_unit = current_active_unit
-                current_active_unit = None
-                active_space = None
+                # current_active_unit = None
+                # active_space = None
         elif event.type == MOUSEMOTION:
             if moving or firing_is_active:
                 current_hovered_space, possible_dest_space_ids = handle_hover(board, screen, current_active_unit, active_space,
@@ -86,7 +85,8 @@ while running:
             remove_movement_hilights(board, screen, exclude=current_hovered_space)
 
     display_screen_and_resources(screen, board, end_turn_button, fire_button, resources_screen, unit_info_screen,
-                                 current_active_team, team_wolf, team_barbarian, firing_is_active, current_selected_unit_info)
+                                 current_active_team, team_wolf, team_barbarian, firing_is_active, current_selected_unit_info,
+                                 active_space, buy_button)
     if moving and current_active_unit:
         current_active_unit.draw(screen)
     pygame.display.update()

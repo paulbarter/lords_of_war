@@ -1,6 +1,6 @@
 
 from Teams import WolfTeam, BarbarianTeam
-from Units.BaseUnit import BaseUnit, Jet, Teams
+from Units.BaseUnit import BaseUnit, Jet, Teams, Soldier, Settler
 from Units.Spaces import BaseSpace, SpaceTypes
 
 team_wolf = WolfTeam()
@@ -35,8 +35,8 @@ def get_board(space_width, space_height):
     space_3_8 = BaseSpace(space_width * 8, -50 + space_height * 3, SpaceTypes.MOUNTAIN)
     space_3_9 = BaseSpace(space_width * 9, -50 + space_height * 3, SpaceTypes.MOUNTAIN)
 
-    space_1_1.add_unit(BaseUnit(1, 2, Teams.WOLF))
-    space_2_1.add_unit(BaseUnit(1, 2, Teams.BARBARIAN))
+    space_1_1.add_unit(Soldier(1, 2, Teams.WOLF))
+    space_2_1.add_unit(Settler(1, 2, Teams.BARBARIAN))
     space_2_2.add_unit(Jet(1, 2, Teams.BARBARIAN))
     space_2_3.add_unit(Jet(1, 2, Teams.WOLF))
     space_3_6.add_unit(Jet(1, 2, Teams.WOLF))

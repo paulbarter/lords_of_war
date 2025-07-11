@@ -1,9 +1,29 @@
 import pygame
 from Units.BaseUnit import Teams
+from Units.Spaces import SpaceTypes
+from Utils import handle_end_turn
 
 pygame.init()
 font = pygame.font.SysFont(None, 32)
 SCREEN_BACKGROUND = (60, 60, 60)
+
+def handle_buttons(event, board, screen, fire_button, buy_button, end_turn_button, firing_is_active, active_space,
+                   current_active_team, moving, current_active_unit, possible_dest_space_ids, team_wolf, team_barbarian):
+    if fire_button.rect.collidepoint(event.pos):
+        firing_is_active = not firing_is_active
+    if buy_button.rect.collidepoint(event.pos):
+        if active_space and active_space.type == SpaceTypes.CITY and current_active_team.can_buy_settler():
+            current_active_team.buy_settler(active_space, current_active_team)
+        else:
+            print("Not enough resources to buy a settler.")
+    if end_turn_button.rect.collidepoint(event.pos):
+        (current_active_team, moving, current_active_unit, active_space, possible_dest_space_ids, team_wolf,
+         team_barbarian) = handle_end_turn(board, screen, current_active_team, moving, current_active_unit,
+                                           active_space,
+                                           possible_dest_space_ids, team_wolf, team_barbarian)
+
+    return (firing_is_active, current_active_team, moving, current_active_unit, active_space, possible_dest_space_ids, team_wolf,
+            team_barbarian)
 
 class BaseScreen:
     def __init__(self, screen, left, top, width, height):
@@ -66,7 +86,8 @@ def draw_board(screen, board):
         space.draw(screen)
 
 def display_screen_and_resources(screen, board, end_turn_button, fire_button, resources_screen, unit_info_screen,
-                                 current_active_team, team_wolf, team_barbarian, firing, current_selected_unit_info):
+                                 current_active_team, team_wolf, team_barbarian, firing, current_selected_unit_info,
+                                 active_space, buy_button):
     screen.fill(SCREEN_BACKGROUND)
     draw_board(screen, board)
     end_turn_button.draw()
@@ -79,4 +100,5 @@ def display_screen_and_resources(screen, board, end_turn_button, fire_button, re
     elif current_active_team.type == Teams.BARBARIAN:
         resources_screen.display(messages=team_barbarian.get_info())
     unit_info_screen.display(text=None, messages=current_selected_unit_info)
+    buy_button.draw(new_text='BUY SETTLER')
 
