@@ -23,31 +23,13 @@ class BaseSpace():
         self.owner = None  # The team that owns the space, if any
         self.units = []
         self.type = type
-        if (type == SpaceTypes.CITY or type == SpaceTypes.PLAIN):
-            self.move_penalty = 50
-            if (type == SpaceTypes.CITY):
-                self.name = 'City'
-            else:
-                self.name = 'Plain'
-        elif type == SpaceTypes.ROAD:
-            self.move_penalty = 50
-            self.name = 'Road'
-        elif type == SpaceTypes.FOREST:
-            self.name = 'Forest'
-            self.move_penalty = 150
-        elif type == SpaceTypes.MOUNTAIN:
-            self.name = 'Mountain'
-            self.move_penalty = 300
-        elif type == SpaceTypes.RIVER:
-            self.name = 'River'
-            self.move_penalty = 99999
-        self.rect = self.create_rect(type, x, y)
+        self.rect = self.create_rect(x, y)
 
     def get_info(self):
         return [f"Type: {self.name}"]
 
-    def create_rect(self, type, x, y):
-        image = get_image_for_space_type(type)
+    def create_rect(self, x, y):
+        image = get_image_for_space(self)
         image.convert()
         self.image = image
         rect = image.get_rect()
@@ -77,7 +59,7 @@ class BaseSpace():
 
     def draw(self, screen):
         if self.type == SpaceTypes.CITY and self.owner:
-            new_image = get_image_for_space_type(self.type, hover=False, owner=self.owner)
+            new_image = get_image_for_space(self, hover=False, owner=self.owner)
             new_image.convert()
             self.image = new_image
             self.rect = new_image.get_rect()
@@ -86,6 +68,74 @@ class BaseSpace():
         screen.blit(self.image, self.rect)
         if len(self.units) > 0:
             self.draw_units(screen)
+
+    def get_hover_firing_image(self, enemy, valid):
+        if enemy and valid:
+            return pygame.image.load(f'images\\{self.name}-hover-enemy-firing.png').convert()
+        if valid:
+            return pygame.image.load(f'images\\{self.name}-hover-firing.png').convert()
+        else:
+            return pygame.image.load(f'images\\{self.name}-hover-invalid.png').convert()
+
+    def get_hover_image(self):
+        return pygame.image.load(f'images\\{self.name}-hover.png').convert()
+
+    def get_moving_image_hover(self, valid, enemy):
+        if not valid:
+            return pygame.image.load(f'images\\{self.name}-hover-invalid.png').convert()
+        if enemy:
+            return pygame.image.load(f'images\\{self.name}-hover-enemy.png').convert()
+        else:
+            return pygame.image.load(f'images\\{self.name}-hover.png').convert()
+
+    def get_owner_image(self, owner):
+        if owner.name == 'Wolf':
+            return pygame.image.load(f'images\\{self.name}-wolf.png').convert()
+        elif owner.name == 'Barbarian':
+            return pygame.image.load(f'images\\{self.name}-barbarian.png').convert()
+
+    def get_regular_image(self):
+        return pygame.image.load(f'images\\{self.name}.png').convert()
+
+class Plain(BaseSpace):
+    def __init__(self, x, y):
+        self.name = 'Plain'
+        super().__init__(x, y, SpaceTypes.PLAIN)
+        self.move_penalty = 100
+
+class Road(BaseSpace):
+    def __init__(self, x, y):
+        self.name = 'Road'
+        super().__init__(x, y, SpaceTypes.ROAD)
+        self.move_penalty = 50
+
+class Forest(BaseSpace):
+    def __init__(self, x, y):
+        self.name = 'Forest'
+        super().__init__(x, y, SpaceTypes.FOREST)
+
+class Mountain(BaseSpace):
+    def __init__(self, x, y):
+        self.name = 'Mountain'
+        super().__init__(x, y, SpaceTypes.MOUNTAIN)
+        self.move_penalty = 300
+
+class City(BaseSpace):
+    def __init__(self, x, y):
+        self.name = 'City'
+        super().__init__(x, y, SpaceTypes.CITY)
+        self.move_penalty = 50
+        self.owner = None  # The team that owns the city
+        self.units = []  # Units stationed in the city
+
+    def get_info(self):
+        return [f"Type: {self.name}", f"Owner: {self.owner.name if self.owner else 'None'}",]
+
+class River(BaseSpace):
+    def __init__(self, x, y):
+        self.name = 'River'
+        super().__init__(x, y, SpaceTypes.RIVER)
+        self.move_penalty = 99999  # Cannot cross river without a boat or flying unit
 
 def get_current_active_unit(previously_active_unit, active_team, x, y, board):
     active_unit = None
@@ -171,7 +221,7 @@ def remove_movement_hilights(board, screen, exclude=None):
     for space in board:
         if exclude and space.id == exclude.id:
             continue
-        new_image = get_image_for_space_type(space.type)
+        new_image = get_image_for_space(space)
         space.image = new_image
         space.draw(screen)
         space.draw_units(screen)
@@ -183,124 +233,35 @@ def is_space_adjacent(space1, space2):
     distance = pygame.math.Vector2(centre_space1).distance_to(centre_space2)
     return distance < 110  # Assuming spaces are close enough if within 100 pixels
 
-def get_image_for_space_type(space_type, hover=False, valid=True, enemy=None, firing=False, owner=None):
-    if space_type == SpaceTypes.CITY:
-        if hover:
-            if firing:
-                # valid here means in range
-                if enemy and valid:
-                    return pygame.image.load('images\\city-hover-enemy-firing.png').convert()
-                if valid:
-                    return pygame.image.load('images\\city-hover-firing.png').convert()
-                else:
-                    return pygame.image.load('images\\city-hover-invalid.png').convert()
-            else:
-                # Moving
-                if not valid:
-                    return pygame.image.load('images\\city-hover-invalid.png').convert()
-                if enemy:
-                    return pygame.image.load('images\\city-hover-enemy.png').convert()
-            return pygame.image.load('images\\city-hover.png').convert()
-        if owner:
-            if owner.name == 'Wolf':
-                return pygame.image.load('images\\city-wolf.png').convert()
-            elif owner.name == 'Barbarian':
-                return pygame.image.load('images\\city-barbarian.png').convert()
-        return pygame.image.load('images\\city.png').convert()
-    elif space_type == SpaceTypes.PLAIN:
-        if hover:
-            if firing:
-                # valid here means in range
-                if enemy and valid:
-                    return pygame.image.load('images\\plain-hover-enemy-firing.png').convert()
-                if valid:
-                    return pygame.image.load('images\\plain-hover-firing.png').convert()
-                else:
-                    return pygame.image.load('images\\plain-hover-invalid.png').convert()
-            else:
-                # Moving
-                if not valid:
-                    return pygame.image.load('images\\plain-hover-invalid.png').convert()
-                if enemy:
-                    return pygame.image.load('images\\plain-hover-enemy.png').convert()
-            return pygame.image.load('images\\plain-hover.png').convert()
-        return pygame.image.load('images\\plain.png').convert()
-    elif space_type == SpaceTypes.ROAD:
-        if hover:
-            if firing:
-                # valid here means in range
-                if enemy and valid:
-                    # in range means the target will be on the unit and not the space
-                    return None
-                if valid:
-                    return pygame.image.load('images\\road-hover-firing.png').convert()
-                else:
-                    return pygame.image.load('images\\road-hover-invalid.png').convert()
-            else:
-                # Moving
-                if not valid:
-                    return pygame.image.load('images\\road-hover-invalid.png').convert()
-                if enemy:
-                    return pygame.image.load('images\\road-hover-enemy.png').convert()
-            return pygame.image.load('images\\road-hover.png').convert()
-        return pygame.image.load('images\\road.png').convert()
-    elif space_type == SpaceTypes.FOREST:
-        if hover:
-            if firing:
-                # valid here means in range
-                if enemy and valid:
-                    # in range means the target will be on the unit and not the space
-                    return None
-                if valid:
-                    return pygame.image.load('images\\forest-hover-firing.png').convert()
-                else:
-                    return pygame.image.load('images\\forest-hover-invalid.png').convert()
-            else:
-                # Moving
-                if not valid:
-                    return pygame.image.load('images\\forest-hover-invalid.png').convert()
-                if enemy:
-                    return pygame.image.load('images\\forest-hover-enemy.png').convert()
-            return pygame.image.load('images\\forest-hover.png').convert()
-        return pygame.image.load('images\\forest.png').convert()
-    elif space_type == SpaceTypes.MOUNTAIN:
-        if hover:
-            if firing:
-                # valid here means in range
-                if enemy and valid:
-                    # in range means the target will be on the unit and not the space
-                    return None
-                if valid:
-                    return pygame.image.load('images\\mountain-hover-firing.png').convert()
-                else:
-                    return pygame.image.load('images\\mountain-hover-invalid.png').convert()
-            else:
-                # Moving
-                if not valid:
-                    return pygame.image.load('images\\mountain-hover-invalid.png').convert()
-                if enemy:
-                    return pygame.image.load('images\\mountain-hover-enemy.png').convert()
-            return pygame.image.load('images\\mountain-hover.png').convert()
-        return pygame.image.load('images\\mountain.png').convert()
-    elif space_type == SpaceTypes.RIVER:
-        if hover:
-            if firing:
-                # valid here means in range
-                if enemy and valid:
-                    # in range means the target will be on the unit and not the space
-                    return None
-                if valid:
-                    return pygame.image.load('images\\river-hover-firing.png').convert()
-                else:
-                    return pygame.image.load('images\\river-hover-invalid.png').convert()
-            else:
-                # Moving
-                if not valid:
-                    return pygame.image.load('images\\river-hover-invalid.png').convert()
-                if enemy:
-                    return pygame.image.load('images\\river-hover-enemy.png').convert()
-            return pygame.image.load('images\\river-hover.png').convert()
-        return pygame.image.load('images\\river.png').convert()
+def get_image_for_space(space, hover=False, valid=True, enemy=None, firing=False, owner=None):
+    if hover:
+        if firing:
+            # valid here means in range
+            return space.get_hover_firing_image(enemy, valid)
+        else:
+            return space.get_moving_image_hover(valid, enemy)
+    if owner:
+        return space.get_owner_image(owner)
+    return space.get_regular_image()
+
+
+    # if hover:
+    #     if firing:
+    #         # valid here means in range
+    #         if enemy and valid:
+    #             return pygame.image.load('images\\city-hover-enemy-firing.png').convert()
+    #         if valid:
+    #             return pygame.image.load('images\\city-hover-firing.png').convert()
+    #         else:
+    #             return pygame.image.load('images\\city-hover-invalid.png').convert()
+    #     else:
+    #         # Moving
+    #         if not valid:
+    #             return pygame.image.load('images\\city-hover-invalid.png').convert()
+    #         if enemy:
+    #             return pygame.image.load('images\\city-hover-enemy.png').convert()
+    #     return pygame.image.load('images\\city-hover.png').convert()
+
 
 def total_terrain_move_penalty(unit, start_point, end_point, board):
     # Calculate the move penalty based on the terrain type between two points
@@ -365,10 +326,10 @@ def handle_move(distance, unit, centre_active_space, centre_current_space, space
         enemy = None
         if space.units and space.units[0].team != unit.team:
             enemy = space.units[0]
-        new_image = get_image_for_space_type(space.type, hover=True, enemy=enemy)
+        new_image = get_image_for_space(space, hover=True, enemy=enemy)
         possible_dest_space_ids.add(space.id)
     else:
-        new_image = get_image_for_space_type(space.type, hover=True, valid=False)
+        new_image = get_image_for_space(space, hover=True, valid=False)
     if new_image:
         space.image = new_image
         space.draw(screen)
@@ -383,10 +344,10 @@ def handle_shoot(distance, unit, centre_active_space, centre_current_space, spac
             enemy = space.units[0]
             enemy.image = enemy.get_target_image()
         if unit.movement > 0:
-            new_image = get_image_for_space_type(space.type, hover=True, enemy=enemy, firing=True)
+            new_image = get_image_for_space(space, hover=True, enemy=enemy, firing=True)
             possible_dest_shooting_ids.add(space.id)
     else:
-        new_image = get_image_for_space_type(space.type, hover=True, valid=False, firing=True)
+        new_image = get_image_for_space(space, hover=True, valid=False, firing=True)
     if new_image:
         space.image = new_image
         space.draw(screen)

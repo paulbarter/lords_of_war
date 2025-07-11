@@ -8,7 +8,6 @@ class Teams():
 
 class BaseUnit():
     def __init__(self, x, y, team):
-        self.name = "Soldier"
         self.team = team
         if team == Teams.WOLF:
             self.team_name = "Wolf"
@@ -43,30 +42,10 @@ class BaseUnit():
         screen.blit(self.image, self.rect)
 
     def create_rect(self):
-        raise NotImplementedError("Subclasses should implement this method")
-
-    def get_target_image(self):
-        raise NotImplementedError("Subclasses should implement this method")
-
-    def get_unit_image(self):
-        raise NotImplementedError("Subclasses should implement this method")
-
-    def get_hovered_image(self):
-        raise NotImplementedError("Subclasses should implement this method")
-
-class Soldier(BaseUnit):
-    def __init__(self, x, y, team):
-        super().__init__(x, y, team)
-        self.name = "Soldier"
-        self.health = 100
-        self.can_shoot = True
-        self.range = 250
-
-    def create_rect(self):
         if self.team == Teams.WOLF:
-            img = pygame.image.load('images\\units\\soldier-wolf.png')
+            img = pygame.image.load(f'images\\units\\{self.name}-wolf.png')
         elif self.team == Teams.BARBARIAN:
-            img = pygame.image.load('images\\units\\soldier-barbarian.png')
+            img = pygame.image.load(f'images\\units\\{self.name}-barbarian.png')
         img.convert()
         self.image = img
         # Draw rectangle around the image
@@ -76,26 +55,34 @@ class Soldier(BaseUnit):
 
     def get_target_image(self):
         if self.team == Teams.WOLF:
-            return pygame.image.load('images\\units\\soldier-wolf-hover-firing.png')
+            return pygame.image.load(f'images\\units\\{self.name}-wolf-hover-firing.png')
         elif self.team == Teams.BARBARIAN:
-            return pygame.image.load('images\\units\\soldier-barbarian-hover-firing.png')
+            return pygame.image.load(f'images\\units\\{self.name}-barbarian-hover-firing.png')
 
     def get_hovered_image(self):
         if self.team == Teams.WOLF:
-            return pygame.image.load('images\\units\\soldier-wolf-hover.png')
+            return pygame.image.load(f'images\\units\\{self.name}-wolf-hover.png')
         elif self.team == Teams.BARBARIAN:
-            return pygame.image.load('images\\units\\soldier-barbarian-hover.png')
+            return pygame.image.load(f'images\\units\\{self.name}-barbarian-hover.png')
 
     def get_unit_image(self):
         if self.team == Teams.WOLF:
-            return pygame.image.load('images\\units\\soldier-wolf.png')
+            return pygame.image.load(f'images\\units\\{self.name}-wolf.png')
         elif self.team == Teams.BARBARIAN:
-            return pygame.image.load('images\\units\\soldier-barbarian.png')
+            return pygame.image.load(f'images\\units\\{self.name}-barbarian.png')
+
+class Soldier(BaseUnit):
+    def __init__(self, x, y, team):
+        self.name = "Soldier"
+        super().__init__(x, y, team)
+        self.health = 100
+        self.can_shoot = True
+        self.range = 250
 
 class Jet(BaseUnit):
     def __init__(self, x, y, team):
-        super().__init__(x, y, team)
         self.name = "Jet"
+        super().__init__(x, y, team)
         self.health = 100
         self.fly = True
         self.can_shoot = True
@@ -105,72 +92,12 @@ class Jet(BaseUnit):
         self.movement = 710
         self.initial_movement = 710
 
-    def create_rect(self):
-        if self.team == Teams.WOLF:
-            img = pygame.image.load('images\\units\\jet-wolf.png')
-        elif self.team == Teams.BARBARIAN:
-            img = pygame.image.load('images\\units\\jet-barbarian.png')
-        img.convert()
-        self.image = img
-        # Draw rectangle around the image
-        rect = img.get_rect()
-        rect.center = self.position
-        return rect
-
-    def get_target_image(self):
-        if self.team == Teams.WOLF:
-            return pygame.image.load('images\\units\\jet-wolf-hover-firing.png')
-        elif self.team == Teams.BARBARIAN:
-            return pygame.image.load('images\\units\\jet-barbarian-hover-firing.png')
-
-    def get_hovered_image(self):
-        if self.team == Teams.WOLF:
-            return pygame.image.load('images\\units\\jet-wolf-hover.png')
-        elif self.team == Teams.BARBARIAN:
-            return pygame.image.load('images\\units\\jet-barbarian-hover.png')
-
-    def get_unit_image(self):
-        if self.team == Teams.WOLF:
-            return pygame.image.load('images\\units\\jet-wolf.png')
-        elif self.team == Teams.BARBARIAN:
-            return pygame.image.load('images\\units\\jet-barbarian.png')
-
 class Settler(BaseUnit):
     def __init__(self, x, y, team):
-        super().__init__(x, y, team)
         self.name = "Settler"
+        super().__init__(x, y, team)
         self.health = 5
         self.attack_power = 0
         self.defense_power = 0
         self.movement = 200
         self.initial_movement = 100
-
-    def create_rect(self):
-        if self.team == Teams.WOLF:
-            img = pygame.image.load('images\\units\\settler-wolf.png')
-        elif self.team == Teams.BARBARIAN:
-            img = pygame.image.load('images\\units\\settler-barbarian.png')
-        img.convert()
-        self.image = img
-        # Draw rectangle around the image
-        rect = img.get_rect()
-        rect.center = self.position
-        return rect
-
-    def get_target_image(self):
-        if self.team == Teams.WOLF:
-            return pygame.image.load('images\\units\\settler-wolf-hover-firing.png')
-        elif self.team == Teams.BARBARIAN:
-            return pygame.image.load('images\\units\\settler-barbarian-hover-firing.png')
-
-    def get_hovered_image(self):
-        if self.team == Teams.WOLF:
-            return pygame.image.load('images\\units\\settler-wolf-hover.png')
-        elif self.team == Teams.BARBARIAN:
-            return pygame.image.load('images\\units\\settler-barbarian-hover.png')
-
-    def get_unit_image(self):
-        if self.team == Teams.WOLF:
-            return pygame.image.load('images\\units\\settler-wolf.png')
-        elif self.team == Teams.BARBARIAN:
-            return pygame.image.load('images\\units\\settler-barbarian.png')

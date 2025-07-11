@@ -74,8 +74,6 @@ while running:
                 possible_dest_space_ids = []
                 remove_movement_hilights(board, screen)
                 previously_active_unit = current_active_unit
-                # current_active_unit = None
-                # active_space = None
         elif event.type == MOUSEMOTION:
             if moving or firing_is_active:
                 current_hovered_space, possible_dest_space_ids = handle_hover(board, screen, current_active_unit, active_space,
