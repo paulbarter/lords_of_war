@@ -79,6 +79,7 @@ class Soldier(BaseUnit):
         self.health = 100
         self.can_shoot = True
         self.range = 250
+        self.gold_cost = 5
 
 class Jet(BaseUnit):
     def __init__(self, x, y, team):
@@ -92,6 +93,7 @@ class Jet(BaseUnit):
         self.defense_power = 5
         self.movement = 710
         self.initial_movement = 710
+        self.gold_cost = 20
 
 class Settler(BaseUnit):
     def __init__(self, x, y, team):
@@ -101,7 +103,8 @@ class Settler(BaseUnit):
         self.attack_power = 0
         self.defense_power = 0
         self.movement = 200
-        self.initial_movement = 100
+        self.initial_movement = 150
+        self.gold_cost = 5
 
     def settle(self, current_space, team, board):
         if current_space.name != "City" and current_space.name != "River" and current_space.name != "Mountain":

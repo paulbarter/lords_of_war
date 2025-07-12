@@ -18,13 +18,10 @@ class BaseTeam():
         self.total_gold += (GOLD_PER_CITY * len(self.owned_cities))
         self.total_resources += (RESOURCES_PER_CITY * len(self.owned_cities))
 
-    def can_buy_settler(self):
-        if self.total_gold >= GOLD_FOR_SETTLER:
-            return True
-
-    def buy_settler(self, city, current_active_team):
-        self.total_gold -= GOLD_FOR_SETTLER
-        city.add_unit(Settler(1, 2, current_active_team.type))
+    def buy_unit(self, city, new_unit):
+        if self.total_gold >= new_unit.gold_cost:
+            self.total_gold -= new_unit.gold_cost
+            city.add_unit(new_unit)
 
     def get_info(self):
         return [f"Name: {self.name}", f"Points: {self.points}", f"Turn: {self.turn_nr}",

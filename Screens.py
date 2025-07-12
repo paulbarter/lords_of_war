@@ -1,5 +1,5 @@
 import pygame
-from Units.BaseUnit import Teams
+from Units.BaseUnit import Teams, Soldier, Settler
 from Units.Spaces import SpaceTypes
 from Utils import handle_end_turn
 
@@ -7,16 +7,14 @@ pygame.init()
 font = pygame.font.SysFont(None, 32)
 SCREEN_BACKGROUND = (60, 60, 60)
 
-def handle_buttons(event, board, screen, fire_button, buy_button, end_turn_button, firing_is_active, active_space,
+def handle_buttons(event, board, screen, fire_button, buy_settler_button, end_turn_button, firing_is_active, active_space,
                    current_active_team, moving, current_active_unit, possible_dest_space_ids, team_wolf, team_barbarian,
-                   settle_button):
+                   settle_button, buy_soldier_button):
     if fire_button.rect.collidepoint(event.pos):
         firing_is_active = not firing_is_active
-    if buy_button.rect.collidepoint(event.pos):
-        if active_space and active_space.type == SpaceTypes.CITY and current_active_team.can_buy_settler():
-            current_active_team.buy_settler(active_space, current_active_team)
-        else:
-            print("Not enough resources to buy a settler.")
+    if buy_settler_button.rect.collidepoint(event.pos):
+        if active_space and active_space.type == SpaceTypes.CITY:
+            current_active_team.buy_unit(active_space, Settler(1, 2, current_active_team.type))
     if end_turn_button.rect.collidepoint(event.pos):
         (current_active_team, moving, current_active_unit, active_space, possible_dest_space_ids, team_wolf,
          team_barbarian) = handle_end_turn(board, screen, current_active_team, moving, current_active_unit,
@@ -26,7 +24,9 @@ def handle_buttons(event, board, screen, fire_button, buy_button, end_turn_butto
         if (current_active_unit and current_active_unit.name == 'Settler' and active_space and active_space.name != "City" and
                 active_space.name != "River" and active_space.name != "Mountain"):
             current_active_unit.settle(active_space, current_active_team, board)
-
+    if buy_soldier_button.rect.collidepoint(event.pos):
+        if active_space and active_space.type == SpaceTypes.CITY:
+            current_active_team.buy_unit(active_space, Soldier(1, 2, current_active_team.type))
     return (firing_is_active, current_active_team, moving, current_active_unit, active_space, possible_dest_space_ids, team_wolf,
             team_barbarian)
 
@@ -92,7 +92,7 @@ def draw_board(screen, board):
 
 def display_screen_and_resources(screen, board, end_turn_button, fire_button, resources_screen, unit_info_screen,
                                  current_active_team, team_wolf, team_barbarian, firing, current_selected_unit_info,
-                                 buy_button, settle_button):
+                                 buy_button, settle_button, buy_soldier_button):
     screen.fill(SCREEN_BACKGROUND)
     draw_board(screen, board)
     end_turn_button.draw()
@@ -107,4 +107,5 @@ def display_screen_and_resources(screen, board, end_turn_button, fire_button, re
     unit_info_screen.display(text=None, messages=current_selected_unit_info)
     buy_button.draw(new_text='BUY SETTLER')
     settle_button.draw(new_text='SETTLE')
+    buy_soldier_button.draw(new_text='BUY SOLDIER')
 
