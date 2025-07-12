@@ -50,9 +50,12 @@ class BaseSpace():
 
     def draw_units(self, screen):
         for unit in self.units:
+            unit.stacked = False  # Reset stacked state for all units
             unit.draw(screen)
         # only draw the first unit in the stack because that is the only unit available for selection
         if self.units:
+            if len(self.units) > 1:
+                self.units[0].stacked = True
             self.units[0].draw(screen)
 
     def draw(self, screen):
@@ -215,7 +218,6 @@ def snap_to_space(active_team, inactive_team, board, possible_dest_spaces, unit,
                         break
                 else:
                     space.add_unit(unit)
-                space.add_unit(unit)
                 if space.type == SpaceTypes.CITY:
                     calculate_city_occupied(active_team, inactive_team, space)
                 dragged_from_space.remove_unit(unit)

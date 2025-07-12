@@ -65,6 +65,8 @@ while running:
 
         elif event.type == MOUSEBUTTONUP:
             moving = False
+            ###############
+            # ACTUALLY MOVE
             if current_active_unit:
                 if possible_dest_space_ids and len(possible_dest_space_ids) > 0:
                     if firing_is_active:
@@ -79,6 +81,8 @@ while running:
                 remove_movement_hilights(board, screen)
                 previously_active_unit = current_active_unit
         elif event.type == MOUSEMOTION:
+            ##################################
+            # CHECKING WHERE CAN MOVE OR SHOOT
             if moving or firing_is_active:
                 current_hovered_space, possible_dest_space_ids = handle_hover(board, screen, current_active_unit, active_space,
                                                               current_active_team, event, firing_is_active)

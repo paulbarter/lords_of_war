@@ -26,6 +26,7 @@ class BaseUnit():
         self.position = (x, y)
         self.image = None
         self.rect = self.create_rect()
+        self.stacked = False
 
     def get_info(self, unit_stack):
         unit_stack_label = ""
@@ -40,14 +41,20 @@ class BaseUnit():
             pygame.draw.rect(screen, BLUE, self.rect, 100, border_radius=100)
         else:
             pygame.draw.rect(screen, BLUE, self.rect, 2)
+        if self.stacked:
+            if self.team == Teams.WOLF:
+                self.image = pygame.image.load(f'images\\units\\{self.name}-wolf-stack.png')
+            else:
+                self.image = pygame.image.load(f'images\\units\\{self.name}-barbarian-stack.png')
         screen.blit(self.image, self.rect)
 
-    def create_rect(self):
-        if self.team == Teams.WOLF:
-            img = pygame.image.load(f'images\\units\\{self.name}-wolf.png')
-        elif self.team == Teams.BARBARIAN:
-            img = pygame.image.load(f'images\\units\\{self.name}-barbarian.png')
-        img.convert()
+    def create_rect(self, img=None):
+        if img is None:
+            if self.team == Teams.WOLF:
+                img = pygame.image.load(f'images\\units\\{self.name}-wolf.png')
+            elif self.team == Teams.BARBARIAN:
+                img = pygame.image.load(f'images\\units\\{self.name}-barbarian.png')
+            img.convert()
         self.image = img
         # Draw rectangle around the image
         rect = img.get_rect()
@@ -68,8 +75,12 @@ class BaseUnit():
 
     def get_unit_image(self):
         if self.team == Teams.WOLF:
+            if self.stacked:
+                return pygame.image.load(f'images\\units\\{self.name}-wolf-stack.png')
             return pygame.image.load(f'images\\units\\{self.name}-wolf.png')
         elif self.team == Teams.BARBARIAN:
+            if self.stacked:
+                return pygame.image.load(f'images\\units\\{self.name}-barbarian-stack.png')
             return pygame.image.load(f'images\\units\\{self.name}-barbarian.png')
 
 class Soldier(BaseUnit):
