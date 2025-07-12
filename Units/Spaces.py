@@ -99,13 +99,13 @@ class Plain(BaseSpace):
     def __init__(self, x, y):
         self.name = 'Plain'
         super().__init__(x, y, SpaceTypes.PLAIN)
-        self.move_penalty = 100
+        self.move_penalty = 50
 
 class Road(BaseSpace):
     def __init__(self, x, y):
         self.name = 'Road'
         super().__init__(x, y, SpaceTypes.ROAD)
-        self.move_penalty = 50
+        self.move_penalty = 0
 
 class Forest(BaseSpace):
     def __init__(self, x, y):
@@ -175,6 +175,7 @@ def get_current_active_unit(previously_active_unit, active_team, x, y, board):
         new_stack = new_stack[:-1]  # Reverse the stack to have the bottom unit first
         active_space.units = new_stack
         unit_stack = new_stack
+        active_unit = new_stack[0]
     return active_unit, active_space, unit_stack
 
 def restore_movement_units(board, active_team):
