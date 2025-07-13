@@ -93,7 +93,7 @@ while running:
 
     display_screen_and_resources(screen, board, end_turn_button, fire_button, resources_screen, unit_info_screen,
                                  current_active_team, team_wolf, team_barbarian, firing_is_active, current_selected_unit_info,
-                                 buy_settler_button, settle_button, buy_soldier_button)
+                                 buy_settler_button, settle_button, buy_soldier_button, hovered_unit)
     if moving and current_active_unit:
         current_active_unit.draw(screen)
     pygame.display.update()

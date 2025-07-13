@@ -86,15 +86,15 @@ class BaseButton:
         self.screen.blit(self.text_surface, self.text_rect)
 
 
-def draw_board(screen, board):
+def draw_board(screen, board, hovered_unit):
     for space in board:
-        space.draw(screen)
+        space.draw(screen, hovered_unit=hovered_unit)
 
 def display_screen_and_resources(screen, board, end_turn_button, fire_button, resources_screen, unit_info_screen,
                                  current_active_team, team_wolf, team_barbarian, firing, current_selected_unit_info,
-                                 buy_button, settle_button, buy_soldier_button):
+                                 buy_button, settle_button, buy_soldier_button, hovered_unit):
     screen.fill(SCREEN_BACKGROUND)
-    draw_board(screen, board)
+    draw_board(screen, board, hovered_unit)
     end_turn_button.draw()
     if firing:
         fire_button.draw(new_text='MOVE [NOW FIRING]')

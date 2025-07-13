@@ -36,16 +36,19 @@ class BaseUnit():
                f"Attack Power: {self.attack_power}", f"Defense Power: {self.defense_power}, " \
                f"Movement: {self.movement}", f"Unit Stack: {unit_stack_label}"]
 
-    def draw(self, screen, hilight=False):
+    def draw(self, screen, hilight=False, hovered_unit=None):
         if hilight:
             pygame.draw.rect(screen, BLUE, self.rect, 100, border_radius=100)
         else:
             pygame.draw.rect(screen, BLUE, self.rect, 2)
         if self.stacked:
-            if self.team == Teams.WOLF:
-                self.image = pygame.image.load(f'images\\units\\{self.name}-wolf-stack.png')
+            if hovered_unit:
+                self.image = self.get_hovered_image()
             else:
-                self.image = pygame.image.load(f'images\\units\\{self.name}-barbarian-stack.png')
+                if self.team == Teams.WOLF:
+                    self.image = pygame.image.load(f'images\\units\\{self.name}-wolf-stack.png')
+                else:
+                    self.image = pygame.image.load(f'images\\units\\{self.name}-barbarian-stack.png')
         screen.blit(self.image, self.rect)
 
     def create_rect(self, img=None):
@@ -69,8 +72,12 @@ class BaseUnit():
 
     def get_hovered_image(self):
         if self.team == Teams.WOLF:
+            if self.stacked:
+                return pygame.image.load(f'images\\units\\{self.name}-wolf-hover-stack.png')
             return pygame.image.load(f'images\\units\\{self.name}-wolf-hover.png')
         elif self.team == Teams.BARBARIAN:
+            if self.stacked:
+                return pygame.image.load(f'images\\units\\{self.name}-barbarian-hover-stack.png')
             return pygame.image.load(f'images\\units\\{self.name}-barbarian-hover.png')
 
     def get_unit_image(self):

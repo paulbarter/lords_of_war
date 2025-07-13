@@ -48,7 +48,7 @@ class BaseSpace():
                 new_units.append(unit)
         self.units = new_units
 
-    def draw_units(self, screen):
+    def draw_units(self, screen, hovered_unit=None):
         for unit in self.units:
             unit.stacked = False  # Reset stacked state for all units
             unit.draw(screen)
@@ -56,9 +56,12 @@ class BaseSpace():
         if self.units:
             if len(self.units) > 1:
                 self.units[0].stacked = True
-            self.units[0].draw(screen)
+            if hovered_unit and self.units[0].id == hovered_unit.id:
+                self.units[0].draw(screen, hovered_unit=hovered_unit)
+            else:
+                self.units[0].draw(screen)
 
-    def draw(self, screen):
+    def draw(self, screen, hovered_unit=None):
         if self.type == SpaceTypes.CITY and self.owner:
             new_image = get_image_for_space(self, hover=False, owner=self.owner)
             new_image.convert()
@@ -68,7 +71,7 @@ class BaseSpace():
         pygame.draw.rect(screen, (0, 0, 0), self.rect, 2)
         screen.blit(self.image, self.rect)
         if len(self.units) > 0:
-            self.draw_units(screen)
+            self.draw_units(screen, hovered_unit=hovered_unit)
 
     def get_hover_firing_image(self, enemy, valid):
         if enemy and valid:
