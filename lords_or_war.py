@@ -22,13 +22,13 @@ space_height = 100
 board = make_random_board( 10, 7, space_width, space_height)
 
 # boards for info
-resources_screen = BaseScreen(screen, 100, 400, 600, 200)
-unit_info_screen = BaseScreen(screen, 100, 600, 400, 150)
-end_turn_button = BaseButton(screen, 'END TURN', 100, 320, 150, 50)
-fire_button = BaseButton(screen, 'FIRE', 300, 320, 250, 50)
-buy_settler_button = BaseButton(screen, 'Buy settler', 580, 320, 250, 50)
-settle_button = BaseButton(screen, 'SETTLE', 900, 320, 250, 50)
-buy_soldier_button = BaseButton(screen, 'Buy Soldier', 1200, 320, 250, 50)
+resources_screen = BaseScreen(screen, 1100, 20, 400, 200)
+unit_info_screen = BaseScreen(screen, 1100, 320, 400, 150)
+end_turn_button = BaseButton(screen, 'END TURN', 20, 720, 150, 50)
+fire_button = BaseButton(screen, 'FIRE', 250, 720, 250, 50)
+buy_settler_button = BaseButton(screen, 'Buy settler', 580, 720, 200, 50)
+settle_button = BaseButton(screen, 'SETTLE', 900, 720, 200, 50)
+buy_soldier_button = BaseButton(screen, 'Buy Soldier', 1200, 720, 200, 50)
 
 # Initialising variables
 running = True

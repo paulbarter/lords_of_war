@@ -91,6 +91,7 @@ class Soldier(BaseUnit):
         self.can_shoot = True
         self.range = 250
         self.gold_cost = 5
+        self.attack_power = 30
 
 class Jet(BaseUnit):
     def __init__(self, x, y, team):
