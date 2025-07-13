@@ -1,11 +1,7 @@
 
-from Teams import WolfTeam, BarbarianTeam
 from Units.BaseUnit import Jet, Teams, Soldier, Settler
 from Units.Spaces import River, Road, Mountain, Plain, City
 import random
-
-team_wolf = WolfTeam()
-team_barbarian = BarbarianTeam()
 
 def get_board(space_width, space_height):
     space_1_1 = Road(space_width, -50 + space_height)

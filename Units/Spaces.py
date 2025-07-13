@@ -22,6 +22,48 @@ class BaseSpace():
         self.units = []
         self.type = type
         self.rect = self.create_rect(x, y)
+        self.move_penalty = 0
+
+    def to_dict(self):
+        return {
+            'id': str(self.id),
+            'x': self.x,
+            'y': self.y,
+            'type': self.type,
+            'name': getattr(self, 'name', None),
+            'owner': self.owner.name if self.owner else None,
+            'units': [unit.to_dict() for unit in self.units],
+            'move_penalty': self.move_penalty
+        }
+
+    def get_unit_object_by_name(self, unit_name, x, y, team):
+        from Units.BaseUnit import Soldier, Settler, Jet
+        if unit_name == "Soldier":
+            return Soldier(x, y, team)
+        elif unit_name == "Settler":
+            return Settler(x, y, team)
+        elif unit_name == "Jet":
+            return Jet(x, y, team)
+
+    def from_dict(self, data, team_wolf, team_barbarian):
+        self.id = uuid.UUID(data['id'])
+        self.x = data['x']
+        self.y = data['y']
+        self.type = data['type']
+        self.name = data.get('name', None)
+        owner_name = data.get('owner', None)
+        if owner_name:
+            if owner_name == 'Wolf':
+                self.owner = team_wolf
+            else:
+                self.owner = team_barbarian
+        else:
+            self.owner = None
+        self.units = []
+        for unit in data['units']:
+            unit_object = self.get_unit_object_by_name(unit['name'], unit['position'][0], unit['position'][1], unit['team'])
+            self.units.append(unit_object)
+        self.move_penalty = data.get('move_penalty', 0)
 
     def get_info(self):
         return [f"Type: {self.name}"]
@@ -260,25 +302,6 @@ def get_image_for_space(space, hover=False, valid=True, enemy=None, firing=False
     if owner:
         return space.get_owner_image(owner)
     return space.get_regular_image()
-
-
-    # if hover:
-    #     if firing:
-    #         # valid here means in range
-    #         if enemy and valid:
-    #             return pygame.image.load('images\\city-hover-enemy-firing.png').convert()
-    #         if valid:
-    #             return pygame.image.load('images\\city-hover-firing.png').convert()
-    #         else:
-    #             return pygame.image.load('images\\city-hover-invalid.png').convert()
-    #     else:
-    #         # Moving
-    #         if not valid:
-    #             return pygame.image.load('images\\city-hover-invalid.png').convert()
-    #         if enemy:
-    #             return pygame.image.load('images\\city-hover-enemy.png').convert()
-    #     return pygame.image.load('images\\city-hover.png').convert()
-
 
 def total_terrain_move_penalty(unit, start_point, end_point, board):
     # Calculate the move penalty based on the terrain type between two points

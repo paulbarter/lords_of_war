@@ -1,8 +1,10 @@
 import pygame
+
 from Units.Spaces import City
 import uuid
 BLUE = (0, 0, 255)
 
+# duplicated class to avoid circular import issues
 class Teams():
     WOLF = 1
     BARBARIAN = 2
@@ -28,6 +30,37 @@ class BaseUnit():
         self.rect = self.create_rect()
         self.stacked = False
         self.stack_clicked = False
+
+    def to_dict(self):
+        return {
+            "id": str(self.id),
+            "name": self.name,
+            "team": self.team,
+            "health": self.health,
+            "can_shoot": self.can_shoot,
+            "range": self.range,
+            "fly": self.fly,
+            "attack_power": self.attack_power,
+            "defense_power": self.defense_power,
+            "movement": self.movement,
+            "initial_movement": self.initial_movement,
+            "position": self.position
+        }
+
+    def from_dict(self, data):
+        self.id = uuid.UUID(data["id"])
+        self.name = data["name"]
+        self.team = data["team"]
+        self.health = data["health"]
+        self.can_shoot = data["can_shoot"]
+        self.range = data["range"]
+        self.fly = data["fly"]
+        self.attack_power = data["attack_power"]
+        self.defense_power = data["defense_power"]
+        self.movement = data["movement"]
+        self.initial_movement = data["initial_movement"]
+        self.position = tuple(data["position"])
+        self.rect = self.create_rect()
 
     def get_info(self, unit_stack):
         unit_stack_label = ""

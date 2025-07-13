@@ -1,5 +1,3 @@
-from Units.BaseUnit import Teams
-
 
 def calculate_city_occupied(active_team, inactive_team, city):
     if city.owner and city.owner != active_team:

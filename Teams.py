@@ -1,8 +1,10 @@
-from Units.BaseUnit import Teams, BaseUnit, Settler
-
 GOLD_PER_CITY = 1
 RESOURCES_PER_CITY = 2
 GOLD_FOR_SETTLER = 5
+
+class Teams():
+    WOLF = 1
+    BARBARIAN = 2
 
 class BaseTeam():
     def __init__(self):
@@ -12,6 +14,29 @@ class BaseTeam():
         self.owned_cities = []
         self.total_gold = 0
         self.total_resources = 0
+
+    def to_dict(self):
+        return {
+            'name': self.name,
+            'points': self.points,
+            'turn_nr': self.turn_nr,
+            'owned_cities': [city.to_dict() for city in self.owned_cities],
+            'total_gold': self.total_gold,
+            'total_resources': self.total_resources
+        }
+
+    def from_dict(self, data):
+        from Units.Spaces import City
+        self.name = data['name']
+        self.points = data['points']
+        self.turn_nr = data['turn_nr']
+        self.owned_cities = []
+        for city in data['owned_cities']:
+            space = City(1, 2)
+            space.from_dict(city, None, None)
+            self.owned_cities.append(space)
+        self.total_gold = data['total_gold']
+        self.total_resources = data['total_resources']
 
     def calculate_resources(self):
         # TODO - add for farms etc... create city class
@@ -38,3 +63,6 @@ class BarbarianTeam(BaseTeam):
         super().__init__()
         self.name = "Barbarian"
         self.type = Teams.BARBARIAN
+
+team_wolf = WolfTeam()
+team_barbarian = BarbarianTeam()
