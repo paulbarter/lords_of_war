@@ -5,7 +5,7 @@ from Utils import handle_end_turn
 pygame.init()
 from pygame.locals import *
 
-from Board import team_wolf, team_barbarian, get_board
+from Board import team_wolf, team_barbarian, get_board, make_random_board
 from Screens import BaseScreen, BaseButton, display_screen_and_resources, handle_buttons
 from Units.Spaces import get_current_active_unit, hover_space, \
     snap_to_space, remove_movement_hilights, snap_back_to_start, check_hover_unit, restore_movement_units, \
@@ -18,7 +18,8 @@ w, h = 1550, 795
 screen = pygame.display.set_mode((w, h))
 space_width = 100
 space_height = 100
-board = get_board(space_width, space_height)
+# board = get_board(space_width, space_height)
+board = make_random_board( 10, 7, space_width, space_height)
 
 # boards for info
 resources_screen = BaseScreen(screen, 100, 400, 600, 200)
