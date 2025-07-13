@@ -160,15 +160,20 @@ def get_current_active_unit(previously_active_unit, active_team, x, y, board):
         for unit in space.units:
             # check that the mouse is hovering over the unit within the space
             if unit.rect.collidepoint(x, y) and unit.team == active_team.type:
-                if previously_active_unit and previously_active_unit.id == unit.id and len(space.units) > 1:
-                    # If the previously active unit is the same as the current unit, get bottom unit, to allow selecting different unit
-                    get_bottom_of_stack = True
+                active_unit = unit
+                if len(space.units) > 1:
                     unit_stack = space.units
-                    break
+                    if unit.stack_clicked:  # allow one click in the stack before changing the order
+                        # If the previously active unit is the same as the current unit, get bottom unit, to allow selecting different unit
+                        get_bottom_of_stack = True
+                        unit.stack_clicked = False
+                        break
+                    else:
+                        unit.stack_clicked = True
+                        break
                 else:
                     # If the unit is found, return the unit
                     active_unit = unit
-                    unit_stack = space.units
                     break
     if get_bottom_of_stack:
         # start with last element

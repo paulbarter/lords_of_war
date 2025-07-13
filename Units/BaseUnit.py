@@ -27,6 +27,7 @@ class BaseUnit():
         self.image = None
         self.rect = self.create_rect()
         self.stacked = False
+        self.stack_clicked = False
 
     def get_info(self, unit_stack):
         unit_stack_label = ""
