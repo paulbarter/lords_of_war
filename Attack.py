@@ -4,7 +4,10 @@ from sounds.Sounds import play_sound
 pygame.init()
 font = pygame.font.SysFont(None, 32)
 
-def show_popup(screen, message, font):
+def show_popup(screen, message, font=None):
+    if not font:
+        font = pygame.font.SysFont(None, 32)
+
     # Draw semi-transparent overlay
     overlay = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
     overlay.fill((0, 0, 0, 180))  # Black with alpha

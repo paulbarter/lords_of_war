@@ -14,7 +14,7 @@ def handle_buttons(event, board, screen, fire_button, buy_settler_button, end_tu
     if fire_button.rect.collidepoint(event.pos):
         firing_is_active = not firing_is_active
     if buy_settler_button.rect.collidepoint(event.pos):
-        if active_space and active_space.type == SpaceTypes.CITY:
+        if active_space and active_space.type == SpaceTypes.CITY and active_space.owner == current_active_team:
             current_active_team.buy_unit(active_space, Settler(1, 2, current_active_team.type))
     if end_turn_button.rect.collidepoint(event.pos):
         (current_active_team, moving, current_active_unit, active_space, possible_dest_space_ids, team_wolf,
@@ -24,9 +24,9 @@ def handle_buttons(event, board, screen, fire_button, buy_settler_button, end_tu
     if settle_button.rect.collidepoint(event.pos):
         if (current_active_unit and current_active_unit.name == 'Settler' and active_space and active_space.name != "City" and
                 active_space.name != "River" and active_space.name != "Mountain"):
-            current_active_unit.settle(active_space, current_active_team, board)
+            current_active_unit.settle(active_space, current_active_team, board, screen)
     if buy_soldier_button.rect.collidepoint(event.pos):
-        if active_space and active_space.type == SpaceTypes.CITY:
+        if active_space and active_space.type == SpaceTypes.CITY and active_space.owner == current_active_team:
             current_active_team.buy_unit(active_space, Soldier(1, 2, current_active_team.type))
     if save_game_button.rect.collidepoint(event.pos):
         save_game(board, current_active_team, team_wolf, team_barbarian)
