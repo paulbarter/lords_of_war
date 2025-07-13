@@ -126,15 +126,24 @@ class Settler(BaseUnit):
         self.initial_movement = 150
         self.gold_cost = 5
 
+    def check_far_enough_from_city(self, current_space, board):
+        for space in board:
+            if space.name == "City" and space.owner.type == self.team:
+                if abs(space.rect.centerx - current_space.rect.centerx) < 300 and \
+                   abs(space.rect.centery - current_space.rect.centery) < 300:
+                    return False
+        return True
+
     def settle(self, current_space, team, board):
         if current_space.name != "City" and current_space.name != "River" and current_space.name != "Mountain":
-            new_space = City(current_space.rect.centerx, current_space.rect.centery)
-            new_space.owner = team
-            new_space.units = []
-            number_on_board = 0
-            for space in board:
-                if space.id == current_space.id:
-                    break
-                number_on_board += 1
-            board[number_on_board] = new_space
-            team.owned_cities.append(new_space)
+            if self.check_far_enough_from_city(current_space, board):
+                new_space = City(current_space.rect.centerx, current_space.rect.centery)
+                new_space.owner = team
+                new_space.units = []
+                number_on_board = 0
+                for space in board:
+                    if space.id == current_space.id:
+                        break
+                    number_on_board += 1
+                board[number_on_board] = new_space
+                team.owned_cities.append(new_space)
