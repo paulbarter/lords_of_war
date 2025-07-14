@@ -12,16 +12,16 @@ BLUE = (0, 0, 255)
 
 w, h = 1550, 795
 screen = pygame.display.set_mode((w, h))
-space_width = 100
-space_height = 100
+space_width = 75
+space_height = 75
 from Board import get_board, make_random_board
 from Teams import team_wolf, team_barbarian
 # board = get_board(space_width, space_height)
-# board = make_random_board( 10, 7, space_width, space_height)
-# current_active_team = team_wolf
+board = make_random_board( 14, 9, space_width, space_height, percentage_road=0.0)
+current_active_team = team_wolf
 
 from Utils import load_game
-board, current_active_team, team_wolf, team_barbarian = load_game("saved_games\\20250714_001130_game.json")
+# board, current_active_team, team_wolf, team_barbarian = load_game("saved_games\\20250714_001130_game.json")
 
 # boards for info
 resources_screen = BaseScreen(screen, 1100, 20, 400, 200)
@@ -32,8 +32,8 @@ buy_settler_button = BaseButton(screen, 'Buy settler', 530, 720, 200, 50)
 settle_button = BaseButton(screen, 'SETTLE', 750, 720, 200, 50)
 buy_soldier_button = BaseButton(screen, 'Buy Soldier', 1000, 720, 200, 50)
 save_game_button = BaseButton(screen, 'Save Game', 1250, 720, 200, 50)
-research_road_button = BaseButton(screen, 'Research Road', 1050, 450, 80, 18)
-research_archery_button = BaseButton(screen, 'Research Archery', 1050, 500, 80, 18)
+research_road_button = BaseButton(screen, 'Research Road', 1090, 450, 80, 18)
+research_archery_button = BaseButton(screen, 'Research Archery', 1090, 500, 80, 18)
 
 # Initialising variables
 running = True

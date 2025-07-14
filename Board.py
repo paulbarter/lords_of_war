@@ -1,6 +1,6 @@
 
 from Units.BaseUnit import Jet, Teams, Soldier, Settler
-from Units.Spaces import River, Road, Mountain, Plain, City
+from Units.Spaces import River, Road, Mountain, Plain, City, Forest
 import random
 
 def get_board(space_width, space_height):
@@ -44,18 +44,30 @@ def get_board(space_width, space_height):
              space_3_1, space_3_2, space_3_3, space_3_4, space_3_5, space_3_6, space_3_7, space_3_8, space_3_9]
 
 def make_random_board(width_units, height_units, space_width, space_height, percentage_road=0.3, percentage_river=0.1,
-                      percentage_mountain=0.1):
+                      percentage_mountain=0.1, percentage_forrest=0.2):
     board = []
+    wolf_start_squares = [(0, 0), (1, 0), (0, 1), (1, 1)]
+    length = height_units
+    breadth = width_units
+    barbarian_start_squares = [(length-1, breadth-1), (length -2, breadth-1),
+                               (length-1, breadth-2), (length-2, breadth-2)]
     for height_unit in range(height_units):
         for width_unit in range(width_units):
             space_type = Plain
-            rand_value = random.random()
-            if rand_value < percentage_road:
-                space_type = Road
-            elif rand_value < percentage_road + percentage_river:
-                space_type = River
-            elif rand_value < percentage_road + percentage_river + percentage_mountain:
-                space_type = Mountain
+            if (height_unit, width_unit) in wolf_start_squares:
+                space_type = Plain
+            elif (height_unit, width_unit) in barbarian_start_squares:
+                space_type = Plain
+            else:
+                rand_value = random.random()
+                if rand_value < percentage_road:
+                    space_type = Road
+                elif rand_value < percentage_road + percentage_river:
+                    space_type = River
+                elif rand_value < percentage_road + percentage_river + percentage_mountain:
+                    space_type = Mountain
+                elif rand_value < percentage_road + percentage_river + percentage_mountain + percentage_forrest:
+                    space_type = Forest
 
             initialised_space = space_type(space_width * width_unit + 60, 50 + space_height * height_unit)
             board.append(initialised_space)
