@@ -109,16 +109,16 @@ class BaseButton:
         self.screen.blit(self.text_surface, self.text_rect)
 
 
-def draw_board(screen, board, hovered_unit):
+def draw_board(screen, board):
     for space in board:
-        space.draw(screen, hovered_unit=hovered_unit)
+        space.draw(screen)
 
 def display_screen_and_resources(screen, board, end_turn_button, fire_button, resources_screen, unit_info_screen,
                                  current_active_team, team_wolf, team_barbarian, firing, current_selected_unit_info,
                                  buy_button, settle_button, buy_soldier_button, hovered_unit, research_road_button,
-                                 research_archery_button, save_game_button, move_button):
+                                 research_archery_button, save_game_button, move_button, current_active_unit):
     screen.fill(SCREEN_BACKGROUND)
-    draw_board(screen, board, hovered_unit)
+    draw_board(screen, board)
     end_turn_button.draw()
     fire_button.draw(new_text='FIRE')
     move_button.draw(new_text='MOVE')
@@ -126,7 +126,14 @@ def display_screen_and_resources(screen, board, end_turn_button, fire_button, re
         resources_screen.display(messages=team_wolf.get_info())
     elif current_active_team.type == Teams.BARBARIAN:
         resources_screen.display(messages=team_barbarian.get_info())
+
     unit_info_screen.display(text=None, messages=current_selected_unit_info)
+    if current_active_unit:
+        display_unit = current_active_unit.clone_unit()
+        display_unit.rect.top = unit_info_screen.top + 140
+        display_unit.rect.right = unit_info_screen.left + 70
+        display_unit.draw(screen)
+
     buy_button.draw(new_text='BUY SETTLER [8]')
     settle_button.draw(new_text='SETTLE')
     buy_soldier_button.draw(new_text='BUY SOLDIER [5]')

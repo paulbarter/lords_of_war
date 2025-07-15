@@ -5,7 +5,7 @@ from pygame.locals import *
 from Screens import BaseScreen, BaseButton, display_screen_and_resources, handle_buttons
 from Units.Spaces import get_current_active_unit, \
     snap_to_space, snap_back_to_start, check_hover_unit, shoot_at_space, handle_hover, \
-    remove_hover_effects
+    remove_hover_effects, remove_units_selected, remove_units_hovered
 
 YELLOW = (255, 255, 0)
 BLUE = (0, 0, 255)
@@ -17,24 +17,25 @@ space_height = 75
 from Board import get_board, make_random_board
 from Teams import team_wolf, team_barbarian
 # board = get_board(space_width, space_height)
-# board = make_random_board( 14, 9, space_width, space_height, percentage_road=0.0)
-# current_active_team = team_wolf
+board = make_random_board( 14, 9, space_width, space_height, percentage_road=0.0)
+current_active_team = team_wolf
 
-from Utils import load_game
-board, current_active_team, team_wolf, team_barbarian = load_game("saved_games\\20250715_133918_game.json")
+# from Utils import load_game
+# board, current_active_team, team_wolf, team_barbarian = load_game("saved_games\\20250715_133918_game.json")
 
 # boards for info
 resources_screen = BaseScreen(screen, 1100, 20, 400, 200)
-unit_info_screen = BaseScreen(screen, 1100, 250, 400, 150)
+unit_info_screen = BaseScreen(screen, 1100, 250, 400, 200)
 end_turn_button = BaseButton(screen, 'END TURN', 20, 720, 150, 50)
 fire_button = BaseButton(screen, 'FIRE', 250, 720, 100, 50)
 move_button = BaseButton(screen, 'MOVE', 370, 720, 100, 50)
+move_button.pressed = True
 buy_settler_button = BaseButton(screen, 'Buy settler', 530, 720, 200, 50)
 settle_button = BaseButton(screen, 'SETTLE', 750, 720, 200, 50)
 buy_soldier_button = BaseButton(screen, 'Buy Soldier', 1000, 720, 200, 50)
 save_game_button = BaseButton(screen, 'Save Game', 1250, 720, 200, 50)
-research_road_button = BaseButton(screen, 'Research Road', 1090, 450, 80, 18)
-research_archery_button = BaseButton(screen, 'Research Archery', 1090, 500, 80, 18)
+research_road_button = BaseButton(screen, 'Research Road', 1090, 500, 120, 18)
+research_archery_button = BaseButton(screen, 'Research Archery', 1090, 550, 120, 18)
 
 # Initialising variables
 running = True
@@ -55,6 +56,8 @@ while running:
         if event.type == QUIT:
             running = False
         elif event.type == MOUSEBUTTONDOWN:
+            remove_units_selected(board)
+            remove_units_hovered(board)
             (firing_is_active, current_active_team, moving, current_active_unit, active_space, possible_dest_space_ids, team_wolf,
             team_barbarian) = (
                 handle_buttons(event, board, screen, fire_button, buy_settler_button, end_turn_button, firing_is_active,
@@ -93,11 +96,13 @@ while running:
             if moving:
                 current_hovered_space, possible_dest_space_ids = handle_hover(board, screen, current_active_unit, active_space,
                                                               current_active_team, event, firing_is_active)
+            remove_units_hovered(board)
             hovered_unit = check_hover_unit(current_active_team, screen, board, event.pos)
+
     display_screen_and_resources(screen, board, end_turn_button, fire_button, resources_screen, unit_info_screen,
                                  current_active_team, team_wolf, team_barbarian, firing_is_active, current_selected_unit_info,
                                  buy_settler_button, settle_button, buy_soldier_button, hovered_unit, research_road_button,
-                                 research_archery_button, save_game_button, move_button)
+                                 research_archery_button, save_game_button, move_button, current_active_unit)
     if moving and current_active_unit:
         current_active_unit.draw(screen)
     pygame.display.update()

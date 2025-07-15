@@ -32,6 +32,7 @@ class BaseUnit():
         self.stacked = False
         self.stack_clicked = False
         self.is_selected = False
+        self.is_hovered = False
         self.is_valid_target = False
         self.is_invalid_target = False
 
@@ -66,6 +67,17 @@ class BaseUnit():
         self.position = tuple(data["position"])
         self.rect = self.create_rect()
 
+    def clone_unit(self):
+        if self.name == 'Soldier':
+            new_unit = Soldier(self.position[0], self.position[1], self.team)
+        elif self.name == 'Settler':
+            new_unit = Settler(self.position[0], self.position[1], self.team)
+        elif self.name == 'Archer':
+            new_unit = Archer(self.position[0], self.position[1], self.team)
+        new_unit.selected = False
+        new_unit.stacked = False
+        return new_unit
+
     def get_info(self, unit_stack):
         unit_stack_label = ""
         if unit_stack:
@@ -76,6 +88,12 @@ class BaseUnit():
 
     def draw_hovered_effect(self, screen):
         highlight_color = (255, 255, 0, 128)  # RGBA: Yellow with 50% opacity
+        highlight_surface = pygame.Surface(self.rect.size, pygame.SRCALPHA)
+        highlight_surface.fill(highlight_color)
+        screen.blit(highlight_surface, self.rect)
+
+    def draw_selected_effect(self, screen):
+        highlight_color = (255, 0, 0, 100)  # RGBA: Yellow with 50% opacity
         highlight_surface = pygame.Surface(self.rect.size, pygame.SRCALPHA)
         highlight_surface.fill(highlight_color)
         screen.blit(highlight_surface, self.rect)
@@ -114,6 +132,10 @@ class BaseUnit():
             self.draw_target_effect(screen, valid_target=True)
         elif self.is_invalid_target:
             self.draw_target_effect(screen, valid_target=False)
+        if self.is_selected:
+            self.draw_selected_effect(screen)
+        elif self.is_hovered:
+            self.draw_hovered_effect(screen)
         self.draw_team_effect(screen)
 
     def create_rect(self, img=None):

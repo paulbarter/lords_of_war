@@ -99,13 +99,9 @@ class BaseSpace():
             unit.stacked = False  # Reset stacked state for all units
             unit.draw(screen)
         # only draw the first unit in the stack because that is the only unit available for selection
-        if self.units:
-            if len(self.units) > 1:
-                self.units[0].stacked = True
-            if hovered_unit and self.units[0].id == hovered_unit.id:
-                self.units[0].draw(screen, hovered_unit=hovered_unit)
-            else:
-                self.units[0].draw(screen)
+        if self.units and len(self.units) > 1:
+            self.units[0].stacked = True
+            self.units[0].draw(screen)
 
     def draw_target_effect(self, screen, valid_target=False, in_range=False):
         if valid_target:
@@ -278,8 +274,20 @@ def get_current_active_unit(screen, active_team, x, y, board):
         active_space.units = new_stack
         unit_stack = new_stack
         active_unit = new_stack[0]
-        active_unit.draw_stacked_effect(screen)
+        active_unit.draw_stacked_effect(screen) # dont draw here just set property to stacked!
+    if active_unit:
+        active_unit.is_selected = True
     return active_unit, active_space, unit_stack
+
+def remove_units_selected(board):
+    for space in board:
+        for unit in space.units:
+            unit.is_selected = False
+
+def remove_units_hovered(board):
+    for space in board:
+        for unit in space.units:
+            unit.is_hovered = False
 
 def restore_movement_units(board, active_team):
     for space in board:
@@ -354,6 +362,7 @@ def remove_hover_effects(board):
         for unit in space.units:
             unit.is_valid_target = False
             unit.is_invalid_target = False
+            unit.selected = False
 
 def handle_hover(board, screen, current_active_unit, active_space, current_active_team, event, firing):
     remove_hover_effects(board)
@@ -364,7 +373,6 @@ def handle_hover(board, screen, current_active_unit, active_space, current_activ
         current_hovered_space, possible_dest_space_ids = hover_space(board, screen, current_active_unit,
                                                                          active_space,
                                                                          event.pos[0], event.pos[1], firing=firing)
-        check_hover_unit(current_active_team, screen, board, event.pos, firing=firing)
     return current_hovered_space, possible_dest_space_ids
 
 def check_hover_unit(active_team, screen, board, mouse_position, firing=False):
@@ -373,11 +381,8 @@ def check_hover_unit(active_team, screen, board, mouse_position, firing=False):
             if unit.rect.collidepoint(mouse_position) and unit.team == active_team.type:
                 if firing and not unit.can_shoot:
                     continue
-                if not unit.is_selected:
-                    unit.draw_hovered_effect(screen)
-                    unit.is_selected = True
-                if unit.stacked:
-                    unit.draw_stacked_effect(screen)
+                if not unit.is_hovered:
+                    unit.is_hovered = True
                 return unit
 
 def handle_move(distance, unit, centre_active_space, centre_current_space, space, screen, board):
