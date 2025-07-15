@@ -191,7 +191,7 @@ def calculate_city_occupied(active_team, inactive_team, city):
         active_team.owned_cities.append(city)
     city.owner = active_team
 
-def get_current_active_unit(previously_active_unit, active_team, x, y, board):
+def get_current_active_unit(screen, active_team, x, y, board):
     active_unit = None
     active_space = None
     unit_stack = []
@@ -204,6 +204,8 @@ def get_current_active_unit(previously_active_unit, active_team, x, y, board):
             if unit.rect.collidepoint(x, y) and unit.team == active_team.type:
                 active_unit = unit
                 if len(space.units) > 1:
+                    for unit in space.units:
+                        unit.stacked = True
                     unit_stack = space.units
                     if unit.stack_clicked:  # allow one click in the stack before changing the order
                         # If the previously active unit is the same as the current unit, get bottom unit, to allow selecting different unit
@@ -216,6 +218,7 @@ def get_current_active_unit(previously_active_unit, active_team, x, y, board):
                 else:
                     # If the unit is found, return the unit
                     active_unit = unit
+                    unit.stacked = False
                     break
     if get_bottom_of_stack:
         # start with last element
@@ -229,6 +232,7 @@ def get_current_active_unit(previously_active_unit, active_team, x, y, board):
         active_space.units = new_stack
         unit_stack = new_stack
         active_unit = new_stack[0]
+        active_unit.draw_stacked_effect(screen)
     return active_unit, active_space, unit_stack
 
 def restore_movement_units(board, active_team):
@@ -326,22 +330,8 @@ def handle_hover(board, screen, current_active_unit, active_space, current_activ
             current_hovered_space, possible_dest_space_ids = \
                 hover_space(board, screen, current_active_unit, active_space,
                             event.pos[0], event.pos[1], firing=firing)
-    hovered_unit = check_hover_unit(current_active_team, screen, board, event.pos, firing=True)
+        check_hover_unit(current_active_team, screen, board, event.pos, firing=True)
     return current_hovered_space, possible_dest_space_ids
-
-def remove_all_unit_hilights(board, screen, exclude=None):
-    for space in board:
-        for unit in space.units:
-            if exclude and unit.id == exclude.id:
-                continue
-            if unit.image is not None:
-                original_unit_position = unit.rect.center
-                original_unit_image = unit.get_unit_image()
-                original_unit_image.convert()
-                unit.image = original_unit_image
-                unit.rect = original_unit_image.get_rect()
-                unit.rect.center = original_unit_position
-                screen.blit(original_unit_image, unit.rect)
 
 def check_hover_unit(active_team, screen, board, mouse_position, firing=False):
     for space in board:
@@ -349,14 +339,11 @@ def check_hover_unit(active_team, screen, board, mouse_position, firing=False):
             if unit.rect.collidepoint(mouse_position) and unit.team == active_team.type:
                 if firing and not unit.can_shoot:
                     continue
-                original_unit_position = unit.position
-                hovered_unit_image = unit.get_hovered_image()
-                hovered_unit_image.convert()
-                unit.image = hovered_unit_image
-                unit.rect = hovered_unit_image.get_rect()
-                unit.rect.center = original_unit_position
-                screen.blit(hovered_unit_image, unit.rect)
-                remove_all_unit_hilights(board, screen, exclude=unit)
+                if not unit.is_selected:
+                    unit.draw_hovered_effect(screen)
+                    unit.is_selected = True
+                if unit.stacked:
+                    unit.draw_stacked_effect(screen)
                 return unit
 
 def handle_move(distance, unit, centre_active_space, centre_current_space, space, screen, board):

@@ -31,6 +31,7 @@ class BaseUnit():
         self.rect = self.create_rect()
         self.stacked = False
         self.stack_clicked = False
+        self.is_selected = False
 
     def to_dict(self):
         return {
@@ -71,20 +72,23 @@ class BaseUnit():
                f"Attack Power: {self.attack_power}", f"Defense Power: {self.defense_power}, " \
                f"Movement: {self.movement}", f"Unit Stack: {unit_stack_label}"]
 
-    def draw(self, screen, hilight=False, hovered_unit=None):
-        if hilight:
-            pygame.draw.rect(screen, BLUE, self.rect, 100, border_radius=100)
-        else:
-            pygame.draw.rect(screen, BLUE, self.rect, 2)
-        if self.stacked:
-            if hovered_unit:
-                self.image = self.get_hovered_image()
-            else:
-                if self.team == Teams.WOLF:
-                    self.image = pygame.image.load(f'images\\units\\{self.name}-wolf-stack.png')
-                else:
-                    self.image = pygame.image.load(f'images\\units\\{self.name}-barbarian-stack.png')
+    def draw_hovered_effect(self, screen):
+        highlight_color = (255, 255, 0, 128)  # RGBA: Yellow with 50% opacity
+        highlight_surface = pygame.Surface(self.rect.size, pygame.SRCALPHA)
+        highlight_surface.fill(highlight_color)
+        screen.blit(highlight_surface, self.rect)
+
+    def draw_stacked_effect(self, screen):
+        overlay_image = pygame.image.load("images\\units\\stack.png").convert_alpha()  # Replace with your overlay image
+        overlay_rect = overlay_image.get_rect(topleft=self.rect.topleft)
+        screen.blit(overlay_image, overlay_rect)
+
+    def draw(self, screen, hovered_unit=None):
         screen.blit(self.image, self.rect)
+        if hovered_unit:
+            self.draw_hovered_effect(screen)
+        if self.stacked:
+            self.draw_stacked_effect(screen)
 
     def create_rect(self, img=None):
         if img is None:

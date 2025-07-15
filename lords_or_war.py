@@ -4,8 +4,7 @@ from pygame.locals import *
 
 from Screens import BaseScreen, BaseButton, display_screen_and_resources, handle_buttons
 from Units.Spaces import get_current_active_unit, \
-    snap_to_space, remove_movement_hilights, snap_back_to_start, check_hover_unit, \
-    remove_all_unit_hilights, shoot_at_space, handle_hover
+    snap_to_space, remove_movement_hilights, snap_back_to_start, check_hover_unit, shoot_at_space, handle_hover
 
 YELLOW = (255, 255, 0)
 BLUE = (0, 0, 255)
@@ -60,13 +59,12 @@ while running:
                                active_space, current_active_team, moving, current_active_unit, possible_dest_space_ids,
                                team_wolf, team_barbarian, settle_button, buy_soldier_button, save_game_button, research_road_button,
                                research_archery_button))
-            current_active_unit, active_space, unit_stack = get_current_active_unit(previously_active_unit, current_active_team,
+            current_active_unit, active_space, unit_stack = get_current_active_unit(screen, current_active_team,
                                                                                     event.pos[0], event.pos[1], board)
             if current_active_unit:
                 moving = True
                 current_selected_unit_info = current_active_unit.get_info(unit_stack)
             else:
-                remove_all_unit_hilights(board, screen)
                 if active_space:
                     current_selected_unit_info = active_space.get_info()
 
@@ -95,8 +93,7 @@ while running:
                                                               current_active_team, event, firing_is_active)
             else:
                 hovered_unit = check_hover_unit(current_active_team, screen, board, event.pos)
-            remove_movement_hilights(board, screen, exclude=current_hovered_space)
-
+            hovered_unit = check_hover_unit(current_active_team, screen, board, event.pos)
     display_screen_and_resources(screen, board, end_turn_button, fire_button, resources_screen, unit_info_screen,
                                  current_active_team, team_wolf, team_barbarian, firing_is_active, current_selected_unit_info,
                                  buy_settler_button, settle_button, buy_soldier_button, hovered_unit, research_road_button,
