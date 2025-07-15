@@ -8,11 +8,24 @@ pygame.init()
 default_font = pygame.font.SysFont(None, 32)
 SCREEN_BACKGROUND = (60, 60, 60)
 
+def toggle_button(button1, button2):
+    if button1.pressed:
+        button1.pressed = False
+        button2.pressed = True
+    else:
+        button2.pressed = True
+        button1.pressed = False
+
 def handle_buttons(event, board, screen, fire_button, buy_settler_button, end_turn_button, firing_is_active, active_space,
                    current_active_team, moving, current_active_unit, possible_dest_space_ids, team_wolf, team_barbarian,
-                   settle_button, buy_soldier_button, save_game_button, research_road_button, research_archery_button):
+                   settle_button, buy_soldier_button, save_game_button, research_road_button, research_archery_button,
+                   move_button):
     if fire_button.rect.collidepoint(event.pos):
         firing_is_active = not firing_is_active
+        toggle_button(fire_button, move_button)
+    if move_button.rect.collidepoint(event.pos):
+        firing_is_active = False
+        toggle_button(move_button, fire_button)
     if buy_settler_button.rect.collidepoint(event.pos):
         if active_space and active_space.type == SpaceTypes.CITY and active_space.owner == current_active_team:
             current_active_team.buy_unit(active_space, Settler(1, 2, current_active_team.type))
@@ -80,13 +93,17 @@ class BaseButton:
         self.rect = pygame.Rect(left, top, width, height)
         self.text_surface = default_font.render(text, True, (255, 255, 255))
         self.text_rect = self.text_surface.get_rect(center=self.rect.center)
+        self.pressed = False
 
-    def draw(self, color=(150, 150, 150), new_text="", font_type=None):
+    def draw(self, new_text="", font_type=None):
         font = default_font
         if font_type == 'small':
             font = pygame.font.SysFont(None, 24)
         if new_text:
-            self.text_surface = font.render(new_text, True, (255, 255, 255))
+            if self.pressed:
+                self.text_surface = font.render(new_text, True, (100, 100, 100))
+            else:
+                self.text_surface = font.render(new_text, True, (255, 255, 255))
             self.text_rect = self.text_surface.get_rect(center=self.rect.center)
         pygame.draw.rect(self.screen, (150, 150, 150), self.rect)
         self.screen.blit(self.text_surface, self.text_rect)
@@ -99,23 +116,21 @@ def draw_board(screen, board, hovered_unit):
 def display_screen_and_resources(screen, board, end_turn_button, fire_button, resources_screen, unit_info_screen,
                                  current_active_team, team_wolf, team_barbarian, firing, current_selected_unit_info,
                                  buy_button, settle_button, buy_soldier_button, hovered_unit, research_road_button,
-                                 research_archery_button, save_game_button):
+                                 research_archery_button, save_game_button, move_button):
     screen.fill(SCREEN_BACKGROUND)
     draw_board(screen, board, hovered_unit)
     end_turn_button.draw()
-    if firing:
-        fire_button.draw(new_text='MOVE [NOW FIRING]')
-    else:
-        fire_button.draw(new_text='FIRE [NOW MOVING]')
+    fire_button.draw(new_text='FIRE')
+    move_button.draw(new_text='MOVE')
     if current_active_team.type == Teams.WOLF:
         resources_screen.display(messages=team_wolf.get_info())
     elif current_active_team.type == Teams.BARBARIAN:
         resources_screen.display(messages=team_barbarian.get_info())
     unit_info_screen.display(text=None, messages=current_selected_unit_info)
-    buy_button.draw(new_text='BUY SETTLER')
+    buy_button.draw(new_text='BUY SETTLER [8]')
     settle_button.draw(new_text='SETTLE')
-    buy_soldier_button.draw(new_text='BUY SOLDIER')
+    buy_soldier_button.draw(new_text='BUY SOLDIER [5]')
     save_game_button.draw(new_text='SAVE GAME')
-    research_road_button.draw(new_text='Road', font_type='small')
-    research_archery_button.draw(new_text='Archery', font_type='small')
+    research_road_button.draw(new_text='Road [5/12]', font_type='small')
+    research_archery_button.draw(new_text='Archery [7/7]', font_type='small')
 

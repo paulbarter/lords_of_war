@@ -1,6 +1,6 @@
 from Attack import show_popup
 from Teams import BaseTeam, WolfTeam, BarbarianTeam
-from Units.Spaces import restore_movement_units, remove_movement_hilights, Plain, City, Mountain, Forest, Road, River
+from Units.Spaces import restore_movement_units, Plain, City, Mountain, Forest, Road, River
 import random
 import pygame
 import json
@@ -65,7 +65,6 @@ def handle_end_turn(board, screen, current_active_team, moving, current_active_u
     current_active_unit = None
     active_space = None
     possible_dest_space_ids = []
-    remove_movement_hilights(board, screen)
     if current_active_team.name == 'Wolf':
         team_wolf.turn_nr += 1
     else:

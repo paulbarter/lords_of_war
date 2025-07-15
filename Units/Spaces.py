@@ -41,13 +41,13 @@ class BaseSpace():
         }
 
     def get_unit_object_by_name(self, unit_name, x, y, team):
-        from Units.BaseUnit import Soldier, Settler, Jet
+        from Units.BaseUnit import Soldier, Settler, Archer
         if unit_name == "Soldier":
             return Soldier(x, y, team)
         elif unit_name == "Settler":
             return Settler(x, y, team)
-        elif unit_name == "Jet":
-            return Jet(x, y, team)
+        elif unit_name == "Archer":
+            return Archer(x, y, team)
 
     def from_dict(self, data, team_wolf, team_barbarian):
         self.id = uuid.UUID(data['id'])
@@ -326,17 +326,6 @@ def snap_to_space(active_team, inactive_team, board, possible_dest_spaces, unit,
 def snap_back_to_start(current_active_unit, active_space):
     current_active_unit.rect.center = active_space.rect.center
 
-def remove_movement_hilights(board, screen, exclude=None):
-    for space in board:
-        if exclude and space.id == exclude.id:
-            continue
-        space.is_valid_hover = False
-        space.is_invalid_hover = False
-        # new_image = get_image_for_space(space)
-        # space.image = new_image
-        space.draw(screen)
-        space.draw_units(screen)
-
 def is_space_adjacent(space1, space2):
     # bug here when go from corner to corner to corner
     centre_space1 = (space1.rect.centerx, space1.rect.centery)
@@ -372,14 +361,10 @@ def handle_hover(board, screen, current_active_unit, active_space, current_activ
     if current_active_unit and active_space:
         if not firing:
             current_active_unit.rect.move_ip(event.rel)
-            current_hovered_space, possible_dest_space_ids = hover_space(board, screen, current_active_unit,
+        current_hovered_space, possible_dest_space_ids = hover_space(board, screen, current_active_unit,
                                                                          active_space,
-                                                                         event.pos[0], event.pos[1], firing=False)
-        else:
-            current_hovered_space, possible_dest_space_ids = \
-                hover_space(board, screen, current_active_unit, active_space,
-                            event.pos[0], event.pos[1], firing=firing)
-        check_hover_unit(current_active_team, screen, board, event.pos, firing=True)
+                                                                         event.pos[0], event.pos[1], firing=firing)
+        check_hover_unit(current_active_team, screen, board, event.pos, firing=firing)
     return current_hovered_space, possible_dest_space_ids
 
 def check_hover_unit(active_team, screen, board, mouse_position, firing=False):
@@ -424,6 +409,9 @@ def handle_shoot(distance, unit, centre_active_space, centre_current_space, spac
             space.is_invalid_target_in_range = True
     else:
         space.is_invalid_target = True
+        if space.units and space.units[0].team != unit.team:
+            enemy = space.units[0]
+            enemy.is_invalid_target = True
     return list(possible_dest_shooting_ids)
 
 def hover_space(board, screen, unit, active_space, x, y, firing=False):
