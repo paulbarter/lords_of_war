@@ -183,7 +183,7 @@ class Settler(BaseUnit):
         self.attack_power = 0
         self.defense_power = 0
         self.movement = 200
-        self.initial_movement = 150
+        self.initial_movement = 200
         self.gold_cost = 8
 
     def check_far_enough_from_city(self, current_space, board):

@@ -50,7 +50,6 @@ hovered_unit = None
 current_selected_unit_info = []
 unit_stack = []
 
-
 while running:
     for event in pygame.event.get():
         if event.type == QUIT:
