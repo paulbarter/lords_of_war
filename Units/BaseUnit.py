@@ -168,7 +168,7 @@ class Archer(BaseUnit):
         super().__init__(x, y, team)
         self.health = 30
         self.can_shoot = True
-        self.range = 400
+        self.range = 200
         self.attack_power = 50
         self.defense_power = 5
         self.movement = 310
