@@ -23,6 +23,8 @@ class BaseSpace():
         self.type = type
         self.rect = self.create_rect(x, y)
         self.move_penalty = 0
+        self.is_invalid_hover = False
+        self.is_valid_hover = False
 
     def to_dict(self):
         return {
@@ -104,16 +106,45 @@ class BaseSpace():
                 self.units[0].draw(screen)
 
     def draw(self, screen, hovered_unit=None):
-        if self.type == SpaceTypes.CITY and self.owner:
-            new_image = get_image_for_space(self, hover=False, owner=self.owner)
-            new_image.convert()
-            self.image = new_image
-            self.rect = new_image.get_rect()
-            self.rect.center = self.x, self.y
-        pygame.draw.rect(screen, (0, 0, 0), self.rect, 2)
         screen.blit(self.image, self.rect)
+        if self.type == SpaceTypes.CITY and self.owner:
+            self.draw_team_effect(screen)
+        # pygame.draw.rect(screen, (0, 0, 0), self.rect, 2)
+        # if hover:
+        #     self.draw_hovered_effect(screen)
+        if self.is_valid_hover:
+            self.draw_valid_hovered_effect(screen)
+        elif self.is_invalid_hover:
+            self.draw_invalid_hovered_effect(screen)
         if len(self.units) > 0:
             self.draw_units(screen, hovered_unit=hovered_unit)
+
+    #####
+
+    def draw_valid_hovered_effect(self, screen):
+        hover_image = pygame.image.load(f'images\\valid-hover.png')
+        hover_image.convert_alpha()
+        overlay_rect = hover_image.get_rect(topleft=self.rect.topleft)
+        screen.blit(hover_image, overlay_rect)
+
+    def draw_invalid_hovered_effect(self, screen):
+        hover_image = pygame.image.load(f'images\\invalid-hover.png')
+        hover_image.convert_alpha()
+        overlay_rect = hover_image.get_rect(topleft=self.rect.topleft)
+        screen.blit(hover_image, overlay_rect)
+
+    def draw_team_effect(self, screen):
+        team_img = None
+        if self.owner.name == "Wolf":
+            team_img = pygame.image.load(f'images\\units\\wolf.png')
+        elif self.owner.name == "Barbarian":
+            team_img = pygame.image.load(f'images\\units\\barbarian.png')
+        team_img.convert_alpha()
+        overlay_rect = team_img.get_rect(topright=self.rect.topright)
+        screen.blit(team_img, overlay_rect)
+
+    #####
+
 
     def get_hover_firing_image(self, enemy, valid):
         if enemy and valid:
@@ -284,8 +315,10 @@ def remove_movement_hilights(board, screen, exclude=None):
     for space in board:
         if exclude and space.id == exclude.id:
             continue
-        new_image = get_image_for_space(space)
-        space.image = new_image
+        space.is_valid_hover = False
+        space.is_invalid_hover = False
+        # new_image = get_image_for_space(space)
+        # space.image = new_image
         space.draw(screen)
         space.draw_units(screen)
 
@@ -318,7 +351,13 @@ def total_terrain_move_penalty(unit, start_point, end_point, board):
                 total_move_penalty += space.move_penalty
     return total_move_penalty
 
+def remove_hover_all_spaces(board):
+    for space in board:
+        space.is_valid_hover = False
+        space.is_invalid_hover = False
+
 def handle_hover(board, screen, current_active_unit, active_space, current_active_team, event, firing):
+    remove_hover_all_spaces(board)
     current_hovered_space = possible_dest_space_ids = None
     if current_active_unit and active_space:
         if not firing:
@@ -349,17 +388,17 @@ def check_hover_unit(active_team, screen, board, mouse_position, firing=False):
 def handle_move(distance, unit, centre_active_space, centre_current_space, space, screen, board):
     possible_dest_space_ids = set()
     terrain_penalty = total_terrain_move_penalty(unit, centre_active_space, centre_current_space, board)
+    space.draw(screen)
     if distance <= (unit.movement - terrain_penalty):
         enemy = None
         if space.units and space.units[0].team != unit.team:
             enemy = space.units[0]
-        new_image = get_image_for_space(space, hover=True, enemy=enemy)
+        # space.draw_valid_hovered_effect(screen)
+        space.is_valid_hover = True
         possible_dest_space_ids.add(space.id)
     else:
-        new_image = get_image_for_space(space, hover=True, valid=False)
-    if new_image:
-        space.image = new_image
-        space.draw(screen)
+        # space.draw_invalid_hovered_effect(screen)
+        space.is_invalid_hover = True
     return list(possible_dest_space_ids)
 
 def handle_shoot(distance, unit, centre_active_space, centre_current_space, space, screen, board):

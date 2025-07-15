@@ -116,26 +116,6 @@ class BaseUnit():
         elif self.team == Teams.BARBARIAN:
             return pygame.image.load(f'images\\units\\{self.name}-barbarian-hover-firing.png')
 
-    def get_hovered_image(self):
-        if self.team == Teams.WOLF:
-            if self.stacked:
-                return pygame.image.load(f'images\\units\\{self.name}-wolf-hover-stack.png')
-            return pygame.image.load(f'images\\units\\{self.name}-wolf-hover.png')
-        elif self.team == Teams.BARBARIAN:
-            if self.stacked:
-                return pygame.image.load(f'images\\units\\{self.name}-barbarian-hover-stack.png')
-            return pygame.image.load(f'images\\units\\{self.name}-barbarian-hover.png')
-
-    def get_unit_image(self):
-        if self.team == Teams.WOLF:
-            if self.stacked:
-                return pygame.image.load(f'images\\units\\{self.name}-wolf-stack.png')
-            return pygame.image.load(f'images\\units\\{self.name}-wolf.png')
-        elif self.team == Teams.BARBARIAN:
-            if self.stacked:
-                return pygame.image.load(f'images\\units\\{self.name}-barbarian-stack.png')
-            return pygame.image.load(f'images\\units\\{self.name}-barbarian.png')
-
 class Soldier(BaseUnit):
     def __init__(self, x, y, team):
         self.name = "Soldier"
