@@ -32,6 +32,8 @@ class BaseUnit():
         self.stacked = False
         self.stack_clicked = False
         self.is_selected = False
+        self.is_valid_target = False
+        self.is_invalid_target = False
 
     def to_dict(self):
         return {
@@ -93,12 +95,25 @@ class BaseUnit():
         overlay_rect = team_img.get_rect(topleft=self.rect.topleft)
         screen.blit(team_img, overlay_rect)
 
+    def draw_target_effect(self, screen, valid_target=False):
+        if valid_target:
+            target_image = pygame.image.load(f'images\\target.png')
+        else:
+            target_image = pygame.image.load(f'images\\target-invalid.png')
+        target_image.convert_alpha()
+        overlay_rect = target_image.get_rect(centerx=self.rect.centerx, centery=self.rect.centery)
+        screen.blit(target_image, overlay_rect)
+
     def draw(self, screen, hovered_unit=None):
         screen.blit(self.image, self.rect)
         if hovered_unit:
             self.draw_hovered_effect(screen)
         if self.stacked:
             self.draw_stacked_effect(screen)
+        if self.is_valid_target:
+            self.draw_target_effect(screen, valid_target=True)
+        elif self.is_invalid_target:
+            self.draw_target_effect(screen, valid_target=False)
         self.draw_team_effect(screen)
 
     def create_rect(self, img=None):
