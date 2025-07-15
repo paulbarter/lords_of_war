@@ -121,24 +121,22 @@ class Soldier(BaseUnit):
         self.name = "Soldier"
         super().__init__(x, y, team)
         self.health = 100
-        self.can_shoot = True
-        self.range = 250
+        self.can_shoot = False
         self.gold_cost = 5
         self.attack_power = 30
 
-class Jet(BaseUnit):
+class Archer(BaseUnit):
     def __init__(self, x, y, team):
-        self.name = "Jet"
+        self.name = "Archer"
         super().__init__(x, y, team)
-        self.health = 100
-        self.fly = True
+        self.health = 30
         self.can_shoot = True
         self.range = 400
         self.attack_power = 50
         self.defense_power = 5
-        self.movement = 710
-        self.initial_movement = 710
-        self.gold_cost = 20
+        self.movement = 310
+        self.initial_movement = 310
+        self.gold_cost = 7
 
 class Settler(BaseUnit):
     def __init__(self, x, y, team):
