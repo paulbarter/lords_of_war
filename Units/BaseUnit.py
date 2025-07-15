@@ -83,23 +83,30 @@ class BaseUnit():
         overlay_rect = overlay_image.get_rect(topleft=self.rect.topleft)
         screen.blit(overlay_image, overlay_rect)
 
+    def draw_team_effect(self, screen):
+        team_img = None
+        if self.team == Teams.WOLF:
+            team_img = pygame.image.load(f'images\\units\\wolf.png')
+        elif self.team == Teams.BARBARIAN:
+            team_img = pygame.image.load(f'images\\units\\barbarian.png')
+        team_img.convert_alpha()
+        overlay_rect = team_img.get_rect(topleft=self.rect.topleft)
+        screen.blit(team_img, overlay_rect)
+
     def draw(self, screen, hovered_unit=None):
         screen.blit(self.image, self.rect)
         if hovered_unit:
             self.draw_hovered_effect(screen)
         if self.stacked:
             self.draw_stacked_effect(screen)
+        self.draw_team_effect(screen)
 
     def create_rect(self, img=None):
         if img is None:
-            if self.team == Teams.WOLF:
-                img = pygame.image.load(f'images\\units\\{self.name}-wolf.png')
-            elif self.team == Teams.BARBARIAN:
-                img = pygame.image.load(f'images\\units\\{self.name}-barbarian.png')
-            img.convert()
-        self.image = img
+            base_img = pygame.image.load(f'images\\units\\{self.name}.png').convert()
+        self.image = base_img
         # Draw rectangle around the image
-        rect = img.get_rect()
+        rect = base_img.get_rect()
         rect.center = self.position
         return rect
 
