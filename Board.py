@@ -73,12 +73,10 @@ def make_random_board(width_units, height_units, space_width, space_height, perc
             board.append(initialised_space)
             if height_unit == 0 and width_unit == 0:
                 initialised_space.add_unit(Soldier(1, 2, Teams.WOLF))
-                initialised_space.add_unit(Archer(1, 2, Teams.WOLF))
                 initialised_space.add_unit(Settler(1, 2, Teams.WOLF))
 
             if height_unit == height_units -1 and width_unit == width_units -1:
                 initialised_space.add_unit(Soldier(1, 2, Teams.BARBARIAN))
-                initialised_space.add_unit(Archer(1, 2, Teams.BARBARIAN))
                 initialised_space.add_unit(Settler(1, 2, Teams.BARBARIAN))
     return board
 

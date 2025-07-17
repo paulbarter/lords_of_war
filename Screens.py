@@ -89,16 +89,18 @@ def research_archery(screen, current_active_team, active_space):
     if current_active_team.total_resources < 7:
         show_popup(screen, "Not enough resources, 7 needed", default_font)
     else:
-        if not current_active_team.researched_roads:
-            current_active_team.researched_roads = True
+        if not current_active_team.researched_archery:
+            current_active_team.researched_archery = True
             play_sound('sounds\\research.wav')
             show_popup(screen,
                        "Your noble race has researched the noble art of archery, nobly. You may now nobly buy archers.",
                        default_font)
             current_active_team.total_resources -= 7
         elif active_space and active_space.type == SpaceTypes.CITY and active_space.owner == current_active_team:
-            current_active_team.buy_unit(active_space, Archer(1, 2, current_active_team.type))
-            current_active_team.total_resources -= 7
+            if current_active_team.total_gold < 7:
+                show_popup(screen, "Not enough gold, 7 needed", default_font)
+            else:
+                current_active_team.buy_unit(active_space, Archer(1, 2, current_active_team.type))
         else:
             show_popup(screen, "Click on a city first", default_font)
 
@@ -194,6 +196,6 @@ def display_screen_and_resources(screen, board, end_turn_button, fire_button, re
     settle_button.draw(new_text='SETTLE')
     buy_soldier_button.draw(new_text='BUY SOLDIER [5]')
     save_game_button.draw(new_text='SAVE GAME')
-    research_road_button.draw(new_text='Road [5/12]', font_type='small')
-    research_archery_button.draw(new_text='Archery [7/7]', font_type='small')
+    research_road_button.draw(new_text='Road [5]', font_type='small')
+    research_archery_button.draw(new_text='Archery [7]', font_type='small')
 
