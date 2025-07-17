@@ -161,6 +161,8 @@ class Soldier(BaseUnit):
         self.can_shoot = False
         self.gold_cost = 5
         self.attack_power = 30
+        self.movement = 350
+        self.initial_movement = 350
 
 class Archer(BaseUnit):
     def __init__(self, x, y, team):
@@ -171,8 +173,8 @@ class Archer(BaseUnit):
         self.range = 200
         self.attack_power = 50
         self.defense_power = 5
-        self.movement = 310
-        self.initial_movement = 310
+        self.movement = 550
+        self.initial_movement = 550
         self.gold_cost = 7
 
 class Settler(BaseUnit):
@@ -182,8 +184,8 @@ class Settler(BaseUnit):
         self.health = 5
         self.attack_power = 0
         self.defense_power = 0
-        self.movement = 250
-        self.initial_movement = 250
+        self.movement = 350
+        self.initial_movement = 350
         self.gold_cost = 8
 
     def check_far_enough_from_city(self, current_space, board):

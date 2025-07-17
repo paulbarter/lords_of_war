@@ -14,7 +14,7 @@ def show_popup(screen, message, font=None):
     screen.blit(overlay, (0, 0))
 
     # Draw popup rectangle
-    popup_rect = pygame.Rect(0, 0, 600, 200)
+    popup_rect = pygame.Rect(0, 0, 1600, 200)
     popup_rect.center = screen.get_rect().center
     pygame.draw.rect(screen, (255, 255, 255), popup_rect)
     pygame.draw.rect(screen, (0, 0, 0), popup_rect, 3)

@@ -130,8 +130,6 @@ class BaseSpace():
         if len(self.units) > 0:
             self.draw_units(screen, hovered_unit=hovered_unit)
 
-    #####
-
     def draw_valid_hovered_effect(self, screen):
         hover_image = pygame.image.load(f'images\\valid-hover.png')
         hover_image.convert_alpha()
@@ -153,9 +151,6 @@ class BaseSpace():
         team_img.convert_alpha()
         overlay_rect = team_img.get_rect(topright=self.rect.topright)
         screen.blit(team_img, overlay_rect)
-
-    #####
-
 
     def get_hover_firing_image(self, enemy, valid):
         if enemy and valid:
@@ -189,24 +184,26 @@ class Plain(BaseSpace):
     def __init__(self, x, y):
         self.name = 'Plain'
         super().__init__(x, y, SpaceTypes.PLAIN)
-        self.move_penalty = 50
+        self.move_penalty = 150
 
 class Road(BaseSpace):
     def __init__(self, x, y):
         self.name = 'Road'
         super().__init__(x, y, SpaceTypes.ROAD)
-        self.move_penalty = 0
+        self.move_penalty = 50
+        self.owner = None
 
 class Forest(BaseSpace):
     def __init__(self, x, y):
         self.name = 'Forest'
         super().__init__(x, y, SpaceTypes.FOREST)
+        self.move_penalty = 300
 
 class Mountain(BaseSpace):
     def __init__(self, x, y):
         self.name = 'Mountain'
         super().__init__(x, y, SpaceTypes.MOUNTAIN)
-        self.move_penalty = 300
+        self.move_penalty = 400
 
 class City(BaseSpace):
     def __init__(self, x, y):
@@ -313,7 +310,7 @@ def snap_to_space(active_team, inactive_team, board, possible_dest_spaces, unit,
             if space.id in possible_dest_spaces:
                 centre_active_space = (dragged_from_space.rect.centerx, dragged_from_space.rect.centery)
                 centre_current_space = (space.rect.centerx, space.rect.centery)
-                unit.movement -= total_terrain_move_penalty(unit, centre_active_space, centre_current_space, board)
+                unit.movement -= total_terrain_move_penalty(space, unit, centre_active_space, centre_current_space, board)
                 if len(space.units) > 0 and space.units[0].team != unit.team:
                     defeated = Attack(unit, space.units[0]).execute()
                     if defeated:
@@ -341,14 +338,12 @@ def is_space_adjacent(space1, space2):
     distance = pygame.math.Vector2(centre_space1).distance_to(centre_space2)
     return distance < 110  # Assuming spaces are close enough if within 100 pixels
 
-def total_terrain_move_penalty(unit, start_point, end_point, board):
+def total_terrain_move_penalty(current_space, unit, start_point, end_point, board):
     # Calculate the move penalty based on the terrain type between two points
     total_move_penalty = 0
     for space in board:
-        if space.rect.clipline(start_point, end_point):
-            if unit.fly:
-                total_move_penalty += 50
-            else:
+        if space.rect.clipline(start_point, end_point) and space.id != current_space.id:
+            if not unit.fly:
                 total_move_penalty += space.move_penalty
     return total_move_penalty
 
@@ -387,9 +382,9 @@ def check_hover_unit(active_team, screen, board, mouse_position, firing=False):
 
 def handle_move(distance, unit, centre_active_space, centre_current_space, space, screen, board):
     possible_dest_space_ids = set()
-    terrain_penalty = total_terrain_move_penalty(unit, centre_active_space, centre_current_space, board)
+    terrain_penalty = total_terrain_move_penalty(space, unit, centre_active_space, centre_current_space, board)
     space.draw(screen)
-    if distance <= (unit.movement - terrain_penalty):
+    if unit.movement >= terrain_penalty:
         enemy = None
         if space.units and space.units[0].team != unit.team:
             enemy = space.units[0]

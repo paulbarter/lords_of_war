@@ -3,7 +3,7 @@ import pygame
 from Attack import show_popup
 from Units.BaseUnit import Soldier, Settler, Archer
 from Teams import Teams
-from Units.Spaces import SpaceTypes
+from Units.Spaces import SpaceTypes, Road
 from Utils import handle_end_turn, save_game
 from sounds.Sounds import play_sound
 
@@ -47,22 +47,60 @@ def handle_buttons(event, board, screen, fire_button, buy_settler_button, end_tu
     if save_game_button.rect.collidepoint(event.pos):
         save_game(board, current_active_team, team_wolf, team_barbarian)
     if research_archery_button.rect.collidepoint(event.pos):
-        if current_active_team.total_resources < 5:
-            show_popup(screen, "Not enough resources, 5 needed", default_font)
-        else:
-            if not current_active_team.researched_roads:
-                current_active_team.researched_roads = True
-                play_sound('sounds\\research.wav')
-                show_popup(screen, "Your noble race has researched the noble art of archery, nobly. You may now nobly buy archers.", default_font)
-                current_active_team.total_resources -= 5
-            elif active_space and active_space.type == SpaceTypes.CITY and active_space.owner == current_active_team:
-                current_active_team.buy_unit(active_space, Archer(1, 2, current_active_team.type))
-                current_active_team.total_resources -= 5
-            else:
-                show_popup(screen, "Click on a city first", default_font)
-
+        research_archery(screen, current_active_team, active_space)
+    if research_road_button.rect.collidepoint(event.pos):
+        research_road(screen, current_active_team, active_space, board)
     return (firing_is_active, current_active_team, moving, current_active_unit, active_space, possible_dest_space_ids, team_wolf,
             team_barbarian)
+
+def is_adjacent_city_or_road(current_space, board, current_active_team):
+    # next to any city or road you own
+    for space in board:
+        if space.name in ["City", "Road"]:
+            if abs(space.rect.centerx - current_space.rect.centerx) < 150 and \
+               abs(space.rect.centery - current_space.rect.centery) < 150 and space.owner == current_active_team:
+                return True
+    return False
+
+def research_road(screen, current_active_team, active_space, board):
+    if current_active_team.total_resources < 5:
+        show_popup(screen, "Not enough resources, 5 needed", default_font)
+    else:
+        if not current_active_team.researched_roads:
+            current_active_team.researched_roads = True
+            play_sound('sounds\\research.wav')
+            show_popup(screen, "You researched the road, a straight line, well done! - what took you so long!?", default_font)
+            current_active_team.total_resources -= 5
+        elif (active_space and is_adjacent_city_or_road(active_space, board, current_active_team) and active_space.type != SpaceTypes.CITY and
+              active_space.type != SpaceTypes.RIVER and active_space.type != SpaceTypes.MOUNTAIN and active_space.type != SpaceTypes.ROAD):
+            new_space = Road(active_space.rect.centerx, active_space.rect.centery)
+            new_space.owner = current_active_team
+            number_on_board = 0
+            for space in board:
+                if space.id == active_space.id:
+                    break
+                number_on_board += 1
+            board[number_on_board] = new_space
+            current_active_team.total_resources -= 5
+        else:
+            show_popup(screen, "Click on a plain or forrest next to a city or road you own", default_font)
+
+def research_archery(screen, current_active_team, active_space):
+    if current_active_team.total_resources < 7:
+        show_popup(screen, "Not enough resources, 7 needed", default_font)
+    else:
+        if not current_active_team.researched_roads:
+            current_active_team.researched_roads = True
+            play_sound('sounds\\research.wav')
+            show_popup(screen,
+                       "Your noble race has researched the noble art of archery, nobly. You may now nobly buy archers.",
+                       default_font)
+            current_active_team.total_resources -= 7
+        elif active_space and active_space.type == SpaceTypes.CITY and active_space.owner == current_active_team:
+            current_active_team.buy_unit(active_space, Archer(1, 2, current_active_team.type))
+            current_active_team.total_resources -= 7
+        else:
+            show_popup(screen, "Click on a city first", default_font)
 
 class BaseScreen:
     def __init__(self, screen, left, top, width, height):
