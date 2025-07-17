@@ -200,7 +200,7 @@ class Settler(BaseUnit):
             if self.check_far_enough_from_city(current_space, board):
                 new_space = City(current_space.rect.centerx, current_space.rect.centery)
                 new_space.owner = team
-                new_space.units = []
+                new_space.units = [unit for unit in current_space.units if unit.id != self.id]
                 number_on_board = 0
                 for space in board:
                     if space.id == current_space.id:
