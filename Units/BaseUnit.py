@@ -24,8 +24,8 @@ class BaseUnit():
         self.fly = False
         self.attack_power = 10
         self.defense_power = 5
-        self.movement = 200
-        self.initial_movement = 200
+        self.movement = 250
+        self.initial_movement = 250
         self.position = (x, y)
         self.image = None
         self.rect = self.create_rect()
@@ -182,8 +182,8 @@ class Settler(BaseUnit):
         self.health = 5
         self.attack_power = 0
         self.defense_power = 0
-        self.movement = 200
-        self.initial_movement = 200
+        self.movement = 250
+        self.initial_movement = 250
         self.gold_cost = 8
 
     def check_far_enough_from_city(self, current_space, board):

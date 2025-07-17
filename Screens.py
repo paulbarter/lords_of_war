@@ -1,8 +1,11 @@
 import pygame
-from Units.BaseUnit import Soldier, Settler
+
+from Attack import show_popup
+from Units.BaseUnit import Soldier, Settler, Archer
 from Teams import Teams
 from Units.Spaces import SpaceTypes
 from Utils import handle_end_turn, save_game
+from sounds.Sounds import play_sound
 
 pygame.init()
 default_font = pygame.font.SysFont(None, 32)
@@ -36,13 +39,28 @@ def handle_buttons(event, board, screen, fire_button, buy_settler_button, end_tu
                                            possible_dest_space_ids, team_wolf, team_barbarian)
     if settle_button.rect.collidepoint(event.pos):
         if (current_active_unit and current_active_unit.name == 'Settler' and active_space and active_space.name != "City" and
-                active_space.name != "River" and active_space.name != "Mountain"):
+                active_space.name != "River" and active_space.name != "Mountain" and current_active_unit in active_space.units):
             current_active_unit.settle(active_space, current_active_team, board, screen)
     if buy_soldier_button.rect.collidepoint(event.pos):
         if active_space and active_space.type == SpaceTypes.CITY and active_space.owner == current_active_team:
             current_active_team.buy_unit(active_space, Soldier(1, 2, current_active_team.type))
     if save_game_button.rect.collidepoint(event.pos):
         save_game(board, current_active_team, team_wolf, team_barbarian)
+    if research_archery_button.rect.collidepoint(event.pos):
+        if current_active_team.total_resources < 5:
+            show_popup(screen, "Not enough resources, 5 needed", default_font)
+        else:
+            if not current_active_team.researched_roads:
+                current_active_team.researched_roads = True
+                play_sound('sounds\\research.wav')
+                show_popup(screen, "Your noble race has researched the noble art of archery, nobly. You may now nobly buy archers.", default_font)
+                current_active_team.total_resources -= 5
+            elif active_space and active_space.type == SpaceTypes.CITY and active_space.owner == current_active_team:
+                current_active_team.buy_unit(active_space, Archer(1, 2, current_active_team.type))
+                current_active_team.total_resources -= 5
+            else:
+                show_popup(screen, "Click on a city first", default_font)
+
     return (firing_is_active, current_active_team, moving, current_active_unit, active_space, possible_dest_space_ids, team_wolf,
             team_barbarian)
 

@@ -14,6 +14,8 @@ class BaseTeam():
         self.owned_cities = []
         self.total_gold = 0
         self.total_resources = 0
+        self.researched_roads = False
+        self.researched_archery = False
 
     def to_dict(self):
         return {
