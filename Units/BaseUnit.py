@@ -74,6 +74,10 @@ class BaseUnit():
             new_unit = Settler(self.position[0], self.position[1], self.team)
         elif self.name == 'Archer':
             new_unit = Archer(self.position[0], self.position[1], self.team)
+        elif self.name == 'barbarian-hero':
+            new_unit = BarbarianHero(self.position[0], self.position[1], self.team)
+        elif self.name == 'wolf-hero':
+            new_unit = WolfHero(self.position[0], self.position[1], self.team)
         new_unit.selected = False
         new_unit.stacked = False
         return new_unit
@@ -212,3 +216,23 @@ class Settler(BaseUnit):
                 team.owned_cities.append(new_space)
             else:
                 show_popup(screen, "Too close to another city to settle")
+
+class WolfHero(BaseUnit):
+    def __init__(self, x, y, team):
+        self.name = "wolf-hero"
+        super().__init__(x, y, team)
+        self.health = 150
+        self.attack_power = 50
+        self.defense_power = 50
+        self.movement = 500
+        self.initial_movement = 500
+
+class BarbarianHero(BaseUnit):
+    def __init__(self, x, y, team):
+        self.name = "barbarian-hero"
+        super().__init__(x, y, team)
+        self.health = 150
+        self.attack_power = 150
+        self.defense_power = 50
+        self.movement = 350
+        self.initial_movement = 350

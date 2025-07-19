@@ -75,6 +75,7 @@ def research_road(screen, current_active_team, active_space, board):
               active_space.type != SpaceTypes.RIVER and active_space.type != SpaceTypes.MOUNTAIN and active_space.type != SpaceTypes.ROAD):
             new_space = Road(active_space.rect.centerx, active_space.rect.centery)
             new_space.owner = current_active_team
+            new_space.units = active_space.units
             number_on_board = 0
             for space in board:
                 if space.id == active_space.id:
