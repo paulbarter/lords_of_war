@@ -78,14 +78,14 @@ class BaseUnit():
             new_unit = BarbarianHero(self.position[0], self.position[1], self.team)
         elif self.name == 'wolf-hero':
             new_unit = WolfHero(self.position[0], self.position[1], self.team)
-        new_unit.selected = False
+        new_unit.selected = True
         new_unit.stacked = False
         return new_unit
 
     def get_info(self, unit_stack):
         unit_stack_label = ""
         if unit_stack:
-            unit_stack_label = [unit.name + ";" for unit in unit_stack]
+            unit_stack_label = [unit.name + "," for unit in unit_stack]
         return [f"Name: {self.name}", f"Team: {self.team_name}", f"Health: {self.health}, " \
                f"Attack Power: {self.attack_power}", f"Defense Power: {self.defense_power}, " \
                f"Movement: {self.movement}", f"Unit Stack: {unit_stack_label}"]
@@ -97,10 +97,16 @@ class BaseUnit():
         screen.blit(highlight_surface, self.rect)
 
     def draw_selected_effect(self, screen):
-        highlight_color = (255, 0, 0, 100)  # RGBA: Yellow with 50% opacity
-        highlight_surface = pygame.Surface(self.rect.size, pygame.SRCALPHA)
-        highlight_surface.fill(highlight_color)
-        screen.blit(highlight_surface, self.rect)
+        # Transparent highlight effect for selected unit:
+        # highlight_color = (255, 0, 0, 100)  # RGBA: Yellow with 50% opacity
+        # highlight_surface = pygame.Surface(self.rect.size, pygame.SRCALPHA)
+        # highlight_surface.fill(highlight_color)
+        # screen.blit(highlight_surface, self.rect)
+
+        # Draw a border around the unit to indicate selection
+        highlight_color = (255, 255, 0)  # Yellow
+        border_thickness = 2
+        pygame.draw.rect(screen, highlight_color, self.rect, border_thickness)
 
     def draw_stacked_effect(self, screen):
         overlay_image = pygame.image.load("images\\units\\stack.png").convert_alpha()  # Replace with your overlay image
@@ -114,7 +120,7 @@ class BaseUnit():
         elif self.team == Teams.BARBARIAN:
             team_img = pygame.image.load(f'images\\units\\barbarian.png')
         team_img.convert_alpha()
-        overlay_rect = team_img.get_rect(topleft=self.rect.topleft)
+        overlay_rect = team_img.get_rect(topright=self.rect.topright)
         screen.blit(team_img, overlay_rect)
 
     def draw_target_effect(self, screen, valid_target=False):

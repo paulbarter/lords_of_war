@@ -172,10 +172,21 @@ def draw_board(screen, board):
     for space in board:
         space.draw(screen)
 
+def draw_selected_space(unit_info_screen, screen, current_active_unit, active_space):
+    if current_active_unit:
+        display_unit = current_active_unit.clone_unit()
+        display_unit.rect.top = unit_info_screen.top + 170
+        display_unit.rect.right = unit_info_screen.left + 80
+    elif active_space:
+        display_unit = active_space.clone_space()
+        display_unit.rect.top = unit_info_screen.top + 140
+        display_unit.rect.right = unit_info_screen.left + 100
+    display_unit.draw(screen)
+
 def display_screen_and_resources(screen, board, end_turn_button, fire_button, resources_screen, unit_info_screen,
-                                 current_active_team, team_wolf, team_barbarian, firing, current_selected_unit_info,
-                                 buy_button, settle_button, buy_soldier_button, hovered_unit, research_road_button,
-                                 research_archery_button, save_game_button, move_button, current_active_unit):
+                                 current_active_team, team_wolf, team_barbarian, current_selected_unit_info,
+                                 buy_button, settle_button, buy_soldier_button, research_road_button,
+                                 research_archery_button, save_game_button, move_button, current_active_unit, active_space):
     screen.fill(SCREEN_BACKGROUND)
     draw_board(screen, board)
     end_turn_button.draw()
@@ -187,12 +198,8 @@ def display_screen_and_resources(screen, board, end_turn_button, fire_button, re
         resources_screen.display(messages=team_barbarian.get_info())
 
     unit_info_screen.display(text=None, messages=current_selected_unit_info)
-    if current_active_unit:
-        display_unit = current_active_unit.clone_unit()
-        display_unit.rect.top = unit_info_screen.top + 140
-        display_unit.rect.right = unit_info_screen.left + 70
-        display_unit.draw(screen)
-
+    if current_active_unit or active_space:
+        draw_selected_space(unit_info_screen, screen, current_active_unit, active_space)
     buy_button.draw(new_text='BUY SETTLER [8]')
     settle_button.draw(new_text='SETTLE')
     buy_soldier_button.draw(new_text='BUY SOLDIER [5]')

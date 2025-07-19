@@ -24,8 +24,8 @@ current_active_team = team_wolf
 # board, current_active_team, team_wolf, team_barbarian = load_game("saved_games\\20250715_133918_game.json")
 
 # boards for info
-resources_screen = BaseScreen(screen, 1100, 20, 400, 200)
-unit_info_screen = BaseScreen(screen, 1100, 250, 400, 200)
+resources_screen = BaseScreen(screen, 1100, 20, 400, 150)
+unit_info_screen = BaseScreen(screen, 1100, 200, 400, 250)
 end_turn_button = BaseButton(screen, 'END TURN', 20, 720, 150, 50)
 fire_button = BaseButton(screen, 'FIRE', 250, 720, 100, 50)
 move_button = BaseButton(screen, 'MOVE', 370, 720, 100, 50)
@@ -55,8 +55,11 @@ while running:
         if event.type == QUIT:
             running = False
         elif event.type == MOUSEBUTTONDOWN:
+            ####################
+            # MOUSE CLICK
             remove_units_selected(board)
             remove_units_hovered(board)
+            remove_hover_effects(board)
             (firing_is_active, current_active_team, moving, current_active_unit, active_space, possible_dest_space_ids, team_wolf,
             team_barbarian) = (
                 handle_buttons(event, board, screen, fire_button, buy_settler_button, end_turn_button, firing_is_active,
@@ -99,9 +102,9 @@ while running:
             hovered_unit = check_hover_unit(current_active_team, screen, board, event.pos)
 
     display_screen_and_resources(screen, board, end_turn_button, fire_button, resources_screen, unit_info_screen,
-                                 current_active_team, team_wolf, team_barbarian, firing_is_active, current_selected_unit_info,
-                                 buy_settler_button, settle_button, buy_soldier_button, hovered_unit, research_road_button,
-                                 research_archery_button, save_game_button, move_button, current_active_unit)
+                                 current_active_team, team_wolf, team_barbarian, current_selected_unit_info,
+                                 buy_settler_button, settle_button, buy_soldier_button, research_road_button,
+                                 research_archery_button, save_game_button, move_button, current_active_unit, active_space)
     if moving and current_active_unit:
         current_active_unit.draw(screen)
     pygame.display.update()

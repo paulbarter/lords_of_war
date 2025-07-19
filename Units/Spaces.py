@@ -27,6 +27,7 @@ class BaseSpace():
         self.is_valid_hover = False
         self.is_invalid_target = False
         self.is_invalid_target_in_range = False
+        self.is_selected = False
 
     def to_dict(self):
         return {
@@ -121,6 +122,8 @@ class BaseSpace():
             self.draw_team_effect(screen)
         if self.is_valid_hover:
             self.draw_valid_hovered_effect(screen)
+        if self.is_selected:
+            self.draw_selected_effect(screen)
         elif self.is_invalid_hover:
             self.draw_invalid_hovered_effect(screen)
         if self.is_invalid_target:
@@ -129,6 +132,18 @@ class BaseSpace():
             self.draw_target_effect(screen, valid_target=False, in_range=True)
         if len(self.units) > 0:
             self.draw_units(screen, hovered_unit=hovered_unit)
+
+    def draw_selected_effect(self, screen):
+        # Transparent highlight effect for selected unit:
+        # highlight_color = (255, 0, 0, 100)  # RGBA: Yellow with 50% opacity
+        # highlight_surface = pygame.Surface(self.rect.size, pygame.SRCALPHA)
+        # highlight_surface.fill(highlight_color)
+        # screen.blit(highlight_surface, self.rect)
+
+        # Draw a border around the unit to indicate selection
+        highlight_color = (255, 255, 0)  # Yellow
+        border_thickness = 2
+        pygame.draw.rect(screen, highlight_color, self.rect, border_thickness)
 
     def draw_valid_hovered_effect(self, screen):
         hover_image = pygame.image.load(f'images\\valid-hover.png')
@@ -180,6 +195,23 @@ class BaseSpace():
     def get_regular_image(self):
         return pygame.image.load(f'images\\{self.name}.png').convert()
 
+    def clone_space(self):
+        if self.name == 'Plain':
+            new_space = Plain(1, 2)
+        elif self.name == 'Forest':
+            new_space = Forest(1, 2)
+        elif self.name == 'Mountain':
+            new_space = Mountain(1, 2)
+        elif self.name == 'River':
+            new_space = River(1, 2)
+        elif self.name == 'Road':
+            new_space = Road(1, 2)
+        elif self.name == 'City':
+            new_space = City(1, 2)
+            new_space.owner = self.owner
+        new_space.is_selected = True
+        return new_space
+
 class Plain(BaseSpace):
     def __init__(self, x, y):
         self.name = 'Plain'
@@ -206,15 +238,16 @@ class Mountain(BaseSpace):
         self.move_penalty = 400
 
 class City(BaseSpace):
-    def __init__(self, x, y):
+    def __init__(self, x, y, owner=None):
         self.name = 'City'
         super().__init__(x, y, SpaceTypes.CITY)
         self.move_penalty = 50
-        self.owner = None  # The team that owns the city
+        self.owner = owner  # The team that owns the city
         self.units = []  # Units stationed in the city
+        self.population = 100
 
     def get_info(self):
-        return [f"Type: {self.name}", f"Owner: {self.owner.name if self.owner else 'None'}",]
+        return [f"Type: {self.name}", f"Owner: {self.owner.name if self.owner else 'None'}", f"Population: {self.population}"]
 
 class River(BaseSpace):
     def __init__(self, x, y):
@@ -274,6 +307,8 @@ def get_current_active_unit(screen, active_team, x, y, board):
         active_unit.draw_stacked_effect(screen) # dont draw here just set property to stacked!
     if active_unit:
         active_unit.is_selected = True
+    if active_space:
+        active_space.is_selected = True
     return active_unit, active_space, unit_stack
 
 def remove_units_selected(board):
@@ -354,6 +389,7 @@ def remove_hover_effects(board):
         space.is_invalid_hover = False
         space.is_invalid_target = False
         space.is_invalid_target_in_range = False
+        space.is_selected = False
         for unit in space.units:
             unit.is_valid_target = False
             unit.is_invalid_target = False
