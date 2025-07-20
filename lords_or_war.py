@@ -90,7 +90,6 @@ while running:
                     current_selected_unit_info = current_active_unit.get_info(unit_stack)
                 else:
                     snap_back_to_start(current_active_unit, active_space)
-                possible_dest_space_ids = []
                 remove_hover_effects(board)
                 previously_active_unit = current_active_unit
         elif event.type == MOUSEMOTION:
