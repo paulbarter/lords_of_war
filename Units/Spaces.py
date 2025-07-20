@@ -2,6 +2,7 @@ import pygame
 import uuid
 
 from Attack import Attack
+from sounds.Sounds import play_sound
 
 BLUE = (0, 0, 255)
 
@@ -273,6 +274,10 @@ class Ruins(BaseSpace):
             overlay_rect = ruins_image.get_rect(centerx=self.rect.centerx, centery=self.rect.centery)
             screen.blit(ruins_image, overlay_rect)
 
+    def search(self):
+        play_sound("sounds\\ruins.wav")
+        self.searched = True
+
 def calculate_city_occupied(active_team, inactive_team, city):
     if city.owner and city.owner != active_team:
         active_team.owned_cities.append(city)
@@ -356,7 +361,7 @@ def shoot_at_space(board, unit, mouse_position):
                 if defeated:
                     space.remove_unit(space.units[0])
 
-def snap_to_space(active_team, inactive_team, board, possible_dest_spaces, unit, dragged_from_space: BaseSpace):
+def snap_to_space(screen, active_team, inactive_team, board, possible_dest_spaces, unit, dragged_from_space: BaseSpace):
     for space in board:
         if (abs(unit.rect.centerx - space.rect.centerx) < 45) and (abs(unit.rect.centery - space.rect.centery) < 45):
             unit.rect.center = space.rect.center
@@ -365,9 +370,11 @@ def snap_to_space(active_team, inactive_team, board, possible_dest_spaces, unit,
                 centre_current_space = (space.rect.centerx, space.rect.centery)
                 unit.movement -= total_terrain_move_penalty(space, unit, centre_active_space, centre_current_space, board)
                 if len(space.units) > 0 and space.units[0].team != unit.team:
-                    defeated = Attack(unit, space.units[0]).execute()
+                    enemy = space.units[0]
+                    defeated = Attack(unit, enemy).execute()
                     if defeated:
-                        space.remove_unit(space.units[0])
+                        space.remove_unit(enemy)
+                        space.add_unit(unit)
                     else:
                         # If the attack did not defeat the defender, snap back to start
                         # TODO make sure don't snap back if unit moved from further than 1 space away (dont allow moving

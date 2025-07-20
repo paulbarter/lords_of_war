@@ -4,6 +4,7 @@ from Attack import show_popup
 from Units.Spaces import City
 import uuid
 
+from Utils import get_space_unit_is_in, handle_ruins_searched
 from sounds.Sounds import play_sound
 
 BLUE = (0, 0, 255)
@@ -20,6 +21,7 @@ class BaseUnit():
             self.team_name = "Wolf"
         elif team == Teams.BARBARIAN:
             self.team_name = "Barbarian"
+        self.type = 'RegularUnit'
         self.id = uuid.uuid4()
         self.can_shoot = False
         self.range = 0
@@ -231,7 +233,24 @@ class Settler(BaseUnit):
             else:
                 show_popup(screen, "Too close to another city to settle")
 
-class WolfHero(BaseUnit):
+class Hero(BaseUnit):
+    def __init__(self, x, y, team):
+        super().__init__(x, y, team)
+        self.type = 'Hero'
+
+    def search_ruins(self, screen, active_space, board, current_active_team):
+        ruin = get_space_unit_is_in(board, self)
+        if ruin.name != 'Ruins':
+            show_popup(screen, "You need to be on a Ruins space to search")
+            return
+        if not ruin.searched:
+            ruin.search()
+            ruin.draw(screen)
+            handle_ruins_searched(ruin, current_active_team, screen, self)
+        else:
+            show_popup(screen, "This Ruin has already been searched")
+
+class WolfHero(Hero):
     def __init__(self, x, y, team):
         self.name = "wolf-hero"
         super().__init__(x, y, team)
@@ -241,7 +260,7 @@ class WolfHero(BaseUnit):
         self.movement = 500
         self.initial_movement = 500
 
-class BarbarianHero(BaseUnit):
+class BarbarianHero(Hero):
     def __init__(self, x, y, team):
         self.name = "barbarian-hero"
         super().__init__(x, y, team)

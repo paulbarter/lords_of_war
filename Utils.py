@@ -82,6 +82,21 @@ def increase_random_unit_attack_strength(team, board):
                 random_unit.attack_power += 50
                 return random_unit
 
+def get_random_text(type):
+    if type == 'gold':
+        return random.choice(random_gaining_gold_events)
+    elif type == 'resource':
+        return random.choice(random_gaining_resource_events)
+    elif type == 'lose_health':
+        return random.choice(random_lose_health_events)
+    else:
+        return "Unknown event type"
+
+random_gaining_gold_events = ['You discover gold in an old city!', 'You find a hidden treasure chest!',
+                              'You earn gold trading with natives!']
+random_gaining_resource_events = ['You find a rich resource deposit!', 'A new trade route opens gaining resources']
+random_lose_health_events = ['You battle a dragon and are injured!', 'You walk into a poison dart trap!']
+
 def handle_random_event(current_active_team, screen, team_wolf, team_barbarian, board):
     if current_active_team.name == 'Wolf':
         # End of barbarian's turn is end of both turns
@@ -94,11 +109,41 @@ def handle_random_event(current_active_team, screen, team_wolf, team_barbarian, 
             if random_event == 1:
                 inc_gold = random.randint(1, 5)
                 event_team.total_gold += 5
-                show_popup(screen, f"Random event for {event_team.name} team! Gain {inc_gold} Gold!", font)
+                show_popup(screen, f"{event_team.name}: {get_random_text('gold')}! Gain {inc_gold} Gold!", font)
             elif random_event == 2:
                 inc_resources = random.randint(1, 5)
-                show_popup(screen, f"Random event for {event_team.name} team! Gain {inc_resources} Resources!", font)
+                show_popup(screen, f"{event_team.name}: {get_random_text('resources')}! Gain {inc_resources} Resources!", font)
                 event_team.total_resources += 5
             else:
                 random_unit = increase_random_unit_attack_strength(event_team, board)
-                show_popup(screen, f"Random event for {event_team.name} team! {random_unit.name} gains 50 attack strength!", font)
+                show_popup(screen, f"{event_team.name}: {random_unit.name} has levelled up and gains 50 attack strength!", font)
+
+def handle_ruins_searched(space, current_active_team, screen, hero):
+    random_choice = random.randint(1, 5)
+    if random_choice == 1:
+        inc_gold = random.randint(1, 5)
+        current_active_team.total_gold += inc_gold
+        show_popup(screen, f"You discover {inc_gold} gold in the ruins!", font)
+    elif random_choice == 2:
+        inc_resources = random.randint(1, 5)
+        current_active_team.total_resources += inc_resources
+        show_popup(screen, f"You discover {inc_resources} resources in the ruins!", font)
+    elif random_choice == 3:
+        hero.attack_power += 50
+        show_popup(screen, f"Your hero has levelled up and gains 50 attack strength!", font)
+    elif random_choice == 4:
+        lose_health = random.randint(1, 30)
+        hero.health -= lose_health
+        show_popup(screen, f"{get_random_text('lose_health')}. You lose {lose_health} health.", font)
+        if hero.health <= 0:
+            space.remove_unit(space.units[0])
+            show_popup(screen, f"Your hero has been slain!", font)
+            play_sound('sounds\\die.wav')
+    else:
+        show_popup(screen, f"You find nothing in the ruins.", font)
+
+def get_space_unit_is_in(board, unit):
+    for space in board:
+        if unit in space.units:
+            return space
+    return None

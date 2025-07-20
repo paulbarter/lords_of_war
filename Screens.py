@@ -22,7 +22,7 @@ def toggle_button(button1, button2):
 def handle_buttons(event, board, screen, fire_button, buy_settler_button, end_turn_button, firing_is_active, active_space,
                    current_active_team, moving, current_active_unit, possible_dest_space_ids, team_wolf, team_barbarian,
                    settle_button, buy_soldier_button, save_game_button, research_road_button, research_archery_button,
-                   move_button):
+                   move_button, search_ruins_button):
     if fire_button.rect.collidepoint(event.pos):
         firing_is_active = not firing_is_active
         toggle_button(fire_button, move_button)
@@ -50,6 +50,8 @@ def handle_buttons(event, board, screen, fire_button, buy_settler_button, end_tu
         research_archery(screen, current_active_team, active_space)
     if research_road_button.rect.collidepoint(event.pos):
         research_road(screen, current_active_team, active_space, board)
+    if search_ruins_button.rect.collidepoint(event.pos):
+        current_active_unit.search_ruins(screen, active_space, board, current_active_team)
     return (firing_is_active, current_active_team, moving, current_active_unit, active_space, possible_dest_space_ids, team_wolf,
             team_barbarian)
 
@@ -186,7 +188,8 @@ def draw_selected_space(unit_info_screen, screen, current_active_unit, active_sp
 def display_screen_and_resources(screen, board, end_turn_button, fire_button, resources_screen, unit_info_screen,
                                  current_active_team, team_wolf, team_barbarian, current_selected_unit_info,
                                  buy_button, settle_button, buy_soldier_button, research_road_button,
-                                 research_archery_button, save_game_button, move_button, current_active_unit, active_space):
+                                 research_archery_button, save_game_button, move_button, current_active_unit, active_space,
+                                 search_ruins_button):
     screen.fill(SCREEN_BACKGROUND)
     draw_board(screen, board)
     end_turn_button.draw()
@@ -206,4 +209,6 @@ def display_screen_and_resources(screen, board, end_turn_button, fire_button, re
     save_game_button.draw(new_text='SAVE GAME')
     research_road_button.draw(new_text='Road [5]', font_type='small')
     research_archery_button.draw(new_text='Archery [7]', font_type='small')
+    if current_active_unit and current_active_unit.type == 'Hero':
+        search_ruins_button.draw(new_text='Search Ruins', font_type='small')
 

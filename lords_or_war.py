@@ -27,8 +27,8 @@ current_active_team = team_wolf
 resources_screen = BaseScreen(screen, 1100, 20, 400, 150)
 unit_info_screen = BaseScreen(screen, 1100, 200, 400, 250)
 end_turn_button = BaseButton(screen, 'END TURN', 20, 720, 150, 50)
-fire_button = BaseButton(screen, 'FIRE', 250, 720, 100, 50)
-move_button = BaseButton(screen, 'MOVE', 370, 720, 100, 50)
+fire_button = BaseButton(screen, 'FIRE', 200, 720, 100, 50)
+move_button = BaseButton(screen, 'MOVE', 320, 720, 100, 50)
 move_button.pressed = True
 buy_settler_button = BaseButton(screen, 'Buy settler', 530, 720, 200, 50)
 settle_button = BaseButton(screen, 'SETTLE', 750, 720, 200, 50)
@@ -36,6 +36,7 @@ buy_soldier_button = BaseButton(screen, 'Buy Soldier', 1000, 720, 200, 50)
 research_road_button = BaseButton(screen, 'Research Road', 1090, 500, 120, 18)
 research_archery_button = BaseButton(screen, 'Research Archery', 1090, 550, 120, 18)
 save_game_button = BaseButton(screen, 'Save Game', 1250, 720, 200, 50)
+search_ruins_button = BaseButton(screen, 'Search Ruins', 1250, 390, 120, 30)
 
 # Initialising variables
 running = True
@@ -65,7 +66,7 @@ while running:
                 handle_buttons(event, board, screen, fire_button, buy_settler_button, end_turn_button, firing_is_active,
                                active_space, current_active_team, moving, current_active_unit, possible_dest_space_ids,
                                team_wolf, team_barbarian, settle_button, buy_soldier_button, save_game_button, research_road_button,
-                               research_archery_button, move_button))
+                               research_archery_button, move_button, search_ruins_button))
             current_active_unit, active_space, unit_stack = get_current_active_unit(screen, current_active_team,
                                                                                     event.pos[0], event.pos[1], board)
             if current_active_unit:
@@ -85,7 +86,7 @@ while running:
                         shoot_at_space(board, current_active_unit, event.pos)
                     else:
                         inactive_team = team_wolf if current_active_team.name == "Barbarian" else team_barbarian
-                        snap_to_space(current_active_team, inactive_team, board, possible_dest_space_ids, current_active_unit, active_space)
+                        snap_to_space(screen, current_active_team, inactive_team, board, possible_dest_space_ids, current_active_unit, active_space)
                     current_selected_unit_info = current_active_unit.get_info(unit_stack)
                 else:
                     snap_back_to_start(current_active_unit, active_space)
@@ -104,7 +105,8 @@ while running:
     display_screen_and_resources(screen, board, end_turn_button, fire_button, resources_screen, unit_info_screen,
                                  current_active_team, team_wolf, team_barbarian, current_selected_unit_info,
                                  buy_settler_button, settle_button, buy_soldier_button, research_road_button,
-                                 research_archery_button, save_game_button, move_button, current_active_unit, active_space)
+                                 research_archery_button, save_game_button, move_button, current_active_unit, active_space,
+                                 search_ruins_button)
     if moving and current_active_unit:
         current_active_unit.draw(screen)
     pygame.display.update()
