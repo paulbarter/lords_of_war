@@ -180,8 +180,12 @@ class BaseButton:
 
 
 def draw_board(screen, board):
+    # draw all the spaces and then draw all the units last so that spaces are not drawn over units
     for space in board:
         space.draw(screen)
+    for space in board:
+        if len(space.units) > 0:
+            space.draw_units(screen)
 
 def draw_selected_space(unit_info_screen, screen, current_active_unit, active_space):
     if current_active_unit:
@@ -200,7 +204,6 @@ def display_screen_and_resources(screen, board, end_turn_button, fire_button, re
                                  research_archery_button, save_game_button, move_button, current_active_unit, active_space,
                                  search_ruins_button):
     screen.fill(SCREEN_BACKGROUND)
-    draw_board(screen, board)
     end_turn_button.draw()
     fire_button.draw(new_text='FIRE')
     move_button.draw(new_text='MOVE')
@@ -220,4 +223,5 @@ def display_screen_and_resources(screen, board, end_turn_button, fire_button, re
     research_archery_button.draw(new_text='Archery [7]', font_type='small')
     if current_active_unit and current_active_unit.type == 'Hero':
         search_ruins_button.draw(new_text='Search Ruins', font_type='small')
+    draw_board(screen, board)
 

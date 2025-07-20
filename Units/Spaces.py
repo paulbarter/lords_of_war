@@ -96,7 +96,7 @@ class BaseSpace():
                 new_units.append(unit)
         self.units = new_units
 
-    def draw_units(self, screen, hovered_unit=None):
+    def draw_units(self, screen):
         for unit in self.units:
             unit.stacked = False  # Reset stacked state for all units
             unit.draw(screen)
@@ -131,8 +131,6 @@ class BaseSpace():
             self.draw_target_effect(screen, valid_target=False)
         elif self.is_invalid_target_in_range:
             self.draw_target_effect(screen, valid_target=False, in_range=True)
-        if len(self.units) > 0:
-            self.draw_units(screen, hovered_unit=hovered_unit)
 
     def draw_selected_effect(self, screen):
         # Transparent highlight effect for selected unit:
@@ -383,6 +381,8 @@ def snap_to_space(screen, active_team, inactive_team, board, possible_dest_space
                         break
                 else:
                     space.add_unit(unit)
+                    unit.position = space.rect.center
+                    unit.rect.center = space.rect.center
                 if space.type == SpaceTypes.CITY:
                     calculate_city_occupied(active_team, inactive_team, space)
                 dragged_from_space.remove_unit(unit)

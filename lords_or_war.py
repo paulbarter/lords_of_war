@@ -61,6 +61,7 @@ while running:
             remove_units_selected(board)
             remove_units_hovered(board)
             remove_hover_effects(board)
+            possible_dest_space_ids = []
             (firing_is_active, current_active_team, moving, current_active_unit, active_space, possible_dest_space_ids, team_wolf,
             team_barbarian) = (
                 handle_buttons(event, board, screen, fire_button, buy_settler_button, end_turn_button, firing_is_active,
@@ -106,7 +107,7 @@ while running:
                                  buy_settler_button, settle_button, buy_soldier_button, research_road_button,
                                  research_archery_button, save_game_button, move_button, current_active_unit, active_space,
                                  search_ruins_button)
-    if moving and current_active_unit:
-        current_active_unit.draw(screen)
+    # if current_active_unit:
+    #     current_active_unit.draw(screen)
     pygame.display.update()
 pygame.quit()

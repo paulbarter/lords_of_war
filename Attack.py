@@ -41,9 +41,12 @@ class Attack():
         self.defense_power = defender.defense_power
 
     def calculate_damage(self):
-        # Simple damage calculation: attack power minus defense power
+        # Simple damage calculation: percentage attack power minus percentage defense power
         import random
-        damage = max(0, int(round((self.attack_power - self.defense_power) * random.random(), 0)))
+        damage = max(0, int(round((self.attack_power) * random.random(), 0)))
+        damage = max(0, damage - int(round((self.defense_power) * random.random(), 0)))
+        if damage < 0:
+            damage = random.randint(1, 10)  # Ensure at least some damage is done
         return damage
 
     def execute(self):

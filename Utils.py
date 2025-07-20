@@ -85,7 +85,7 @@ def increase_random_unit_attack_strength(team, board):
 def get_random_text(type):
     if type == 'gold':
         return random.choice(random_gaining_gold_events)
-    elif type == 'resource':
+    elif type == 'resources':
         return random.choice(random_gaining_resource_events)
     elif type == 'lose_health':
         return random.choice(random_lose_health_events)
@@ -116,7 +116,10 @@ def handle_random_event(current_active_team, screen, team_wolf, team_barbarian, 
                 event_team.total_resources += 5
             else:
                 random_unit = increase_random_unit_attack_strength(event_team, board)
-                show_popup(screen, f"{event_team.name}: {random_unit.name} has levelled up and gains 50 attack strength!", font)
+                if random_unit:
+                    show_popup(screen, f"{event_team.name}: {random_unit.name} has levelled up and gains 50 attack strength!", font)
+                else:
+                    show_popup(screen, f"{event_team.name}: Nothing happens", font)
 
 def handle_ruins_searched(space, current_active_team, screen, hero):
     random_choice = random.randint(1, 5)

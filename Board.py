@@ -76,11 +76,13 @@ def make_random_board(team_wolf, team_barbarian, width_units, height_units, spac
                 # Start space
                 if height_unit == 0 and width_unit == 0:
                     start_space = City(space_width * width_unit + 60, 50 + space_height * height_unit, owner=team_wolf)
+                    team_wolf.owned_cities.append(start_space)
                     start_space.add_unit(Wolf(1, 2, Teams.WOLF))
                     start_space.add_unit(Settler(1, 2, Teams.WOLF))
                     start_space.add_unit(WolfHero(1, 2, Teams.WOLF))
                 elif height_unit == height_units -1 and width_unit == width_units -1:
                     start_space = City(space_width * width_unit + 60, 50 + space_height * height_unit, owner=team_barbarian)
+                    team_barbarian.owned_cities.append(start_space)
                     start_space.add_unit(Barbarian(1, 2, Teams.BARBARIAN))
                     start_space.add_unit(Settler(1, 2, Teams.BARBARIAN))
                     start_space.add_unit(BarbarianHero(1, 2, Teams.BARBARIAN))
