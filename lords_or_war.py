@@ -17,7 +17,7 @@ space_height = 75
 from Board import get_board, make_random_board
 from Teams import team_wolf, team_barbarian
 # board = get_board(space_width, space_height)
-board = make_random_board( 14, 9, space_width, space_height, percentage_road=0.0)
+board = make_random_board(team_wolf, team_barbarian, 14, 9, space_width, space_height, percentage_road=0.0)
 current_active_team = team_wolf
 
 # from Utils import load_game

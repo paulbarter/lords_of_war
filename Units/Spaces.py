@@ -160,9 +160,9 @@ class BaseSpace():
     def draw_team_effect(self, screen):
         team_img = None
         if self.owner.name == "Wolf":
-            team_img = pygame.image.load(f'images\\units\\wolf.png')
+            team_img = pygame.image.load(f'images\\units\\wolf-team.png')
         elif self.owner.name == "Barbarian":
-            team_img = pygame.image.load(f'images\\units\\barbarian.png')
+            team_img = pygame.image.load(f'images\\units\\barbarian-team.png')
         team_img.convert_alpha()
         overlay_rect = team_img.get_rect(topright=self.rect.topright)
         screen.blit(team_img, overlay_rect)
@@ -209,6 +209,9 @@ class BaseSpace():
         elif self.name == 'City':
             new_space = City(1, 2)
             new_space.owner = self.owner
+        elif self.name == 'Ruins':
+            new_space = Ruins(1, 2)
+            new_space.searched = False
         new_space.is_selected = True
         return new_space
 
@@ -253,7 +256,22 @@ class River(BaseSpace):
     def __init__(self, x, y):
         self.name = 'River'
         super().__init__(x, y, SpaceTypes.RIVER)
-        self.move_penalty = 99999  # Cannot cross river without a boat or flying unit
+        self.move_penalty = 99999
+        # Cannot cross river without a boat or flying unit
+class Ruins(BaseSpace):
+    def __init__(self, x, y):
+        self.name = 'Ruins'
+        super().__init__(x, y, SpaceTypes.RIVER)
+        self.move_penalty = 150
+        self.searched = False
+
+    def draw(self, screen):
+        super().draw(screen)
+        if not self.searched:
+            ruins_image = pygame.image.load(f'images\\ruins-magic.png')
+            ruins_image.set_alpha(130)
+            overlay_rect = ruins_image.get_rect(centerx=self.rect.centerx, centery=self.rect.centery)
+            screen.blit(ruins_image, overlay_rect)
 
 def calculate_city_occupied(active_team, inactive_team, city):
     if city.owner and city.owner != active_team:

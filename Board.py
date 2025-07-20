@@ -1,6 +1,6 @@
-
-from Units.BaseUnit import Teams, Soldier, Settler, Archer, WolfHero, BarbarianHero
-from Units.Spaces import River, Road, Mountain, Plain, City, Forest
+from Teams import WolfTeam, BarbarianTeam
+from Units.BaseUnit import Teams, Soldier, Settler, Archer, WolfHero, BarbarianHero, Wolf, Barbarian
+from Units.Spaces import River, Road, Mountain, Plain, City, Forest, Ruins
 import random
 
 def get_board(space_width, space_height):
@@ -43,8 +43,8 @@ def get_board(space_width, space_height):
              space_2_1, space_2_2, space_2_3, space_2_4, space_2_5, space_2_6, space_2_7, space_2_8, space_2_9,
              space_3_1, space_3_2, space_3_3, space_3_4, space_3_5, space_3_6, space_3_7, space_3_8, space_3_9]
 
-def make_random_board(width_units, height_units, space_width, space_height, percentage_road=0.3, percentage_river=0.1,
-                      percentage_mountain=0.1, percentage_forrest=0.2):
+def make_random_board(team_wolf, team_barbarian, width_units, height_units, space_width, space_height, percentage_road=0.3, percentage_river=0.1,
+                      percentage_mountain=0.1, percentage_forrest=0.2, percentage_ruins=0.05):
     board = []
     wolf_start_squares = [(0, 0), (1, 0), (0, 1), (1, 1)]
     length = height_units
@@ -68,19 +68,24 @@ def make_random_board(width_units, height_units, space_width, space_height, perc
                     space_type = Mountain
                 elif rand_value < percentage_road + percentage_river + percentage_mountain + percentage_forrest:
                     space_type = Forest
+                elif rand_value < percentage_road + percentage_river + percentage_mountain + percentage_forrest + percentage_ruins:
+                    space_type = Ruins
 
             initialised_space = space_type(space_width * width_unit + 60, 50 + space_height * height_unit)
+            if (height_unit == 0 and width_unit == 0) or (height_unit == height_units -1 and width_unit == width_units -1):
+                # Start space
+                if height_unit == 0 and width_unit == 0:
+                    start_space = City(space_width * width_unit + 60, 50 + space_height * height_unit, owner=team_wolf)
+                    start_space.add_unit(Wolf(1, 2, Teams.WOLF))
+                    start_space.add_unit(Settler(1, 2, Teams.WOLF))
+                    start_space.add_unit(WolfHero(1, 2, Teams.WOLF))
+                elif height_unit == height_units -1 and width_unit == width_units -1:
+                    start_space = City(space_width * width_unit + 60, 50 + space_height * height_unit, owner=team_barbarian)
+                    start_space.add_unit(Barbarian(1, 2, Teams.BARBARIAN))
+                    start_space.add_unit(Settler(1, 2, Teams.BARBARIAN))
+                    start_space.add_unit(BarbarianHero(1, 2, Teams.BARBARIAN))
+                board.append(start_space)
+                continue
             board.append(initialised_space)
-            if height_unit == 0 and width_unit == 0:
-                initialised_space.add_unit(Soldier(1, 2, Teams.WOLF))
-                initialised_space.add_unit(Settler(1, 2, Teams.WOLF))
-                initialised_space.add_unit(Settler(1, 2, Teams.WOLF))
-                initialised_space.add_unit(WolfHero(1, 2, Teams.WOLF))
-
-            if height_unit == height_units -1 and width_unit == width_units -1:
-                initialised_space.add_unit(Soldier(1, 2, Teams.BARBARIAN))
-                initialised_space.add_unit(Settler(1, 2, Teams.BARBARIAN))
-                initialised_space.add_unit(Settler(1, 2, Teams.BARBARIAN))
-                initialised_space.add_unit(BarbarianHero(1, 2, Teams.BARBARIAN))
     return board
 

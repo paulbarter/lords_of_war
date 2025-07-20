@@ -3,6 +3,9 @@ import pygame
 from Attack import show_popup
 from Units.Spaces import City
 import uuid
+
+from sounds.Sounds import play_sound
+
 BLUE = (0, 0, 255)
 
 # duplicated class to avoid circular import issues
@@ -67,9 +70,14 @@ class BaseUnit():
         self.position = tuple(data["position"])
         self.rect = self.create_rect()
 
+    def play_attack_sound(self):
+        play_sound(f'sounds\\{self.name}.wav')
+
     def clone_unit(self):
-        if self.name == 'Soldier':
-            new_unit = Soldier(self.position[0], self.position[1], self.team)
+        if self.name == 'Wolf':
+            new_unit = Wolf(self.position[0], self.position[1], self.team)
+        elif self.name == 'Barbarian':
+            new_unit = Barbarian(self.position[0], self.position[1], self.team)
         elif self.name == 'Settler':
             new_unit = Settler(self.position[0], self.position[1], self.team)
         elif self.name == 'Archer':
@@ -116,9 +124,9 @@ class BaseUnit():
     def draw_team_effect(self, screen):
         team_img = None
         if self.team == Teams.WOLF:
-            team_img = pygame.image.load(f'images\\units\\wolf.png')
+            team_img = pygame.image.load(f'images\\units\\wolf-team.png')
         elif self.team == Teams.BARBARIAN:
-            team_img = pygame.image.load(f'images\\units\\barbarian.png')
+            team_img = pygame.image.load(f'images\\units\\barbarian-team.png')
         team_img.convert_alpha()
         overlay_rect = team_img.get_rect(topright=self.rect.topright)
         screen.blit(team_img, overlay_rect)
@@ -242,3 +250,27 @@ class BarbarianHero(BaseUnit):
         self.defense_power = 50
         self.movement = 350
         self.initial_movement = 350
+
+class Wolf(BaseUnit):
+    def __init__(self, x, y, team):
+        self.name = "Wolf"
+        super().__init__(x, y, team)
+        self.health = 100
+        self.can_shoot = False
+        self.gold_cost = 5
+        self.attack_power = 30
+        self.defense_power = 20
+        self.movement = 650
+        self.initial_movement = 650
+
+class Barbarian(BaseUnit):
+    def __init__(self, x, y, team):
+        self.name = "Barbarian"
+        super().__init__(x, y, team)
+        self.health = 100
+        self.can_shoot = False
+        self.gold_cost = 5
+        self.attack_power = 80
+        self.movement = 250
+        self.initial_movement = 250
+        self.defense_power = 25

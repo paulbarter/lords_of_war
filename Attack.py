@@ -51,12 +51,12 @@ class Attack():
         self.defender.health -= damage
         self.attacker.movement = 0  # Attacker cannot move after attacking
         if self.defender.health <= 0:
-            play_sound('sounds\\explosion.wav')
+            self.attacker.play_attack_sound()
             play_sound('sounds\\die.wav')
             show_popup(pygame.display.get_surface(), f"{self.defender.name} has been defeated!", font)
             return True  # Defender is defeated
         else:
-            play_sound('sounds\\explosion.wav')
+            self.attacker.play_attack_sound()
             show_popup(pygame.display.get_surface(), f"{self.defender.name} takes {damage} damage!"
                                                      f" health left: {self.defender.health}", font)
             return False  # Defender survives
