@@ -12,8 +12,8 @@ class BaseTeam():
         self.points = 0
         self.turn_nr = 0
         self.owned_cities = []
-        self.total_gold = 100
-        self.total_resources = 100
+        self.total_gold = 0
+        self.total_resources = 0
         self.researched_roads = False
         self.researched_archery = False
 

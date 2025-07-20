@@ -1,7 +1,7 @@
 import pygame
 
 from Attack import show_popup
-from Units.BaseUnit import Soldier, Settler, Archer
+from Units.BaseUnit import Settler, Archer, Wolf, Barbarian
 from Teams import Teams
 from Units.Spaces import SpaceTypes, Road
 from Utils import handle_end_turn, save_game
@@ -42,8 +42,7 @@ def handle_buttons(event, board, screen, fire_button, buy_settler_button, end_tu
                 active_space.name != "River" and active_space.name != "Mountain" and current_active_unit in active_space.units):
             current_active_unit.settle(active_space, current_active_team, board, screen)
     if buy_soldier_button.rect.collidepoint(event.pos):
-        if active_space and active_space.type == SpaceTypes.CITY and active_space.owner == current_active_team:
-            current_active_team.buy_unit(active_space, Soldier(1, 2, current_active_team.type))
+        buy_soldier(screen, current_active_team, active_space)
     if save_game_button.rect.collidepoint(event.pos):
         save_game(board, current_active_team, team_wolf, team_barbarian)
     if research_archery_button.rect.collidepoint(event.pos):
@@ -63,6 +62,16 @@ def is_adjacent_city_or_road(current_space, board, current_active_team):
                abs(space.rect.centery - current_space.rect.centery) < 150 and space.owner == current_active_team:
                 return True
     return False
+
+def buy_soldier(screen, current_active_team, active_space):
+    if active_space and active_space.type == SpaceTypes.CITY and active_space.owner == current_active_team:
+        if current_active_team.total_gold >= 5:
+            if current_active_team.name == 'Wolf':
+                current_active_team.buy_unit(active_space, Wolf(1, 2, current_active_team.type))
+            else:
+                current_active_team.buy_unit(active_space, Barbarian(1, 2, current_active_team.type))
+        else:
+            show_popup(screen, "Not enough gold, 5 needed", default_font)
 
 def research_road(screen, current_active_team, active_space, board):
     if current_active_team.total_resources < 5:

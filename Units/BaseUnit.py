@@ -257,8 +257,8 @@ class WolfHero(Hero):
         self.health = 150
         self.attack_power = 50
         self.defense_power = 50
-        self.movement = 500
-        self.initial_movement = 500
+        self.movement = 550
+        self.initial_movement = 550
 
 class BarbarianHero(Hero):
     def __init__(self, x, y, team):
@@ -266,7 +266,7 @@ class BarbarianHero(Hero):
         super().__init__(x, y, team)
         self.health = 150
         self.attack_power = 150
-        self.defense_power = 50
+        self.defense_power = 80
         self.movement = 350
         self.initial_movement = 350
 
@@ -292,4 +292,4 @@ class Barbarian(BaseUnit):
         self.attack_power = 80
         self.movement = 250
         self.initial_movement = 250
-        self.defense_power = 25
+        self.defense_power = 45
