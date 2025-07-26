@@ -1,5 +1,8 @@
+from Units.Spaces import SpaceTypes
+
 GOLD_PER_CITY = 1
 RESOURCES_PER_CITY = 2
+RESOURCES_PER_BARBARIAN_VILLAGE = 1
 GOLD_FOR_SETTLER = 5
 
 class Teams():
@@ -42,8 +45,10 @@ class BaseTeam():
 
     def calculate_resources(self):
         # TODO - add for farms etc... create city class
-        self.total_gold += (GOLD_PER_CITY * len(self.owned_cities))
-        self.total_resources += (RESOURCES_PER_CITY * len(self.owned_cities))
+        total_cities_owned = len([city for city in self.owned_cities if city.type == SpaceTypes.CITY])
+        total_barbarian_villages_owned = len([city for city in self.owned_cities if city.type == SpaceTypes.BARBARIAN_VILLAGE])
+        self.total_gold += (GOLD_PER_CITY * total_cities_owned)
+        self.total_resources += (RESOURCES_PER_CITY * total_cities_owned) + (RESOURCES_PER_BARBARIAN_VILLAGE * total_barbarian_villages_owned)
 
     def buy_unit(self, city, new_unit):
         if self.total_gold >= new_unit.gold_cost:

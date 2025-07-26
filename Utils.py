@@ -58,7 +58,6 @@ def load_game(file_path):
 
 def handle_end_turn(board, screen, current_active_team, moving, current_active_unit, active_space,
                                 possible_dest_space_ids, team_wolf, team_barbarian):
-    # show_popup(screen, f"Ending turn for team {current_turn}", font)
     restore_movement_units(board, current_active_team)
     current_active_team = team_barbarian if current_active_team.name == 'Wolf' else team_wolf
     moving = False

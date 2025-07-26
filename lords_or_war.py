@@ -107,7 +107,5 @@ while running:
                                  buy_settler_button, settle_button, buy_soldier_button, research_road_button,
                                  research_archery_button, save_game_button, move_button, current_active_unit, active_space,
                                  search_ruins_button)
-    # if current_active_unit:
-    #     current_active_unit.draw(screen)
     pygame.display.update()
 pygame.quit()

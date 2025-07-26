@@ -13,6 +13,7 @@ BLUE = (0, 0, 255)
 class Teams():
     WOLF = 1
     BARBARIAN = 2
+    ENEMY = 3
 
 class BaseUnit():
     def __init__(self, x, y, team):
@@ -88,6 +89,8 @@ class BaseUnit():
             new_unit = BarbarianHero(self.position[0], self.position[1], self.team)
         elif self.name == 'wolf-hero':
             new_unit = WolfHero(self.position[0], self.position[1], self.team)
+        elif self.name == 'barbarian-horde':
+            new_unit = BarbarianHorde(self.position[0], self.position[1], self.team)
         new_unit.selected = True
         new_unit.stacked = False
         return new_unit
@@ -129,6 +132,8 @@ class BaseUnit():
             team_img = pygame.image.load(f'images\\units\\wolf-team.png')
         elif self.team == Teams.BARBARIAN:
             team_img = pygame.image.load(f'images\\units\\barbarian-team.png')
+        elif self.team == Teams.ENEMY:
+            team_img = pygame.image.load(f'images\\units\\enemy-team.png')
         team_img.convert_alpha()
         overlay_rect = team_img.get_rect(topright=self.rect.topright)
         screen.blit(team_img, overlay_rect)
@@ -293,3 +298,14 @@ class Barbarian(BaseUnit):
         self.movement = 250
         self.initial_movement = 250
         self.defense_power = 45
+
+class BarbarianHorde(BaseUnit):
+    def __init__(self, x, y, team):
+        self.name = "Barbarian-horde"
+        super().__init__(x, y, team)
+        self.health = 25
+        self.can_shoot = False
+        self.attack_power = 30
+        self.movement = 0
+        self.initial_movement = 0
+        self.defense_power = 20

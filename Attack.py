@@ -40,17 +40,32 @@ class Attack():
         self.attack_power = attacker.attack_power
         self.defense_power = defender.defense_power
 
-    def calculate_damage(self):
+    def calculate_damage(self, attack_power=None, defense_power=None):
         # Simple damage calculation: random percentage of attack power minus a percentage of the damage based on defense power
         # Eg: defence power of 50 means that 50% of the damage is reduced
         import random
-        damage = max(0, int(round((self.attack_power) * random.random(), 0)))
-        damage = damage - int(round(damage * round((self.defense_power / 100), 2), 0))
+        if not attack_power:
+            attack_power = self.attack_power
+        if not defense_power:
+            defense_power = self.defense_power
+        damage = max(0, int(round(attack_power * random.random(), 0)))
+        damage = damage - int(round(damage * round((defense_power / 100), 2), 0))
         if damage <= 0:
             damage = random.randint(1, 5)  # Ensure at least some damage is done
         return damage
 
     def execute(self):
+        if self.defender.name == "Barbarian-horde":
+            horde_inflicts_damage = self.calculate_damage(self.defender.attack_power,self.attacker.defense_power)
+            self.attacker.health -= horde_inflicts_damage
+            self.defender.play_attack_sound()
+            if self.attacker.health <= 0:
+                show_popup(pygame.display.get_surface(), f"{self.attacker.name} has been defeated by the Barbarian horde!", font)
+                play_sound('sounds\\die.wav')
+                return
+            else:
+                show_popup(pygame.display.get_surface(), f"{self.attacker.name} takes {horde_inflicts_damage} damage from Barbarian horde!"
+                                                     f" health left: {self.attacker.health}", font)
         damage = self.calculate_damage()
         self.defender.health -= damage
         self.attacker.movement = 0  # Attacker cannot move after attacking

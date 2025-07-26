@@ -1,6 +1,6 @@
 from Teams import WolfTeam, BarbarianTeam
-from Units.BaseUnit import Teams, Soldier, Settler, Archer, WolfHero, BarbarianHero, Wolf, Barbarian
-from Units.Spaces import River, Road, Mountain, Plain, City, Forest, Ruins
+from Units.BaseUnit import Teams, Soldier, Settler, Archer, WolfHero, BarbarianHero, Wolf, Barbarian, BarbarianHorde
+from Units.Spaces import River, Road, Mountain, Plain, City, Forest, Ruins, BarbarianVillage, SpaceTypes
 import random
 
 def get_board(space_width, space_height):
@@ -44,7 +44,7 @@ def get_board(space_width, space_height):
              space_3_1, space_3_2, space_3_3, space_3_4, space_3_5, space_3_6, space_3_7, space_3_8, space_3_9]
 
 def make_random_board(team_wolf, team_barbarian, width_units, height_units, space_width, space_height, percentage_road=0.3, percentage_river=0.1,
-                      percentage_mountain=0.1, percentage_forrest=0.2, percentage_ruins=0.05):
+                      percentage_mountain=0.1, percentage_forrest=0.2, percentage_ruins=0.05, percentage_barbarian=0.03):
     board = []
     wolf_start_squares = [(0, 0), (1, 0), (0, 1), (1, 1)]
     length = height_units
@@ -70,8 +70,14 @@ def make_random_board(team_wolf, team_barbarian, width_units, height_units, spac
                     space_type = Forest
                 elif rand_value < percentage_road + percentage_river + percentage_mountain + percentage_forrest + percentage_ruins:
                     space_type = Ruins
+                elif rand_value < percentage_road + percentage_river + percentage_mountain + percentage_forrest + percentage_ruins + percentage_barbarian:
+                    space_type = BarbarianVillage
 
             initialised_space = space_type(space_width * width_unit + 60, 50 + space_height * height_unit)
+
+            if initialised_space.type == SpaceTypes.BARBARIAN_VILLAGE:
+                initialised_space.add_unit(BarbarianHorde(1, 2, Teams.ENEMY))
+
             if (height_unit == 0 and width_unit == 0) or (height_unit == height_units -1 and width_unit == width_units -1):
                 # Start space
                 if height_unit == 0 and width_unit == 0:

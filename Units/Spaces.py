@@ -13,6 +13,8 @@ class SpaceTypes:
     MOUNTAIN = 3
     RIVER = 4
     PLAIN = 5
+    RUINS = 6
+    BARBARIAN_VILLAGE = 7
 
 class BaseSpace():
     def __init__(self, x, y, type):
@@ -119,7 +121,7 @@ class BaseSpace():
 
     def draw(self, screen, hovered_unit=None):
         screen.blit(self.image, self.rect)
-        if self.type == SpaceTypes.CITY and self.owner:
+        if self.type in [SpaceTypes.CITY, SpaceTypes.BARBARIAN_VILLAGE] and self.owner:
             self.draw_team_effect(screen)
         if self.is_valid_hover:
             self.draw_valid_hovered_effect(screen)
@@ -211,6 +213,8 @@ class BaseSpace():
         elif self.name == 'Ruins':
             new_space = Ruins(1, 2)
             new_space.searched = False
+        elif self.name == 'Barbarian-village':
+            new_space = BarbarianVillage(1, 2)
         new_space.is_selected = True
         return new_space
 
@@ -256,11 +260,11 @@ class River(BaseSpace):
         self.name = 'River'
         super().__init__(x, y, SpaceTypes.RIVER)
         self.move_penalty = 99999
-        # Cannot cross river without a boat or flying unit
+
 class Ruins(BaseSpace):
     def __init__(self, x, y):
         self.name = 'Ruins'
-        super().__init__(x, y, SpaceTypes.RIVER)
+        super().__init__(x, y, SpaceTypes.RUINS)
         self.move_penalty = 150
         self.searched = False
 
@@ -275,6 +279,13 @@ class Ruins(BaseSpace):
     def search(self):
         play_sound("sounds\\ruins.wav")
         self.searched = True
+
+class BarbarianVillage(BaseSpace):
+    def __init__(self, x, y):
+        self.name = 'Barbarian-village'
+        super().__init__(x, y, SpaceTypes.BARBARIAN_VILLAGE)
+        self.move_penalty = 50
+        self.owner = None
 
 def calculate_city_occupied(active_team, inactive_team, city):
     if city.owner and city.owner != active_team:
@@ -383,7 +394,7 @@ def snap_to_space(screen, active_team, inactive_team, board, possible_dest_space
                     space.add_unit(unit)
                     unit.position = space.rect.center
                     unit.rect.center = space.rect.center
-                if space.type == SpaceTypes.CITY:
+                if space.type in [SpaceTypes.CITY, SpaceTypes.BARBARIAN_VILLAGE]:
                     calculate_city_occupied(active_team, inactive_team, space)
                 dragged_from_space.remove_unit(unit)
             break
