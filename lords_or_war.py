@@ -1,4 +1,7 @@
 import pygame
+
+from Attack import show_popup
+
 pygame.init()
 from pygame.locals import *
 
@@ -52,60 +55,63 @@ current_selected_unit_info = []
 unit_stack = []
 
 while running:
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            running = False
-        elif event.type == MOUSEBUTTONDOWN:
-            ####################
-            # MOUSE CLICK
-            remove_units_selected(board)
-            remove_units_hovered(board)
-            remove_hover_effects(board)
-            possible_dest_space_ids = []
-            (firing_is_active, current_active_team, moving, current_active_unit, active_space, possible_dest_space_ids, team_wolf,
-            team_barbarian) = (
-                handle_buttons(event, board, screen, fire_button, buy_settler_button, end_turn_button, firing_is_active,
-                               active_space, current_active_team, moving, current_active_unit, possible_dest_space_ids,
-                               team_wolf, team_barbarian, settle_button, buy_soldier_button, save_game_button, research_road_button,
-                               research_archery_button, move_button, search_ruins_button))
-            current_active_unit, active_space, unit_stack = get_current_active_unit(screen, current_active_team,
-                                                                                    event.pos[0], event.pos[1], board)
-            if current_active_unit:
-                moving = True
-                current_selected_unit_info = current_active_unit.get_info(unit_stack)
-            else:
-                if active_space:
-                    current_selected_unit_info = active_space.get_info()
-
-        elif event.type == MOUSEBUTTONUP:
-            moving = False
-            ###############
-            # ACTUALLY MOVE OR SHOOT
-            if current_active_unit:
-                if possible_dest_space_ids and len(possible_dest_space_ids) > 0:
-                    if firing_is_active:
-                        shoot_at_space(board, current_active_unit, event.pos)
-                    else:
-                        inactive_team = team_wolf if current_active_team.name == "Barbarian" else team_barbarian
-                        snap_to_space(screen, current_active_team, inactive_team, board, possible_dest_space_ids, current_active_unit, active_space)
+    try:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                running = False
+            elif event.type == MOUSEBUTTONDOWN:
+                ####################
+                # MOUSE CLICK
+                remove_units_selected(board)
+                remove_units_hovered(board)
+                remove_hover_effects(board)
+                possible_dest_space_ids = []
+                (firing_is_active, current_active_team, moving, current_active_unit, active_space, possible_dest_space_ids, team_wolf,
+                team_barbarian) = (
+                    handle_buttons(event, board, screen, fire_button, buy_settler_button, end_turn_button, firing_is_active,
+                                   active_space, current_active_team, moving, current_active_unit, possible_dest_space_ids,
+                                   team_wolf, team_barbarian, settle_button, buy_soldier_button, save_game_button, research_road_button,
+                                   research_archery_button, move_button, search_ruins_button))
+                current_active_unit, active_space, unit_stack = get_current_active_unit(screen, current_active_team,
+                                                                                        event.pos[0], event.pos[1], board)
+                if current_active_unit:
+                    moving = True
                     current_selected_unit_info = current_active_unit.get_info(unit_stack)
                 else:
-                    snap_back_to_start(current_active_unit, active_space)
-                remove_hover_effects(board)
-                previously_active_unit = current_active_unit
-        elif event.type == MOUSEMOTION:
-            ##################################
-            # CHECKING WHERE CAN MOVE OR SHOOT
-            if moving:
-                current_hovered_space, possible_dest_space_ids = handle_hover(board, screen, current_active_unit, active_space,
-                                                              current_active_team, event, firing_is_active)
-            remove_units_hovered(board)
-            hovered_unit = check_hover_unit(current_active_team, screen, board, event.pos)
+                    if active_space:
+                        current_selected_unit_info = active_space.get_info()
 
-    display_screen_and_resources(screen, board, end_turn_button, fire_button, resources_screen, unit_info_screen,
-                                 current_active_team, team_wolf, team_barbarian, current_selected_unit_info,
-                                 buy_settler_button, settle_button, buy_soldier_button, research_road_button,
-                                 research_archery_button, save_game_button, move_button, current_active_unit, active_space,
-                                 search_ruins_button)
-    pygame.display.update()
+            elif event.type == MOUSEBUTTONUP:
+                moving = False
+                ###############
+                # ACTUALLY MOVE OR SHOOT
+                if current_active_unit:
+                    if possible_dest_space_ids and len(possible_dest_space_ids) > 0:
+                        if firing_is_active:
+                            shoot_at_space(board, current_active_unit, event.pos)
+                        else:
+                            inactive_team = team_wolf if current_active_team.name == "Barbarian" else team_barbarian
+                            snap_to_space(screen, current_active_team, inactive_team, board, possible_dest_space_ids, current_active_unit, active_space)
+                        current_selected_unit_info = current_active_unit.get_info(unit_stack)
+                    else:
+                        snap_back_to_start(current_active_unit, active_space)
+                    remove_hover_effects(board)
+                    previously_active_unit = current_active_unit
+            elif event.type == MOUSEMOTION:
+                ##################################
+                # CHECKING WHERE CAN MOVE OR SHOOT
+                if moving:
+                    current_hovered_space, possible_dest_space_ids = handle_hover(board, screen, current_active_unit, active_space,
+                                                                  current_active_team, event, firing_is_active)
+                remove_units_hovered(board)
+                hovered_unit = check_hover_unit(current_active_team, screen, board, event.pos)
+
+        display_screen_and_resources(screen, board, end_turn_button, fire_button, resources_screen, unit_info_screen,
+                                     current_active_team, team_wolf, team_barbarian, current_selected_unit_info,
+                                     buy_settler_button, settle_button, buy_soldier_button, research_road_button,
+                                     research_archery_button, save_game_button, move_button, current_active_unit, active_space,
+                                     search_ruins_button)
+        pygame.display.update()
+    except Exception as e:
+        show_popup(screen, str(e))
 pygame.quit()

@@ -62,7 +62,7 @@ class Attack():
             if self.attacker.health <= 0:
                 show_popup(pygame.display.get_surface(), f"{self.attacker.name} has been defeated by the Barbarian horde!", font)
                 play_sound('sounds\\die.wav')
-                return
+                return True # Attacker is defeated
             else:
                 show_popup(pygame.display.get_surface(), f"{self.attacker.name} takes {horde_inflicts_damage} damage from Barbarian horde!"
                                                      f" health left: {self.attacker.health}", font)
