@@ -41,6 +41,7 @@ class BaseUnit():
         self.is_hovered = False
         self.is_valid_target = False
         self.is_invalid_target = False
+        self.has_speed_potion = False
 
     def to_dict(self):
         return {
@@ -147,6 +148,12 @@ class BaseUnit():
         overlay_rect = target_image.get_rect(centerx=self.rect.centerx, centery=self.rect.centery)
         screen.blit(target_image, overlay_rect)
 
+    def draw_spell_effect(self, screen, type=""):
+        spell_effect_image = pygame.image.load(f'images\\units\\{type}-potion.png')
+        spell_effect_image.convert_alpha()
+        overlay_rect = spell_effect_image.get_rect(centerx=self.rect.centerx, centery=self.rect.centery)
+        screen.blit(spell_effect_image, overlay_rect)
+
     def draw(self, screen, hovered_unit=None):
         screen.blit(self.image, self.rect)
         if hovered_unit:
@@ -161,6 +168,8 @@ class BaseUnit():
             self.draw_selected_effect(screen)
         elif self.is_hovered:
             self.draw_hovered_effect(screen)
+        if self.has_speed_potion:
+            self.draw_spell_effect(screen, 'speed')
         self.draw_team_effect(screen)
 
     def create_rect(self, img=None):
