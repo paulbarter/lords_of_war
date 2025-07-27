@@ -34,17 +34,22 @@ def show_popup(screen, message, font=None):
                 waiting = False
 
 class Attack():
-    def __init__(self, attacker, defender, dragged_from_space):
+    def __init__(self, attacker, defender, dragged_from_space, attacked_space):
         self.attacker = attacker
         self.defender = defender
         self.attack_power = attacker.attack_power
         self.defense_power = defender.defense_power
         self.dragged_from_space = dragged_from_space
+        self.attacked_space = attacked_space
 
     def calculate_damage(self, attack_power=None, defense_power=None):
+        from Units.Spaces import SpaceTypes
         # Simple damage calculation: random percentage of attack power minus a percentage of the damage based on defense power
         # Eg: defence power of 50 means that 50% of the damage is reduced
         import random
+        if self.attacked_space.type == SpaceTypes.CITY:
+            # If attacking a city, the defender's defense power is doubled
+            defense_power = self.defender.defense_power * 1.5
         if not attack_power:
             attack_power = self.attack_power
         if not defense_power:

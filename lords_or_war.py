@@ -96,7 +96,7 @@ while running:
                             snap_to_space(screen, current_active_team, inactive_team, board, possible_dest_space_ids, current_active_unit, active_space)
                         current_selected_unit_info = current_active_unit.get_info(unit_stack)
                     else:
-                        snap_back_to_start(current_active_unit, active_space)
+                        snap_back_to_start(current_active_unit, active_space, None, None, None, out_of_moves=True)
                     remove_hover_effects(board)
                     previously_active_unit = current_active_unit
             elif event.type == MOUSEMOTION:

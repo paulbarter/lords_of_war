@@ -366,7 +366,7 @@ def shoot_at_space(board, unit, mouse_position):
         if space.rect.collidepoint(mouse_position):
             if len(space.units) > 0 and space.units[0].team != unit.team:
                 unit.movement = 0  # Reset movement after firing
-                defeated = Attack(unit, space.units[0], None).execute()
+                defeated = Attack(unit, space.units[0], None, space).execute()
                 if defeated:
                     space.remove_unit(space.units[0])
 
@@ -380,15 +380,13 @@ def snap_to_space(screen, active_team, inactive_team, board, possible_dest_space
                 unit.movement -= total_terrain_move_penalty(space, unit, centre_active_space, centre_current_space, board)
                 if len(space.units) > 0 and space.units[0].team != unit.team:
                     enemy = space.units[0]
-                    defeated = Attack(unit, enemy, dragged_from_space).execute()
+                    defeated = Attack(unit, enemy, dragged_from_space, space).execute()
                     if defeated:
                         space.remove_unit(enemy)
                         space.add_unit(unit)
                     else:
-                        # If the attack did not defeat the defender, snap back to start
-                        # TODO make sure don't snap back if unit moved from further than 1 space away (dont allow moving
-                        # right into another unit unless adjacent)
-                        snap_back_to_start(unit, dragged_from_space)
+                        # If the attack did not defeat the defender, snap back to next to attacker
+                        snap_back_to_start(unit, dragged_from_space, space, possible_dest_spaces, board)
                         break
                 else:
                     space.add_unit(unit)
@@ -399,8 +397,18 @@ def snap_to_space(screen, active_team, inactive_team, board, possible_dest_space
                 dragged_from_space.remove_unit(unit)
             break
 
-def snap_back_to_start(current_active_unit, active_space):
-    current_active_unit.rect.center = active_space.rect.center
+def snap_back_to_start(current_active_unit, dragged_from_space, attacked_space, possible_dest_space_ids, board, out_of_moves=False):
+    if out_of_moves:
+        current_active_unit.rect.center = dragged_from_space.rect.center
+        return
+    if is_space_adjacent(dragged_from_space, attacked_space):
+        current_active_unit.rect.center = dragged_from_space.rect.center
+        return
+    for space in board:
+        if space.id != attacked_space.id:
+            if is_space_adjacent(space, attacked_space):
+                current_active_unit.rect.center = space.rect.center
+                return
 
 def is_space_adjacent(space1, space2):
     # bug here when go from corner to corner to corner
