@@ -380,7 +380,7 @@ def snap_to_space(screen, active_team, inactive_team, board, possible_dest_space
                 unit.movement -= total_terrain_move_penalty(space, unit, centre_active_space, centre_current_space, board)
                 if len(space.units) > 0 and space.units[0].team != unit.team:
                     enemy = space.units[0]
-                    defeated = Attack(unit, enemy).execute()
+                    defeated = Attack(unit, enemy, dragged_from_space).execute()
                     if defeated:
                         space.remove_unit(enemy)
                         space.add_unit(unit)
@@ -414,7 +414,9 @@ def total_terrain_move_penalty(current_space, unit, start_point, end_point, boar
     total_move_penalty = 0
     for space in board:
         if space.rect.clipline(start_point, end_point) and space.id != current_space.id:
-            if not unit.fly:
+            if unit.fly:
+                total_move_penalty += 50
+            else:
                 total_move_penalty += space.move_penalty
     return total_move_penalty
 

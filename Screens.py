@@ -1,7 +1,6 @@
 import pygame
 
 from Attack import show_popup
-from Units.BaseUnit import Settler, Archer, Wolf, Barbarian
 from Teams import Teams
 from Units.Spaces import SpaceTypes, Road
 from Utils import handle_end_turn, save_game
@@ -30,6 +29,7 @@ def handle_buttons(event, board, screen, fire_button, buy_settler_button, end_tu
         firing_is_active = False
         toggle_button(move_button, fire_button)
     if buy_settler_button.rect.collidepoint(event.pos):
+        from Units.Units import Settler
         if active_space and active_space.type == SpaceTypes.CITY and active_space.owner == current_active_team:
             current_active_team.buy_unit(active_space, Settler(1, 2, current_active_team.type))
     if end_turn_button.rect.collidepoint(event.pos):
@@ -66,6 +66,7 @@ def is_adjacent_city_or_road(current_space, board, current_active_team):
     return False
 
 def buy_soldier(screen, current_active_team, active_space):
+    from Units.Units import Wolf, Barbarian
     if active_space and active_space.type == SpaceTypes.CITY and active_space.owner == current_active_team:
         if current_active_team.total_gold >= 5:
             if current_active_team.name == 'Wolf':
@@ -101,6 +102,7 @@ def research_road(screen, current_active_team, active_space, board):
             show_popup(screen, "Click on a plain or forrest next to a city or road you own", default_font)
 
 def research_archery(screen, current_active_team, active_space):
+    from Units.Units import Archer
     if current_active_team.total_resources < 7:
         show_popup(screen, "Not enough resources, 7 needed", default_font)
     else:

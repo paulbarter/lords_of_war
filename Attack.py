@@ -34,11 +34,12 @@ def show_popup(screen, message, font=None):
                 waiting = False
 
 class Attack():
-    def __init__(self, attacker, defender):
+    def __init__(self, attacker, defender, dragged_from_space):
         self.attacker = attacker
         self.defender = defender
         self.attack_power = attacker.attack_power
         self.defense_power = defender.defense_power
+        self.dragged_from_space = dragged_from_space
 
     def calculate_damage(self, attack_power=None, defense_power=None):
         # Simple damage calculation: random percentage of attack power minus a percentage of the damage based on defense power
@@ -62,7 +63,7 @@ class Attack():
             if self.attacker.health <= 0:
                 show_popup(pygame.display.get_surface(), f"{self.attacker.name} has been defeated by the Barbarian horde!", font)
                 play_sound('sounds\\die.wav')
-                return True # Attacker is defeated
+                self.dragged_from_space.remove_unit(self.attacker)
             else:
                 show_popup(pygame.display.get_surface(), f"{self.attacker.name} takes {horde_inflicts_damage} damage from Barbarian horde!"
                                                      f" health left: {self.attacker.health}", font)

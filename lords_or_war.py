@@ -17,9 +17,8 @@ w, h = 1550, 795
 screen = pygame.display.set_mode((w, h))
 space_width = 75
 space_height = 75
-from Board import get_board, make_random_board
+from Board import make_random_board
 from Teams import team_wolf, team_barbarian
-# board = get_board(space_width, space_height)
 board = make_random_board(team_wolf, team_barbarian, 14, 9, space_width, space_height, percentage_road=0.0)
 current_active_team = team_wolf
 

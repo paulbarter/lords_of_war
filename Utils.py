@@ -6,6 +6,7 @@ import pygame
 import json
 import datetime
 
+from Units.Units import Bats
 from sounds.Sounds import play_sound
 
 pygame.init()
@@ -121,7 +122,7 @@ def handle_random_event(current_active_team, screen, team_wolf, team_barbarian, 
                     show_popup(screen, f"{event_team.name}: Nothing happens", font)
 
 def handle_ruins_searched(space, current_active_team, screen, hero):
-    random_choice = random.randint(1, 5)
+    random_choice = random.randint(1, 6)
     if random_choice == 1:
         inc_gold = random.randint(1, 5)
         current_active_team.total_gold += inc_gold
@@ -141,7 +142,13 @@ def handle_ruins_searched(space, current_active_team, screen, hero):
             space.remove_unit(space.units[0])
             show_popup(screen, f"Your hero has been slain!", font)
             play_sound('sounds\\die.wav')
+    elif random_choice == 5:
+        bats = Bats(space.rect.centerx, space.rect.centery, current_active_team.type)
+        space.add_unit(bats)
+        play_sound("sounds\\scary.wav")
+        show_popup(screen, f"A flock of vampire bats joins you!", font)
     else:
+        play_sound("sounds\\wrong-answer.wav")
         show_popup(screen, f"You find nothing in the ruins.", font)
 
 def get_space_unit_is_in(board, unit):
