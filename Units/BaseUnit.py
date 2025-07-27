@@ -37,6 +37,8 @@ class BaseUnit():
         self.is_valid_target = False
         self.is_invalid_target = False
         self.has_speed_potion = False
+        self.has_bloodlust = False
+        self.has_spell = False
 
     def to_dict(self):
         return {
@@ -168,6 +170,8 @@ class BaseUnit():
             self.draw_hovered_effect(screen)
         if self.has_speed_potion:
             self.draw_spell_effect(screen, 'speed')
+        elif self.has_bloodlust:
+            self.draw_spell_effect(screen, 'bloodlust')
         self.draw_team_effect(screen)
 
     def create_rect(self, img=None):

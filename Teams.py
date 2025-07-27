@@ -20,6 +20,7 @@ class BaseTeam():
         self.researched_roads = False
         self.researched_archery = False
         self.researched_speed_spell = False
+        self.researched_bloodlust_spell = False
 
     def to_dict(self):
         return {

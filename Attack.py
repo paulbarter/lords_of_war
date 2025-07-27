@@ -56,7 +56,7 @@ class Attack():
         return damage
 
     def execute(self):
-        if self.defender.name == "Barbarian-horde":
+        if self.defender.name == "Barbarian-horde" and not self.attacker.can_shoot:
             horde_inflicts_damage = self.calculate_damage(self.defender.attack_power,self.attacker.defense_power)
             self.attacker.health -= horde_inflicts_damage
             self.defender.play_attack_sound()

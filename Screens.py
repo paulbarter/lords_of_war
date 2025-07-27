@@ -21,7 +21,7 @@ def toggle_button(button1, button2):
 def handle_buttons(event, board, screen, fire_button, buy_settler_button, end_turn_button, firing_is_active, active_space,
                    current_active_team, moving, current_active_unit, possible_dest_space_ids, team_wolf, team_barbarian,
                    settle_button, buy_soldier_button, save_game_button, research_road_button, research_archery_button,
-                   move_button, search_ruins_button, research_speed_spell_button):
+                   move_button, search_ruins_button, research_speed_spell_button, research_bloodlust_spell_button):
     if fire_button.rect.collidepoint(event.pos):
         firing_is_active = not firing_is_active
         toggle_button(fire_button, move_button)
@@ -53,6 +53,8 @@ def handle_buttons(event, board, screen, fire_button, buy_settler_button, end_tu
         current_active_unit.search_ruins(screen, active_space, board, current_active_team)
     if research_speed_spell_button.rect.collidepoint(event.pos):
         research_spell(screen, current_active_team, current_active_unit, 'speed')
+    if research_bloodlust_spell_button.rect.collidepoint(event.pos):
+        research_spell(screen, current_active_team, current_active_unit, 'bloodlust')
     return (firing_is_active, current_active_team, moving, current_active_unit, active_space, possible_dest_space_ids, team_wolf,
             team_barbarian)
 
@@ -126,13 +128,21 @@ def research_spell(screen, current_active_team, current_active_unit, type_spell)
     spell_attribute = None
     spell_message = ""
     if type_spell == 'speed':
-        cost = 10
+        cost = 15
         spell_attribute = 'researched_speed_spell'
         unit_spell_attribute = 'has_speed_potion'
         unit_spell_affecting = "movement"
         if current_active_unit:
             spell_value = current_active_unit.initial_movement + 250
         spell_message = "Dabbling in the dark arts of speed spells I see... well well well!"
+    elif type_spell == 'bloodlust':
+        cost = 6
+        spell_attribute = 'researched_bloodlust_spell'
+        unit_spell_attribute = 'has_bloodlust'
+        unit_spell_affecting = "attack_power"
+        if current_active_unit:
+            spell_value = current_active_unit.attack_power + 50
+        spell_message = "You have researched the bloodlust spell, your units will now be more powerful!"
     else:
         show_popup(screen, "Unknown spell type", default_font)
         return
@@ -146,12 +156,16 @@ def research_spell(screen, current_active_team, current_active_unit, type_spell)
             current_active_team.total_resources -= cost
         else:
             if current_active_unit and current_active_unit.team == current_active_team.type:
+                if current_active_unit.has_spell:
+                    show_popup(screen, "Unit already has a spell", default_font)
+                    return
                 play_sound('sounds\\research.wav')
                 setattr(current_active_unit, unit_spell_attribute, True)
                 setattr(current_active_unit, unit_spell_affecting, spell_value)
                 if type_spell == 'speed':
                     setattr(current_active_unit, "initial_movement", spell_value)
                 current_active_team.total_resources -= cost
+                current_active_unit.has_spell = True
             else:
                 show_popup(screen, "Click on a unit first", default_font)
 
@@ -241,7 +255,7 @@ def display_screen_and_resources(screen, board, end_turn_button, fire_button, re
                                  current_active_team, team_wolf, team_barbarian, current_selected_unit_info,
                                  buy_button, settle_button, buy_soldier_button, research_road_button,
                                  research_archery_button, save_game_button, move_button, current_active_unit, active_space,
-                                 search_ruins_button, research_speed_spell_button):
+                                 search_ruins_button, research_speed_spell_button, research_bloodlust_spell_button):
     screen.fill(SCREEN_BACKGROUND)
     end_turn_button.draw()
     fire_button.draw(new_text='FIRE')
@@ -260,7 +274,8 @@ def display_screen_and_resources(screen, board, end_turn_button, fire_button, re
     save_game_button.draw(new_text='SAVE GAME')
     research_road_button.draw(new_text='Road [3]', font_type='small')
     research_archery_button.draw(new_text='Archery [7]', font_type='small')
-    research_speed_spell_button.draw(new_text='Speed Spell [10]', font_type='small')
+    research_speed_spell_button.draw(new_text='Speed Spell [15]', font_type='small')
+    research_bloodlust_spell_button.draw(new_text='Bloodlust Spell [6]', font_type='small')
     if current_active_unit and current_active_unit.type == 'Hero':
         search_ruins_button.draw(new_text='Search Ruins', font_type='small')
     draw_board(screen, board)

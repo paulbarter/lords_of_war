@@ -366,7 +366,7 @@ def shoot_at_space(board, unit, mouse_position):
         if space.rect.collidepoint(mouse_position):
             if len(space.units) > 0 and space.units[0].team != unit.team:
                 unit.movement = 0  # Reset movement after firing
-                defeated = Attack(unit, space.units[0]).execute()
+                defeated = Attack(unit, space.units[0], None).execute()
                 if defeated:
                     space.remove_unit(space.units[0])
 
