@@ -1,5 +1,6 @@
 import pygame
 import uuid
+
 from sounds.Sounds import play_sound
 
 BLUE = (0, 0, 255)
@@ -75,7 +76,7 @@ class BaseUnit():
         play_sound(f'sounds\\{self.name}.wav')
 
     def clone_unit(self):
-        from Units.Units import Wolf, Barbarian, Settler, Archer, BarbarianHero, WolfHero, BarbarianHorde, Bats
+        from Units.Units import Wolf, Barbarian, Settler, Archer, BarbarianHero, WolfHero, BarbarianHorde, Bats, Knight
         if self.name == 'Wolf':
             new_unit = Wolf(self.position[0], self.position[1], self.team)
         elif self.name == 'Barbarian':
@@ -92,6 +93,8 @@ class BaseUnit():
             new_unit = BarbarianHorde(self.position[0], self.position[1], self.team)
         elif self.name == 'Bats':
             new_unit = Bats(self.position[0], self.position[1], self.team)
+        elif self.name == 'Knight':
+            new_unit = Knight(self.position[0], self.position[1], self.team)
         new_unit.selected = True
         new_unit.stacked = False
         return new_unit

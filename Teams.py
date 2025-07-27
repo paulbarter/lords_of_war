@@ -19,6 +19,7 @@ class BaseTeam():
         self.total_resources = 0
         self.researched_roads = False
         self.researched_archery = False
+        self.researched_knights = False
         self.researched_speed_spell = False
         self.researched_bloodlust_spell = False
 

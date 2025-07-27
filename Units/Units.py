@@ -146,3 +146,14 @@ class Bats(BaseUnit):
         self.movement = 450
         self.initial_movement = 450
         self.defense_power = 10
+
+class Knight(BaseUnit):
+    def __init__(self, x, y, team):
+        self.name = "Knight"
+        super().__init__(x, y, team)
+        self.gold_cost = 7
+        self.health = 120
+        self.attack_power = 100
+        self.movement = 600
+        self.initial_movement = 600
+        self.defense_power = 50
