@@ -441,7 +441,7 @@ def remove_hover_effects(board):
             unit.is_invalid_target = False
             unit.selected = False
 
-def handle_hover(board, screen, current_active_unit, active_space, current_active_team, event, firing):
+def handle_hover(board, screen, current_active_unit, active_space, event, firing):
     remove_hover_effects(board)
     current_hovered_space = possible_dest_space_ids = None
     if current_active_unit and active_space:

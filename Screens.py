@@ -258,7 +258,6 @@ class BaseButton:
         pygame.draw.rect(self.screen, (150, 150, 150), self.rect)
         self.screen.blit(self.text_surface, self.text_rect)
 
-
 def draw_board(screen, board):
     # draw all the spaces and then draw all the units last so that spaces are not drawn over units
     for space in board:
@@ -266,6 +265,29 @@ def draw_board(screen, board):
     for space in board:
         if len(space.units) > 0:
             space.draw_units(screen)
+
+def adjust_units_after_scrolling(screen, board, board_width_units, top_x, top_y):
+    row_nr = 0
+    col_nr = 0
+    space_width = 75
+    space_height = 75
+    x_offset = 60
+    y_offset = 50
+    for space in board:
+        if col_nr >= board_width_units:
+            col_nr = 0
+            row_nr += 1
+
+        current_space_x = (col_nr * space_width) + x_offset - (top_x * space_width)
+        current_space_y = (row_nr * space_height) + y_offset - (top_y * space_height)
+
+        space.rect.center = (current_space_x, current_space_y)
+        space.draw(screen)
+        if len(space.units) > 0:
+            for unit in space.units:
+                unit.rect.center = (current_space_x, current_space_y)
+            space.draw_units(screen)
+        col_nr += 1
 
 def draw_selected_space(unit_info_screen, screen, current_active_unit, active_space):
     if current_active_unit:

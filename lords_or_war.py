@@ -5,7 +5,7 @@ from Attack import show_popup
 pygame.init()
 from pygame.locals import *
 
-from Screens import BaseScreen, BaseButton, display_screen_and_resources, handle_buttons
+from Screens import BaseScreen, BaseButton, display_screen_and_resources, handle_buttons, adjust_units_after_scrolling
 from Units.Spaces import get_current_active_unit, \
     snap_to_space, snap_back_to_start, check_hover_unit, shoot_at_space, handle_hover, \
     remove_hover_effects, remove_units_selected, remove_units_hovered
@@ -19,7 +19,11 @@ space_width = 75
 space_height = 75
 from Board import make_random_board
 from Teams import team_wolf, team_barbarian
+board_height_units = 9
+board_width_units = 14
 board = make_random_board(team_wolf, team_barbarian, 14, 9, space_width, space_height, percentage_road=0.0)
+top_x = 0
+top_y = 0
 current_active_team = team_wolf
 
 # from Utils import load_game
@@ -105,9 +109,20 @@ while running:
                 # CHECKING WHERE CAN MOVE OR SHOOT
                 if moving:
                     current_hovered_space, possible_dest_space_ids = handle_hover(board, screen, current_active_unit, active_space,
-                                                                  current_active_team, event, firing_is_active)
+                                                                  event, firing_is_active)
                 remove_units_hovered(board)
                 hovered_unit = check_hover_unit(current_active_team, screen, board, event.pos)
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_DOWN:
+                    top_y += 1
+                elif event.key == pygame.K_UP:
+                    top_y -= 1
+                elif event.key == pygame.K_LEFT:
+                    top_x -= 1
+                elif event.key == pygame.K_RIGHT:
+                    top_x += 1
+                if event.key in [pygame.K_DOWN, pygame.K_UP, pygame.K_LEFT, pygame.K_RIGHT]:
+                    adjust_units_after_scrolling(screen, board, board_width_units, top_x, top_y)
 
         display_screen_and_resources(screen, board, end_turn_button, fire_button, resources_screen, unit_info_screen,
                                      current_active_team, team_wolf, team_barbarian, current_selected_unit_info,
